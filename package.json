@@ -1,0 +1,26 @@
+{
+  "name": "vtex-catalog-consolidation-sdd",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cost-aware DeepSeek Harness infrastructure and specifications for the VTEX catalog consolidation exercise",
+  "type": "module",
+  "packageManager": "npm@11.12.1",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "scripts": {
+    "bootstrap": "npm ci && npm run sources:ingest",
+    "sources:ingest": "node scripts/ingest-sources.mjs",
+    "sdd:prepare": "node scripts/sdd-agent.mjs prepare",
+    "sdd:run": "node scripts/sdd-agent.mjs run",
+    "sdd:validate": "node scripts/validate.mjs",
+    "cost:record": "node scripts/cost-record.mjs",
+    "cost:report": "node scripts/cost-report.mjs",
+    "dsh:config": "node scripts/check-dsh-config.mjs",
+    "test": "node --test",
+    "check": "npm run sdd:validate && npm test"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh": "0.1.2-rc.1"
+  }
+}

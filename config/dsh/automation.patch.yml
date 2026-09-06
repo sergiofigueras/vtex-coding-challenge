@@ -1,0 +1,45 @@
+# Applied after the shipped DeepSeek Harness headless profile. DeepSeek Harness
+# orchestrates the run; OpenAI supplies the model.
+# The harness is in developer preview, so this file is intentionally small.
+- id: llm-pi-ai
+  config:
+    providers:
+      openai:
+        apiKeyEnv: OPENAI_API_KEY
+        reasoning: medium
+        cacheRetention: short
+        models:
+          - id: gpt-5.6-luna
+            contextWindow: 272000
+            maxTokens: 16384
+          - id: gpt-5.6-terra
+            contextWindow: 272000
+            maxTokens: 16384
+          - id: gpt-5.6-sol
+            contextWindow: 272000
+            maxTokens: 16384
+        retryPolicy:
+          mode: normal
+          maxRetries: 2
+
+- id: agent-default-model
+  config:
+    provider: openai
+    model: gpt-5.6-terra
+
+# Headless runs cannot answer interactive approval prompts. The sandbox remains
+# workspace-write through DSH_PERMISSION_MODE; approval denial is non-interactive.
+- id: approval
+  config:
+    policy: never
+
+# SDD runs are deliberately local and single-agent. This prevents hidden model
+# fan-out and avoids the default DeepSeek web-search credential path.
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: tool-web
+  disabled: true

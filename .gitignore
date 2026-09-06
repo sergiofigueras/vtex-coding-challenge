@@ -1,0 +1,22 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Private/raw source material and DeepSeek Harness runtime state.
+.sdd/
+
+# The public repository keeps normalized source facts, never the source PDFs.
+*.pdf
+
+# Local copies of assessment fixtures are reproducibly downloaded on demand.
+ProductEntry.json
+catalog.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Product implementation outputs created by later SDD runs.
+coverage/
+dist/

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "requirements": [
+    { "id": "USR-001", "authority": "user", "summary": "Create and publish the infrastructure in the named GitHub repository.", "specIds": ["SDD-008", "SDD-092"] },
+    { "id": "USR-002", "authority": "user", "summary": "Use DeepSeek Harness as effectively as practical.", "specIds": ["SDD-090"] },
+    { "id": "USR-003", "authority": "user", "summary": "Build the development infrastructure now, not the catalog application.", "specIds": ["SDD-000", "SDD-001", "SDD-090"] },
+    { "id": "USR-004", "authority": "user", "summary": "Enable an agent to ingest evidence, implement from specifications, verify, and deliver software.", "specIds": ["SDD-090", "SDD-092"] },
+    { "id": "USR-005", "authority": "user", "summary": "Divide the future catalog work into multiple specifications.", "specIds": ["SDD-000", "SDD-090", "SDD-092"] },
+    { "id": "USR-006", "authority": "user", "summary": "Use the supplied ProductEntry JSON and catalog SQLite URLs as future system inputs.", "specIds": ["SDD-090"] },
+    { "id": "USR-007", "authority": "user", "summary": "Track and map cost to every repository change.", "specIds": ["SDD-091", "SDD-092"] },
+    { "id": "USR-008", "authority": "user", "summary": "Run OpenAI models through DeepSeek Harness and price OpenAI usage.", "specIds": ["SDD-090", "SDD-091"] },
+    { "id": "ASM-001", "authority": "assessment", "summary": "Receive a file containing products supplied by multiple sellers.", "specIds": ["SDD-001", "SDD-002"] },
+    { "id": "ASM-002", "authority": "assessment", "summary": "Persist consolidated results into the supplied SQLite catalog.", "specIds": ["SDD-001", "SDD-003", "SDD-005"] },
+    { "id": "ASM-003", "authority": "assessment", "summary": "Do not insert a duplicate product; link the existing product to the seller.", "specIds": ["SDD-004", "SDD-005", "SDD-007"] },
+    { "id": "ASM-004", "authority": "assessment", "summary": "Database changes are allowed when justified.", "specIds": ["SDD-003", "SDD-005"] },
+    { "id": "ASM-005", "authority": "assessment", "summary": "Intentional ambiguities and defensible reasoning matter more than production scale.", "specIds": ["SDD-000", "SDD-004", "SDD-006", "SDD-007", "SDD-008"] },
+    { "id": "PROC-001", "authority": "process", "summary": "The candidate delivery is time-bounded and hosted in a public repository.", "specIds": ["SDD-008", "SDD-092"] },
+    { "id": "PROC-002", "authority": "process", "summary": "The candidate must validate AI output and explain decisions, limitations, and trade-offs.", "specIds": ["SDD-000", "SDD-006", "SDD-007", "SDD-008", "SDD-092"] },
+    { "id": "FIX-001", "authority": "fixture-observation", "summary": "The JSON snapshot has 269 rows, five stable fields, nullable brands, and seller-scoped identity concerns.", "specIds": ["SDD-000", "SDD-002", "SDD-007"] },
+    { "id": "FIX-002", "authority": "fixture-observation", "summary": "The SQLite snapshot has 975 Product rows, zero SellerProduct rows, and two application tables.", "specIds": ["SDD-000", "SDD-003", "SDD-007"] },
+    { "id": "FIX-003", "authority": "fixture-observation", "summary": "Incoming IDs are opaque strings while SellerProductId is declared INTEGER.", "specIds": ["SDD-000", "SDD-002", "SDD-003", "SDD-007"] },
+    { "id": "FIX-004", "authority": "fixture-observation", "summary": "The fixtures contain duplicate IDs, formatting and language variations, and injection-shaped text.", "specIds": ["SDD-000", "SDD-002", "SDD-004", "SDD-006", "SDD-007"] }
+  ]
+}
