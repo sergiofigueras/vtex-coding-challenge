@@ -1,7 +1,7 @@
 # Errors, security, and observability
 
 Spec ID: `SDD-006`
-Status: `ready`
+Status: `implemented`
 Kind: product specification
 Depends on: `SDD-002`, `SDD-005`
 

@@ -129,8 +129,8 @@ function migrateVersionOne(database: DatabaseSync): void {
   database.exec(`PRAGMA user_version = ${CATALOG_SCHEMA_VERSION}`);
 }
 
-/** Runs all supported ordered catalog migrations in one immediate transaction. */
-export function migrateCatalogDatabase(database: DatabaseSync): void {
+/** Runs supported migrations inside an already-open immediate transaction. */
+export function migrateCatalogDatabaseInTransaction(database: DatabaseSync): void {
   database.exec("PRAGMA foreign_keys = ON");
   const version = scalar(database, "PRAGMA user_version");
   if (typeof version !== "number") throw new CatalogMigrationError("database user_version is invalid");
@@ -138,10 +138,14 @@ export function migrateCatalogDatabase(database: DatabaseSync): void {
     throw new CatalogMigrationError(`database schema version ${version} is newer than supported version ${CATALOG_SCHEMA_VERSION}`);
   }
   if (version === CATALOG_SCHEMA_VERSION) return;
+  migrateVersionOne(database);
+}
 
+/** Runs all supported ordered catalog migrations in one immediate transaction. */
+export function migrateCatalogDatabase(database: DatabaseSync): void {
   database.exec("BEGIN IMMEDIATE");
   try {
-    migrateVersionOne(database);
+    migrateCatalogDatabaseInTransaction(database);
     database.exec("COMMIT");
   } catch (error) {
     database.exec("ROLLBACK");

@@ -1,7 +1,7 @@
 # Consolidation, transactions, and idempotency
 
 Spec ID: `SDD-005`
-Status: `ready`
+Status: `implemented`
 Kind: product specification
 Depends on: `SDD-003`, `SDD-004`
 

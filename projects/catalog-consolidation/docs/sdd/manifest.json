@@ -57,7 +57,7 @@
       "title": "Consolidation, transactions, and idempotency",
       "path": "docs/sdd/specs/05-consolidation-and-idempotency.md",
       "kind": "product",
-      "status": "ready",
+      "status": "implemented",
       "dependsOn": ["SDD-003", "SDD-004"],
       "requirements": ["ASM-002", "ASM-003", "ASM-004"],
       "acceptanceCriteria": ["AC-005-01", "AC-005-02", "AC-005-03", "AC-005-04", "AC-005-05"]
@@ -67,7 +67,7 @@
       "title": "Errors, security, and observability",
       "path": "docs/sdd/specs/06-errors-security-and-observability.md",
       "kind": "product",
-      "status": "ready",
+      "status": "implemented",
       "dependsOn": ["SDD-002", "SDD-005"],
       "requirements": ["ASM-005", "PROC-002", "FIX-004"],
       "acceptanceCriteria": ["AC-006-01", "AC-006-02", "AC-006-03", "AC-006-04"]

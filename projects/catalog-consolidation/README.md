@@ -22,3 +22,9 @@ Product resolution is deterministic and model-free: version 1 compares the canon
 ## CLI input contract
 
 Run `catalog-consolidate --input <products.json> --database <catalog.db> [--dry-run] [--format text|json]`. Paths are caller-relative; input and database paths are always explicit. Required string fields and a non-null `Brand` are limited to 1,000 JavaScript characters. The public validation and CLI suite is `npm test`; after `npm run sources:ingest`, the opt-in private-fixture validation is `npm run test:fixture`.
+
+## Atomic consolidation and safe operation
+
+Each validated batch is sorted deterministically and runs migrations, resolution, product writes, and seller-link writes in one SQLite `BEGIN IMMEDIATE` transaction. The seller-link uniqueness constraint is the final idempotency authority. `--dry-run` executes the same plan and deliberately rolls the complete transaction back. The public suite covers matches, new products, hostile text as data, idempotent reruns, link conflicts, and rollback.
+
+Expected failures use stable codes and exit statuses: command/input failures are `2`, identity ambiguity is `3`, and migration, integrity, busy, or other database failures are `4`. With `--format json`, expected failures emit a versioned JSON error envelope on stdout and diagnostics stay off stdout. A generated run ID, bounded counts, schema version, and normalization version are emitted for successful JSON summaries; product data and raw SQL are never logged. `--debug` is the only mode that writes an unexpected error stack to stderr. Input files are limited to 5 MiB; fields are limited to 1,000 characters and row diagnostics to 20.
