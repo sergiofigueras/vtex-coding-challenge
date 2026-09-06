@@ -37,7 +37,7 @@
       "title": "Catalog schema and migrations",
       "path": "docs/sdd/specs/03-catalog-schema-and-migrations.md",
       "kind": "product",
-      "status": "ready",
+      "status": "verified",
       "dependsOn": ["SDD-000", "SDD-001", "SDD-002"],
       "requirements": ["USR-006", "ASM-002", "ASM-004", "FIX-002", "FIX-003"],
       "acceptanceCriteria": ["AC-003-01", "AC-003-02", "AC-003-03", "AC-003-04"]

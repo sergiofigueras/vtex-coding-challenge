@@ -1,7 +1,7 @@
 # Catalog schema and migrations
 
 Spec ID: `SDD-003`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: `SDD-000`, `SDD-001`, `SDD-002`
 
