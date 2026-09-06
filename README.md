@@ -1,4 +1,4 @@
-# Reusable SDD Delivery Engine
+# Spec Driven Development with Deepseek Harness Engine - VTEX Assignment
 
 [![CI](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml)
 
