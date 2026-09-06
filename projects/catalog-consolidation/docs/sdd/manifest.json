@@ -57,7 +57,7 @@
       "title": "Consolidation, transactions, and idempotency",
       "path": "docs/sdd/specs/05-consolidation-and-idempotency.md",
       "kind": "product",
-      "status": "implemented",
+      "status": "verified",
       "dependsOn": ["SDD-003", "SDD-004"],
       "requirements": ["ASM-002", "ASM-003", "ASM-004"],
       "acceptanceCriteria": ["AC-005-01", "AC-005-02", "AC-005-03", "AC-005-04", "AC-005-05"]

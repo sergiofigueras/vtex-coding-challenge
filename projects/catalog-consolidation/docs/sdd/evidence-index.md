@@ -5,7 +5,7 @@
 | Acceptance criterion | Reproducible evidence |
 |---|---|
 | AC-004-01 | `node --test test/product-identity.test.ts` — `canonicalization has deterministic locale-independent golden identities` asserts a fixed versioned fingerprint and canonical fields for Unicode, spacing, punctuation, and quote variants. |
-| AC-004-02 | `npm run test:fixture` — `private fixture variants resolve deterministically with only canonical matches` exercises the ingested snapshots and records 265 matched, 3 new, and 0 ambiguous resolutions; public unit coverage exercises all three declared aliases. |
+| AC-004-02 | `npm run test:fixture` — `private fixture variants resolve deterministically with the reviewed token aliases` exercises the ingested snapshots and records 267 matched, 1 new, and 0 ambiguous resolutions; public unit coverage proves aliases replace only exact token sequences. |
 | AC-004-03 | `node --test test/product-identity.test.ts` — `resolution matches canonical variants, preserves new display values, and exposes rules` proves the hostile display text is classified as new and unchanged. |
 | AC-004-04 | `node --test test/product-identity.test.ts` — `canonical collisions are explicit and candidate IDs are stable` asserts an ambiguity with sorted candidate IDs rather than an arbitrary match. |
 | AC-004-05 | `node --test test/product-identity.test.ts test/migration.test.ts` — alias collision validation rejects conflicting mappings; `identity backfill applies aliases without mutating historical display fields` proves aliases only populate comparison identity values. |
@@ -16,10 +16,9 @@
 |---|---|
 | AC-005-01 | `node --test test/consolidation.test.ts` — `atomically matches, inserts, and idempotently links seller entries` asserts one canonical match, one new product, and exact identity persistence. |
 | AC-005-02 | `node --test test/consolidation.test.ts` — `seller link conflict rolls back the entire batch` proves an existing different mapping aborts all planned writes. |
-| AC-005-04 | `node --test test/consolidation.test.ts` — the first test asserts a zero-insert, already-present second run. |
-| AC-005-05 | `node --test test/consolidation.test.ts` — conflict and dry-run tests prove full transaction rollback including migration work and products. |
-
-`AC-005-03` remains unverified: the current ingested fixture's prior SDD-004 oracle reports 265 matched and 3 new entries, while this specification requires 267 matched and 1 new (976 total products). Reconciling that requires an identity-policy/alias change outside this request's authorized scope.
+| AC-005-03 | `npm run test:fixture` — `private fixture consolidates once and has a logical no-op rerun` proves 267 matches, 1 new product, 976 total products, 268 seller relationships, and clean foreign keys on the ingested snapshots. |
+| AC-005-04 | `npm run test:fixture` — the fixture consolidation test asserts that the committed rerun inserts zero products and links and that normalized product and seller-link table dumps are unchanged. |
+| AC-005-05 | `node --test test/consolidation.test.ts test/migration.test.ts` — injected product-write failure, seller-link conflict, dry run, and migration collision tests prove rollback covers schema migration, products, identities, and links. |
 
 ## SDD-006: Errors, security, and observability
 

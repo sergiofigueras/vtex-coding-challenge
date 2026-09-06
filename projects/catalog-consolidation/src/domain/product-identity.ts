@@ -74,8 +74,30 @@ export function validateAliasRules(rules: readonly AliasRule[]): void {
 
 export function canonicalizeField(field: IdentityField, value: string | null): { readonly value: string; readonly aliasUsed?: string } {
   const normalized = normalizeBase(value);
-  const replacement = aliases.get(`${field}\u0000${normalized}`);
-  return replacement === undefined ? { value: normalized } : { value: replacement, aliasUsed: `${field}:${normalized}->${replacement}` };
+  const wholeFieldReplacement = aliases.get(`${field}\u0000${normalized}`);
+  if (wholeFieldReplacement !== undefined) {
+    return { value: wholeFieldReplacement, aliasUsed: `${field}:${normalized}->${wholeFieldReplacement}` };
+  }
+
+  const fieldAliases = [...aliases]
+    .filter(([key]) => key.startsWith(`${field}\u0000`))
+    .map(([key, replacement]) => ({ from: key.slice(field.length + 1).split(" "), replacement }))
+    .sort((left, right) => right.from.length - left.from.length || left.from.join(" ").localeCompare(right.from.join(" "), "en"));
+  const tokens = normalized === "" ? [] : normalized.split(" ");
+  const used: string[] = [];
+  const output: string[] = [];
+  for (let index = 0; index < tokens.length;) {
+    const alias = fieldAliases.find(({ from }) => from.every((token, offset) => tokens[index + offset] === token));
+    if (alias === undefined) {
+      output.push(tokens[index]!);
+      index++;
+    } else {
+      output.push(alias.replacement);
+      used.push(`${field}:${alias.from.join(" ")}->${alias.replacement}`);
+      index += alias.from.length;
+    }
+  }
+  return used.length === 0 ? { value: normalized } : { value: output.join(" "), aliasUsed: used.join(",") };
 }
 
 export function canonicalizeProduct(attributes: ProductAttributes): CanonicalProductIdentity {

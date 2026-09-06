@@ -30,3 +30,18 @@ test("dry runs roll back migrated schema and planned writes", () => {
   const path = createDatabase("dry"); const result = consolidate(input([{ Id: "one", SellerName: "seller", Name: "New", Brand: null, Category: "tools" }]), path, true, "dry", 0); assert.equal(result.insertedProducts, 1);
   const db = new DatabaseSync(path); try { assert.equal(db.prepare("PRAGMA user_version").get()?.user_version, 0); assert.equal(db.prepare("SELECT COUNT(*) AS count FROM Product").get()?.count, 1); } finally { db.close(); }
 });
+
+test("injected product write failure rolls back migration and the full batch", () => {
+  const path = createDatabase("injected-failure");
+  const setup = new DatabaseSync(path);
+  setup.exec("CREATE TRIGGER fail_product_insert BEFORE INSERT ON Product WHEN NEW.Name = 'New' BEGIN SELECT RAISE(ABORT, 'injected product write failure'); END;");
+  setup.close();
+  assert.throws(() => consolidate(input([{ Id: "one", SellerName: "seller", Name: "New", Brand: null, Category: "tools" }]), path, false, "injected", 0), /injected product write failure/);
+  const db = new DatabaseSync(path);
+  try {
+    assert.equal(db.prepare("PRAGMA user_version").get()?.user_version, 0);
+    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM Product").get()?.count, 1);
+    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM SellerProduct").get()?.count, 0);
+    assert.equal(db.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name = 'ProductIdentity'").get()?.count, 0);
+  } finally { db.close(); }
+});

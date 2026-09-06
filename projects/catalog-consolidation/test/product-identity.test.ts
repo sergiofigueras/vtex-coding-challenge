@@ -26,6 +26,16 @@ test("canonicalization has deterministic locale-independent golden identities", 
   assert.deepEqual({ name: aliased.name, brand: aliased.brand, category: aliased.category, fingerprint: aliased.fingerprint }, { name: canonical.name, brand: canonical.brand, category: canonical.category, fingerprint: canonical.fingerprint });
 });
 
+test("aliases replace exact token sequences without substring matches", () => {
+  const aliased = canonicalizeProduct(product({ name: "Roteador WiFi 6 TP-Link", brand: "TP-Link", category: "Networking" }));
+  const canonical = canonicalizeProduct(product({ name: "Router WiFi 6 TP-Link", brand: "TP-Link", category: "Networking" }));
+  assert.equal(aliased.fingerprint, canonical.fingerprint);
+  assert.notEqual(
+    canonicalizeProduct(product({ name: "unroteador WiFi 6 TP-Link", brand: "TP-Link", category: "Networking" })).fingerprint,
+    canonical.fingerprint,
+  );
+});
+
 test("resolution matches canonical variants, preserves new display values, and exposes rules", () => {
   const incoming = product({ name: "processador", brand: "Acme", category: "photo" });
   const existing = product({ id: 42, name: "Processor", brand: "ACME", category: "Photography" });
