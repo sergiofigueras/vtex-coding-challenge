@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "node --test test/*.test.ts",
-    "test:fixture": "node --test test/fixture.integration.ts test/migration.fixture.integration.ts",
+    "test:fixture": "node --test test/fixture.integration.ts test/migration.fixture.integration.ts test/identity.fixture.integration.ts",
     "sources:ingest": "npm --prefix ../../engine run sources:ingest -- --project catalog-consolidation",
     "sdd:prepare": "npm --prefix ../../engine run sdd:prepare -- --project catalog-consolidation",
     "sdd:run": "npm --prefix ../../engine run sdd:run -- --project catalog-consolidation",

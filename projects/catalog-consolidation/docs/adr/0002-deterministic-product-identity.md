@@ -1,6 +1,6 @@
 # ADR 0002: Use deterministic, conservative product identity
 
-Status: proposed for `SDD-004` — 2026-09-06
+Status: accepted for `SDD-004` — 2026-09-06
 
 ## Decision
 
@@ -8,4 +8,4 @@ Resolve identity from a versioned canonical `(Name, Brand, Category)` fingerprin
 
 ## Consequences
 
-Matches are reproducible and explainable, and false merges are constrained. Some true duplicates may remain separate until a reviewed alias or manual-resolution design is added.
+Matches are reproducible and explainable, and false merges are constrained. Some true duplicates may remain separate until a reviewed alias or manual-resolution design is added. The checked-in, versioned alias data is limited to exact normalized phrases; it is validated for conflicting mappings and tested for canonical collisions. Alias changes require this ADR to be reviewed again and must not alter source-facing `Product` display fields.

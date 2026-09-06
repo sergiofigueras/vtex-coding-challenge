@@ -15,6 +15,10 @@ The root convenience commands select `catalog-consolidation` automatically. Gene
 
 The product specification graph is [`docs/sdd/manifest.json`](docs/sdd/manifest.json), requirement ownership is [`docs/sdd/traceability.json`](docs/sdd/traceability.json), and the source snapshots are pinned in [`config/sources.json`](config/sources.json). Raw source bytes and Harness run state remain under ignored `.sdd/` storage.
 
+## Product identity
+
+Product resolution is deterministic and model-free: version 1 compares the canonical `(Name, Brand, Category)` key defined in [`src/domain/product-identity.ts`](src/domain/product-identity.ts). It removes comparison-only Unicode marks and quote variants, normalizes punctuation and whitespace, and then applies the exact, field-specific reviewed aliases in [`src/domain/product-aliases.json`](src/domain/product-aliases.json). A missing canonical key is new; more than one matching catalog product is an ambiguity, never an arbitrary match. See [ADR 0002](docs/adr/0002-deterministic-product-identity.md) for the deliberate choice against fuzzy or model-time matching. Run `npm test` for public evidence and, after source ingestion, `npm run test:fixture` for the private resolution oracle.
+
 ## CLI input contract
 
 Run `catalog-consolidate --input <products.json> --database <catalog.db> [--dry-run] [--format text|json]`. Paths are caller-relative; input and database paths are always explicit. Required string fields and a non-null `Brand` are limited to 1,000 JavaScript characters. The public validation and CLI suite is `npm test`; after `npm run sources:ingest`, the opt-in private-fixture validation is `npm run test:fixture`.

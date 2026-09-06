@@ -1,7 +1,7 @@
 # Product identity and deterministic resolution
 
 Spec ID: `SDD-004`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: `SDD-002`, `SDD-003`
 

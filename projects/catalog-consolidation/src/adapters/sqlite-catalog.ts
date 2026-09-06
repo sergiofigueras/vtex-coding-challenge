@@ -1,9 +1,9 @@
-import { createHash } from "node:crypto";
 import { access, constants, stat } from "node:fs/promises";
 import { DatabaseSync, type SQLInputValue, type SQLOutputValue } from "node:sqlite";
+import { CANONICALIZATION_VERSION, canonicalizeProduct } from "../domain/product-identity.ts";
 
 export const CATALOG_SCHEMA_VERSION = 1;
-export const CANONICALIZATION_VERSION = 1;
+export { CANONICALIZATION_VERSION };
 
 export class CatalogMigrationError extends Error {
   override name = "CatalogMigrationError";
@@ -35,25 +35,13 @@ function count(database: DatabaseSync, table: string): number {
   return result;
 }
 
-/**
- * Canonicalizes only the baseline v1 comparison rules needed to backfill identities.
- * Alias expansion belongs to the later SDD-004 identity-resolution slice.
- */
+/** Compatibility helper for migration tests; product identity owns canonicalization. */
 export function canonicalizeForMigration(value: string | null): string {
-  if (value === null) return "";
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .replace(/[\u0027\u0022\u2018\u2019\u201c\u201d]/gu, "")
-    .replace(/\p{P}/gu, " ")
-    .replace(/\s+/gu, " ")
-    .trim();
+  return canonicalizeProduct({ name: value ?? "", brand: null, category: "" }).name;
 }
 
-function fingerprint(name: string, brand: string | null, category: string | null): string {
-  const components = [canonicalizeForMigration(name), canonicalizeForMigration(brand), canonicalizeForMigration(category)];
-  return createHash("sha256").update(JSON.stringify([CANONICALIZATION_VERSION, components])).digest("hex");
+function productIdentity(name: string, brand: string | null, category: string | null) {
+  return canonicalizeProduct({ name, brand, category: category ?? "" });
 }
 
 function assertNoIdentityCollisions(database: DatabaseSync): void {
@@ -67,7 +55,7 @@ function assertNoIdentityCollisions(database: DatabaseSync): void {
     if (typeof id !== "number" || typeof name !== "string" || (brand !== null && typeof brand !== "string") || (category !== null && typeof category !== "string")) {
       throw new CatalogMigrationError("Product has an unsupported row shape");
     }
-    const key = fingerprint(name, brand, category);
+    const key = productIdentity(name, brand, category).fingerprint;
     const priorId = seen.get(key);
     if (priorId !== undefined) {
       throw new CatalogMigrationError(`product identity collision between Product ${priorId} and Product ${id} (${key})`);
@@ -131,10 +119,8 @@ function migrateVersionOne(database: DatabaseSync): void {
     if (typeof id !== "number" || typeof name !== "string" || (brand !== null && typeof brand !== "string") || (category !== null && typeof category !== "string")) {
       throw new CatalogMigrationError("Product has an unsupported row shape");
     }
-    const canonicalName = canonicalizeForMigration(name);
-    const canonicalBrand = canonicalizeForMigration(brand);
-    const canonicalCategory = canonicalizeForMigration(category);
-    insertIdentity.run(id, CANONICALIZATION_VERSION, canonicalName, canonicalBrand, canonicalCategory, fingerprint(name, brand, category));
+    const identity = productIdentity(name, brand, category);
+    insertIdentity.run(id, CANONICALIZATION_VERSION, identity.name, identity.brand, identity.category, identity.fingerprint);
   }
   if (count(database, "ProductIdentity") !== count(database, "Product")) {
     throw new CatalogMigrationError("ProductIdentity backfill count does not match Product");

@@ -62,6 +62,18 @@ test("rebuilds numeric seller IDs as text and preserves arbitrary text IDs", () 
   }
 });
 
+test("identity backfill applies aliases without mutating historical display fields", () => {
+  const path = createLegacyDatabase("display-fields", [{ name: "Roteador", brand: "Marca", category: "Photo" }]);
+  migrateCatalog(path);
+  const database = new DatabaseSync(path);
+  try {
+    assert.deepEqual({ ...database.prepare("SELECT Name, Brand, Category FROM Product WHERE Id = 1").get() }, { Name: "Roteador", Brand: "Marca", Category: "Photo" });
+    assert.deepEqual({ ...database.prepare("SELECT CanonicalName, CanonicalBrand, CanonicalCategory FROM ProductIdentity WHERE ProductId = 1").get() }, { CanonicalName: "router", CanonicalBrand: "marca", CanonicalCategory: "photography" });
+  } finally {
+    database.close();
+  }
+});
+
 test("identity collisions abort and restore exact pre-migration bytes", () => {
   const path = createLegacyDatabase("collision", [
     { name: "Café grinder", brand: "Maker", category: "Kitchen" },

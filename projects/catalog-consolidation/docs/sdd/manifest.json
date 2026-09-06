@@ -47,7 +47,7 @@
       "title": "Product identity and deterministic resolution",
       "path": "docs/sdd/specs/04-product-identity-and-resolution.md",
       "kind": "product",
-      "status": "ready",
+      "status": "verified",
       "dependsOn": ["SDD-002", "SDD-003"],
       "requirements": ["ASM-003", "ASM-005", "FIX-004"],
       "acceptanceCriteria": ["AC-004-01", "AC-004-02", "AC-004-03", "AC-004-04", "AC-004-05"]

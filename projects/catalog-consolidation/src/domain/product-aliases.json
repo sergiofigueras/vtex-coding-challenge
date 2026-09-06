@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "aliases": [
+    { "field": "name", "from": "roteador", "to": "router" },
+    { "field": "name", "from": "processador", "to": "processor" },
+    { "field": "category", "from": "photo", "to": "photography" }
+  ]
+}
