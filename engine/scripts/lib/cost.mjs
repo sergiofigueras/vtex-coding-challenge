@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises'
+import { zstdDecompressSync } from 'node:zlib'
 import { basename, resolve } from 'node:path'
 import { appendJsonLine, sha256, walkFiles } from './files.mjs'
 
@@ -105,8 +106,57 @@ function routeFromData(data, fallback) {
   return fallback
 }
 
+function scanCompleteZstdFrames(buffer) {
+  const frames = []
+  let offset = 0
+  while (offset < buffer.length) {
+    const start = offset
+    if (buffer.length - offset < 5 || buffer.readUInt32LE(offset) !== 0xfd2fb528) {
+      throw new Error(`Invalid Zstandard session frame at byte ${offset}`)
+    }
+    offset += 4
+    const descriptor = buffer.readUInt8(offset)
+    offset += 1
+    if ((descriptor & 0x18) !== 0) throw new Error(`Invalid Zstandard frame descriptor at byte ${offset - 1}`)
+    const contentSizeFlag = descriptor >>> 6
+    const singleSegment = (descriptor & 0x20) !== 0
+    const checksum = (descriptor & 0x04) !== 0
+    const dictionaryFlag = descriptor & 0x03
+    const dictionaryBytes = dictionaryFlag === 3 ? 4 : dictionaryFlag
+    const contentSizeBytes = contentSizeFlag === 0 ? (singleSegment ? 1 : 0) : 1 << contentSizeFlag
+    const headerBytes = (singleSegment ? 0 : 1) + dictionaryBytes + contentSizeBytes
+    if (buffer.length - offset < headerBytes) throw new Error(`Incomplete Zstandard frame header at byte ${start}`)
+    offset += headerBytes
+    for (;;) {
+      if (buffer.length - offset < 3) throw new Error(`Incomplete Zstandard block header at byte ${start}`)
+      const blockHeader = buffer.readUIntLE(offset, 3)
+      offset += 3
+      const lastBlock = (blockHeader & 1) !== 0
+      const blockType = (blockHeader >>> 1) & 3
+      const blockSize = blockHeader >>> 3
+      if (blockType === 3) throw new Error(`Reserved Zstandard block type at byte ${offset - 3}`)
+      const payloadBytes = blockType === 1 ? 1 : blockSize
+      if (buffer.length - offset < payloadBytes) throw new Error(`Incomplete Zstandard block at byte ${start}`)
+      offset += payloadBytes
+      if (lastBlock) break
+    }
+    if (checksum) {
+      if (buffer.length - offset < 4) throw new Error(`Incomplete Zstandard checksum at byte ${start}`)
+      offset += 4
+    }
+    frames.push(buffer.subarray(start, offset))
+  }
+  return frames
+}
+
+async function readSessionText(path) {
+  const contents = await readFile(path)
+  if (!path.endsWith('.zstd')) return contents.toString('utf8')
+  return Buffer.concat(scanCompleteZstdFrames(contents).map(frame => zstdDecompressSync(frame))).toString('utf8')
+}
+
 export async function usageEventsFromJsonl(path) {
-  const text = await readFile(path, 'utf8')
+  const text = await readSessionText(path)
   const records = []
   let route
   for (const [index, line] of text.split(/\r?\n/).entries()) {
@@ -137,7 +187,7 @@ export async function usageEventsFromJsonl(path) {
 
 export async function collectUsageFromSessions(sessionRoot, changedSinceMs = 0) {
   const { stat } = await import('node:fs/promises')
-  const files = await walkFiles(sessionRoot, path => path.endsWith('.jsonl'))
+  const files = await walkFiles(sessionRoot, path => path.endsWith('.jsonl') || path.endsWith('.jsonl.zstd'))
   const selected = []
   for (const path of files) {
     const metadata = await stat(path)

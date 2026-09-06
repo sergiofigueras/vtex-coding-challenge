@@ -59,8 +59,16 @@ function git(root, args) {
   return result.stdout.trim()
 }
 
+function gitPorcelain(root) {
+  const result = spawnSync('git', ['status', '--porcelain=v1', '-z', '--untracked-files=all'], { cwd: root, encoding: 'utf8' })
+  if (result.status !== 0) throw new Error(`git status failed: ${result.stderr}`)
+  return result.stdout
+}
+
 async function dirtySnapshot(root) {
-  const output = git(root, ['status', '--porcelain=v1', '-z', '--untracked-files=all'])
+  // Do not trim porcelain output: its leading column is part of the status
+  // record and trimming it corrupts the first changed path.
+  const output = gitPorcelain(root)
   const records = output.split('\0').filter(Boolean)
   const snapshot = new Map()
   for (const record of records) {

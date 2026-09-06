@@ -33,6 +33,14 @@ for (const [routeName, route] of Object.entries(agent.routes)) {
   for (const disabledTool of ['tool-subagent', 'tool-subagent-fork', 'tool-workflow', 'tool-web']) {
     if (!section(result.stdout, disabledTool).includes('disabled: true')) throw new Error(`${routeName} must disable ${disabledTool}`)
   }
+  const permissionSection = section(result.stdout, 'permission')
+  if (
+    !permissionSection.includes('defaultPreset: headless-workspace-write') ||
+    !permissionSection.includes('sandbox: workspace-write') ||
+    !permissionSection.includes('approval: never')
+  ) {
+    throw new Error(`${routeName} lost the explicit non-interactive workspace permission preset`)
+  }
 }
 
 console.log('DeepSeek Harness resolved all OpenAI-only SDD routes successfully.')

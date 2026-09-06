@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { zstdCompressSync } from 'node:zlib'
 import test from 'node:test'
 import { appendCostEntry, calculateNanoUsd, calculateUsd, usageEventsFromJsonl } from '../scripts/lib/cost.mjs'
 
@@ -88,6 +89,33 @@ test('extracts only canonical top-level usage from a Harness assistant event', a
     cacheReadTokens: 40,
     cacheWriteTokens: 10,
     outputTokens: 20,
+  })
+})
+
+test('extracts usage from the Harness concatenated-frame Zstandard session format', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'vtex-cost-zstd-'))
+  const path = join(directory, 'session.jsonl.zstd')
+  const header = { type: 'session', meta: { id: 'session-one' } }
+  const event = {
+    type: 'assistant/message',
+    seq: 2,
+    data: {
+      message: { source: { kind: 'model', provider: 'openai', model: 'gpt-5.6-luna' } },
+      usage: { inputTokens: 120, cacheReadTokens: 30, cacheWriteTokens: 5, outputTokens: 25 },
+    },
+  }
+  const bytes = Buffer.concat([
+    zstdCompressSync(Buffer.from(`${JSON.stringify(header)}\n`)),
+    zstdCompressSync(Buffer.from(`${JSON.stringify(event)}\n`)),
+  ])
+  await writeFile(path, bytes)
+  const records = await usageEventsFromJsonl(path)
+  assert.equal(records.length, 1)
+  assert.deepEqual(records[0].usage, {
+    uncachedInputTokens: 120,
+    cacheReadTokens: 30,
+    cacheWriteTokens: 5,
+    outputTokens: 25,
   })
 })
 

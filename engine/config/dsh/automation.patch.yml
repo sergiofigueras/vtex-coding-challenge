@@ -33,6 +33,17 @@
   config:
     policy: never
 
+# The headless composition deliberately combines workspace confinement with
+# non-interactive denial. That pair is not one of Harness's shipped presets,
+# so it must be named explicitly or the live plugin tree fails closed.
+- id: permission
+  config:
+    presets:
+      headless-workspace-write:
+        sandbox: workspace-write
+        approval: never
+    defaultPreset: headless-workspace-write
+
 # SDD runs are deliberately local and single-agent. This prevents hidden model
 # fan-out and avoids the default DeepSeek web-search credential path.
 - id: tool-subagent
