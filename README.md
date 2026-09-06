@@ -236,6 +236,31 @@ The paper's guarantees are conditional, not magic cleanup:
 - Key identity alone does not solve independently versioned interface compatibility. Package/version discipline and compatibility tests remain necessary.
 - The paper's Koishi case study is evidence of feasibility and adoption, not a controlled performance or productivity benchmark.
 
+## Operator context tools: RTK and Serena
+
+[RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) is an optional operator/agent CLI proxy. For supported commands, it filters, groups, truncates, and deduplicates noisy shell output before that output enters model context. Install and inspect its global operator setup with:
+
+```bash
+rtk init -g
+rtk init --show
+rtk gain
+```
+
+Use `rtk proxy <command>` when raw output is required. RTK's upstream savings claim describes reduced shell-output tokens/bytes for supported commands; it is not an equivalent percentage reduction in an OpenAI invoice or in total prompt size. RTK does not change program semantics and is neither a catalog runtime dependency nor a CI dependency.
+
+[Serena](https://github.com/oraios/serena) is an optional MCP toolkit that uses LSP and semantic symbol relationships for targeted retrieval, reference discovery, and symbol-aware edits. This repository versions its `.serena/project.yml` for TypeScript and Markdown, along with durable `.serena/memories/**`. `.serena/cache` and `.serena/project.local.yml` are ignored for local state and overrides. Serena's targeted symbol context complements RTK's compact command output: one narrows code context while the other reduces incidental shell noise.
+
+```mermaid
+flowchart LR
+  HA["DeepSeek Harness / agent"] -->|semantic context| SERENA["Serena MCP"]
+  HA -->|compact shell output| RTK["RTK proxy"]
+  SERENA --> CTX["OpenAI context"]
+  RTK --> CTX
+  CTX --> SDD["bounded SDD change"]
+```
+
+These tools optimize the engineering control plane; neither runs in production. Files written by `rtk init -g` remain in the operator's home directory and must not be committed. Only repository-safe `.serena` configuration and memories are versioned. DeepSeek Harness remains the orchestrator, while the delivered catalog runtime stays deterministic and model-free.
+
 ## Prerequisites
 
 - Node.js `^22.19.0 || >=24.0.0`
