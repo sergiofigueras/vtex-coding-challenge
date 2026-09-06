@@ -1,5 +1,8 @@
+import { canonicalizeProduct } from "./product-identity.ts";
+
 export const MAX_FIELD_LENGTH = 1_000;
 export const MAX_DIAGNOSTICS = 20;
+export const MAX_INPUT_ROWS = 10_000;
 
 export interface SellerEntry {
   readonly Id: string;
@@ -38,12 +41,20 @@ function diagnostic(index: number, code: string, message: string): RowDiagnostic
   return { index, code, message };
 }
 
-function duplicateComparisonValue(value: string | null): string | null {
-  return value === null ? null : value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+function stableValue(entry: SellerEntry): string {
+  // Equivalent variants of a repeated seller entry represent the same product identity.
+  return canonicalizeProduct({ name: entry.Name, brand: entry.Brand, category: entry.Category }).fingerprint;
 }
 
-function stableValue(entry: SellerEntry): string {
-  return JSON.stringify([duplicateComparisonValue(entry.Name), duplicateComparisonValue(entry.Brand), duplicateComparisonValue(entry.Category)]);
+function compareOriginalAttributes(left: SellerEntry, right: SellerEntry): number {
+  const leftValue = JSON.stringify([left.Name, left.Brand, left.Category]);
+  const rightValue = JSON.stringify([right.Name, right.Brand, right.Category]);
+  return leftValue < rightValue ? -1 : leftValue > rightValue ? 1 : 0;
+}
+
+/** Encodes a seller-scoped opaque identifier without reserving a separator character. */
+function sellerEntryKey(entry: Pick<SellerEntry, "SellerName" | "Id">): string {
+  return JSON.stringify([entry.SellerName.trim(), entry.Id.trim()]);
 }
 
 function addDiagnostic(diagnostics: RowDiagnostic[], value: RowDiagnostic): void {
@@ -71,7 +82,13 @@ function validateRow(value: unknown, index: number): SellerEntry | RowDiagnostic
   if (typeof row.Brand === "string" && row.Brand.length > MAX_FIELD_LENGTH) {
     return diagnostic(index, "length_exceeded", `Brand exceeds ${MAX_FIELD_LENGTH} characters`);
   }
-  return row as SellerEntry;
+  return {
+    Id: row.Id as string,
+    SellerName: row.SellerName as string,
+    Name: row.Name as string,
+    Brand: row.Brand as string | null,
+    Category: row.Category as string,
+  };
 }
 
 export function parseAndValidateInput(bytes: string): ValidationResult {
@@ -84,10 +101,13 @@ export function parseAndValidateInput(bytes: string): ValidationResult {
   if (!Array.isArray(root)) {
     return { ok: false, error: { invalidCount: 1, diagnostics: [diagnostic(0, "invalid_root", "root must be an array")], diagnosticsTruncated: false } };
   }
+  if (root.length > MAX_INPUT_ROWS) {
+    return { ok: false, error: { invalidCount: 1, diagnostics: [diagnostic(0, "row_limit_exceeded", `input exceeds ${MAX_INPUT_ROWS} rows`)], diagnosticsTruncated: false } };
+  }
 
   const diagnostics: RowDiagnostic[] = [];
   const entries: SellerEntry[] = [];
-  const seen = new Map<string, string>();
+  const seen = new Map<string, { readonly content: string; readonly entryIndex: number }>();
   let invalidCount = 0;
   let duplicates = 0;
   for (const [zeroIndex, value] of root.entries()) {
@@ -98,14 +118,17 @@ export function parseAndValidateInput(bytes: string): ValidationResult {
       addDiagnostic(diagnostics, row);
       continue;
     }
-    const key = `${row.SellerName.trim()}\u0000${row.Id.trim()}`;
+    const key = sellerEntryKey(row);
     const existing = seen.get(key);
     const content = stableValue(row);
     if (existing === undefined) {
-      seen.set(key, content);
+      seen.set(key, { content, entryIndex: entries.length });
       entries.push(row);
-    } else if (existing === content) {
+    } else if (existing.content === content) {
       duplicates++;
+      // The retained display row is stable even when equivalent variants arrive reordered.
+      const retained = entries[existing.entryIndex]!;
+      if (compareOriginalAttributes(row, retained) < 0) entries[existing.entryIndex] = row;
     } else {
       invalidCount++;
       addDiagnostic(diagnostics, diagnostic(index, "seller_entry_conflict", "seller entry conflicts with an earlier row"));

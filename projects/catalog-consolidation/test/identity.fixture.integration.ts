@@ -5,7 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { DatabaseSync } from "node:sqlite";
 import { migrateCatalog } from "../src/adapters/sqlite-catalog.ts";
-import { consolidate } from "../src/application/consolidation.ts";
+import { consolidate } from "../src/adapters/sqlite-catalog.ts";
 import { resolveProduct, type ExistingProduct } from "../src/domain/product-identity.ts";
 import { parseAndValidateInput } from "../src/domain/input.ts";
 
@@ -17,7 +17,8 @@ test("private fixture variants resolve deterministically with the reviewed token
   copyFileSync(".sdd/inputs/catalog.db", path);
   migrateCatalog(path);
   const input = parseAndValidateInput(readFileSync(".sdd/inputs/ProductEntry.json", "utf8"));
-  assert.equal(input.ok, true, input.ok ? undefined : JSON.stringify(input.error));
+  const failure = input.ok ? "input unexpectedly failed validation" : JSON.stringify(input.error) || "input validation failed";
+  assert.equal(input.ok, true, failure);
   if (!input.ok) return;
 
   const database = new DatabaseSync(path, { enableForeignKeyConstraints: true });
@@ -41,10 +42,11 @@ test("private fixture consolidates once and has a logical no-op rerun", () => {
   const path = join(directory, "consolidation-catalog.db");
   copyFileSync(".sdd/inputs/catalog.db", path);
   const input = parseAndValidateInput(readFileSync(".sdd/inputs/ProductEntry.json", "utf8"));
-  assert.equal(input.ok, true, input.ok ? undefined : JSON.stringify(input.error));
+  const failure = input.ok ? "input unexpectedly failed validation" : JSON.stringify(input.error) || "input validation failed";
+  assert.equal(input.ok, true, failure);
   if (!input.ok) return;
 
-  const first = consolidate(input.value, path, false, "fixture-first", 0);
+  const first = consolidate(input.value, path, false, "fixture-first");
   assert.deepEqual(
     { matched: first.matchedProducts, products: first.insertedProducts, links: first.insertedLinks },
     { matched: 267, products: 1, links: 268 },
@@ -56,7 +58,7 @@ test("private fixture consolidates once and has a logical no-op rerun", () => {
     assert.equal(database.prepare("PRAGMA foreign_key_check").all().length, 0);
     const afterFirst = database.prepare("SELECT p.Id, p.Name, p.Brand, p.Category, i.CanonicalFingerprint FROM Product p JOIN ProductIdentity i ON i.ProductId = p.Id ORDER BY p.Id").all();
     const linksAfterFirst = database.prepare("SELECT SellerName, ProductId, SellerProductId FROM SellerProduct ORDER BY SellerName, SellerProductId").all();
-    const second = consolidate(input.value, path, false, "fixture-second", 0);
+    const second = consolidate(input.value, path, false, "fixture-second");
     assert.deepEqual(
       { products: second.insertedProducts, links: second.insertedLinks, present: second.alreadyPresentLinks },
       { products: 0, links: 0, present: 268 },

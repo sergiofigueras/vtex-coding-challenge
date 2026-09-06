@@ -1,6 +1,6 @@
 # Reusable SDD Delivery Engine
 
-This repository now separates a reusable software-delivery engine from the projects it develops. The complete DeepSeek Harness/OpenAI control plane lives in [`engine/`](engine/); the VTEX exercise is the first independently specified project under [`projects/catalog-consolidation/`](projects/catalog-consolidation/). The catalog application itself is intentionally not implemented yet.
+This repository separates a reusable software-delivery engine from the projects it develops. The complete DeepSeek Harness/OpenAI control plane lives in [`engine/`](engine/); the fully implemented VTEX catalog consolidator is the first independently specified project under [`projects/catalog-consolidation/`](projects/catalog-consolidation/). Its application source, migrations, tests, specifications, evidence, and runbook were produced through bounded engine runs rather than a direct outer-agent implementation.
 
 DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model call. The engine selects one project, turns a dependency-ordered subset of that project's specs into a bounded headless implementation run, verifies the result, and maps provider cost back to the project and change.
 
@@ -8,7 +8,7 @@ DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model
 
 - A standalone `engine/` package with four verified infrastructure specs (`SDD-090`–`SDD-093`), pinned Harness, OpenAI cost control, multi-project selection, traceability, and release gates.
 - A `projects/<project-id>/project.json` contract plus a model-free project scaffolder for adding new deliverables without copying engine code.
-- Nine catalog product specs (`SDD-000`–`SDD-008`) covering the boundary, input, SQLite migration, deterministic identity, consolidation, security, tests, and delivery.
+- A completed, model-free catalog consolidation CLI under `projects/catalog-consolidation/`, with nine verified product specs (`SDD-000`–`SDD-008`) covering the boundary, input, SQLite migration, deterministic identity, consolidation, security, tests, and delivery.
 - Pinned catalog fixture URLs, byte sizes, and SHA-256 hashes; downloads stay private under the selected project's `.sdd/`.
 - DeepSeek Harness `0.1.2-rc.1`, a project-confined headless runner, an engine-owned SDD skill, and an offline configuration smoke test.
 - OpenAI-only routing: Terra is the default, Luna is the economy model, and Sol is escalation-only.
@@ -332,7 +332,7 @@ The source documents include a confidentiality notice. They are neither copied n
 
 ## Release gate
 
-A future product release requires:
+The product release gate requires:
 
 1. all requested specs implemented and evidence-linked;
 2. `npm run check` and the opt-in private-fixture suite passing from a clean clone;
@@ -341,4 +341,4 @@ A future product release requires:
 5. a valid cost entry for every commit and `npm run cost:report` reviewed;
 6. the final Git revision and CI result recorded in the delivery note.
 
-See `projects/catalog-consolidation/docs/sdd/specs/08-delivery-and-engineering-defense.md` for the finished catalog runbook requirements; they are deliberately not fabricated before the application exists.
+See [`projects/catalog-consolidation/README.md`](projects/catalog-consolidation/README.md) for clean-room install, test, fixture, CLI, SDD replay, log, and cost-report commands, and `projects/catalog-consolidation/docs/sdd/specs/08-delivery-and-engineering-defense.md` for the delivery requirements and evidence policy.

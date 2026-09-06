@@ -23,8 +23,8 @@ Whitespace-only required strings are invalid. Preserve the original values for s
 
 - Identity of a seller entry is `(SellerName, Id)` after trim-only normalization.
 - Byte-different seller names remain different sellers in version 1.
-- An exact repeated row in the same file is idempotent and counted as `duplicate_input`.
-- Reuse of `(SellerName, Id)` with different product attributes is `seller_entry_conflict`. The entire batch is invalid and no mutation occurs.
+- An exact repeated row, or a repeated row whose product attributes resolve to the same versioned canonical identity, is idempotent and counted as `duplicate_input`. When equivalent variants repeat, retain a deterministic lexical display representative so input order cannot select the inserted display values.
+- Reuse of `(SellerName, Id)` with different canonical product attributes is `seller_entry_conflict`. The entire batch is invalid and no mutation occurs.
 - A global ID reused by another seller is valid.
 - Unknown fields, wrong types, non-array roots, and malformed JSON invalidate the batch before mutation.
 - Validation collects bounded row diagnostics rather than stopping at the first bad row. The summary reports the full invalid count and indicates when details were truncated.

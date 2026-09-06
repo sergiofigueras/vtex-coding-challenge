@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
-import { consolidate, ConsolidationError } from "./application/consolidation.ts";
-import { readInput } from "./adapters/fs-input.ts";
+import { ConsolidationError } from "./application/consolidation.ts";
+import { InputReadError, readInput } from "./adapters/fs-input.ts";
 import { renderDiagnostics, renderJson, renderText } from "./adapters/reporter.ts";
-import { CatalogMigrationError, verifyDatabase, verifyDatabasePath } from "./adapters/sqlite-catalog.ts";
+import { CatalogMigrationError, consolidate, verifyDatabase, verifyDatabasePath } from "./adapters/sqlite-catalog.ts";
 import { parseAndValidateInput } from "./domain/input.ts";
 
 type Format = "text" | "json";
@@ -41,17 +41,21 @@ async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2)); const runId = randomUUID();
   let bytes: string;
   try { [bytes] = await Promise.all([readInput(options.input), verifyDatabasePath(options.database)]); }
-  catch { expected(options, runId, "unreadable_path", "input or database path is unreadable", 2); return; }
+  catch (error) {
+    if (error instanceof InputReadError) expected(options, runId, error.code, error.message, 2);
+    else expected(options, runId, "unreadable_path", "input or database path is unreadable", 2);
+    return;
+  }
   try { verifyDatabase(options.database); } catch { expected(options, runId, "database_failure", "database could not be opened", 4); return; }
   const validation = parseAndValidateInput(bytes);
   if (!validation.ok) { if (options.format === "json") expected(options, runId, validation.error.diagnostics[0]?.code ?? "invalid_input", "input validation failed", 2); else { process.stderr.write(renderDiagnostics(validation.error.diagnostics, validation.error.diagnosticsTruncated)); process.exitCode = 2; } return; }
   try {
-    const started = performance.now();
-    const summary = consolidate(validation.value, options.database, options.dryRun, runId, Math.round(performance.now() - started));
+    const summary = consolidate(validation.value, options.database, options.dryRun, runId);
     process.stdout.write(options.format === "json" ? renderJson(summary) : renderText(summary));
   } catch (error) {
     const sqliteCode = typeof error === "object" && error !== null && "code" in error ? (error as { code?: unknown }).code : undefined;
-    const code = error instanceof ConsolidationError ? error.code : error instanceof CatalogMigrationError && /newer than supported/.test(error.message) ? "unsupported_schema_version" : sqliteCode === "ERR_SQLITE_BUSY" || sqliteCode === "SQLITE_BUSY" ? "database_busy" : error instanceof CatalogMigrationError ? "migration_failure" : "database_failure";
+    const busy = sqliteCode === "ERR_SQLITE_BUSY" || sqliteCode === "SQLITE_BUSY" || (error instanceof Error && /database is locked|database table is locked/i.test(error.message));
+     const code = error instanceof ConsolidationError ? error.code : error instanceof CatalogMigrationError && /newer than supported/.test(error.message) ? "unsupported_schema_version" : busy ? "database_busy" : error instanceof CatalogMigrationError ? "migration_failure" : "database_failure";
     const status = error instanceof ConsolidationError && error.code === "identity_ambiguity" ? 3 : 4;
     expected(options, runId, code, error instanceof Error ? error.message : "database operation failed", status);
     if (options.debug && error instanceof Error && error.stack) process.stderr.write(`${error.stack}\n`);

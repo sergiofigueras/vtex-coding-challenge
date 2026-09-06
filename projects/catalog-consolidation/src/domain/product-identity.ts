@@ -82,7 +82,7 @@ export function canonicalizeField(field: IdentityField, value: string | null): {
   const fieldAliases = [...aliases]
     .filter(([key]) => key.startsWith(`${field}\u0000`))
     .map(([key, replacement]) => ({ from: key.slice(field.length + 1).split(" "), replacement }))
-    .sort((left, right) => right.from.length - left.from.length || left.from.join(" ").localeCompare(right.from.join(" "), "en"));
+    .sort((left, right) => right.from.length - left.from.length || (left.from.join(" ") < right.from.join(" ") ? -1 : left.from.join(" ") > right.from.join(" ") ? 1 : 0));
   const tokens = normalized === "" ? [] : normalized.split(" ");
   const used: string[] = [];
   const output: string[] = [];

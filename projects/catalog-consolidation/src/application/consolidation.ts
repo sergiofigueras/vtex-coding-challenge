@@ -1,7 +1,5 @@
-import { DatabaseSync } from "node:sqlite";
-import type { ValidatedInput } from "../domain/input.ts";
+import type { SellerEntry, ValidatedInput } from "../domain/input.ts";
 import { canonicalizeProduct } from "../domain/product-identity.ts";
-import { CATALOG_SCHEMA_VERSION, migrateCatalogDatabaseInTransaction } from "../adapters/sqlite-catalog.ts";
 
 export class ConsolidationError extends Error {
   readonly code: "identity_ambiguity" | "seller_link_conflict" | "database_integrity_failure";
@@ -10,6 +8,20 @@ export class ConsolidationError extends Error {
     this.code = code;
     this.name = "ConsolidationError";
   }
+}
+
+export interface CatalogTransaction {
+  migrate(): void;
+  findProductIds(fingerprint: string): readonly number[];
+  insertProduct(entry: SellerEntry): number;
+  insertIdentity(productId: number, identity: ReturnType<typeof canonicalizeProduct>): void;
+  findSellerLink(sellerName: string, sellerProductId: string): number | undefined;
+  insertSellerLink(sellerName: string, productId: number, sellerProductId: string): void;
+  assertForeignKeysClean(): void;
+}
+
+export interface CatalogRepository {
+  transact(dryRun: boolean, work: (transaction: CatalogTransaction) => void): void;
 }
 
 export interface ConsolidationSummary {
@@ -30,57 +42,80 @@ export interface ConsolidationSummary {
   readonly databasePath: string;
 }
 
-/** Imports a validated batch atomically. All dynamic values are SQL parameters. */
-export function consolidate(input: ValidatedInput, databasePath: string, dryRun: boolean, runId: string, elapsedMilliseconds: number): ConsolidationSummary {
-  const database = new DatabaseSync(databasePath, { enableForeignKeyConstraints: true });
-  let matchedProducts = 0;
-  let insertedProducts = 0;
-  let insertedLinks = 0;
-  let alreadyPresentLinks = 0;
-  try {
-    database.exec("PRAGMA busy_timeout = 5000");
-    database.exec("BEGIN IMMEDIATE");
-    migrateCatalogDatabaseInTransaction(database);
-    const getIdentity = database.prepare("SELECT ProductId FROM ProductIdentity WHERE CanonicalFingerprint = ? ORDER BY ProductId");
-    const insertProduct = database.prepare("INSERT INTO Product(Name, Brand, Category) VALUES (?, ?, ?)");
-    const insertIdentity = database.prepare("INSERT INTO ProductIdentity(ProductId, CanonicalizationVersion, CanonicalName, CanonicalBrand, CanonicalCategory, CanonicalFingerprint) VALUES (?, ?, ?, ?, ?, ?)");
-    const getLink = database.prepare("SELECT ProductId FROM SellerProduct WHERE SellerName = ? AND SellerProductId = ?");
-    const insertLink = database.prepare("INSERT INTO SellerProduct(SellerName, ProductId, SellerProductId) VALUES (?, ?, ?)");
-    const work = [...input.entries].sort((left, right) => {
-      const l = `${left.SellerName.trim()}\u0000${left.Id.trim()}\u0000${canonicalizeProduct({ name: left.Name, brand: left.Brand, category: left.Category }).fingerprint}`;
-      const r = `${right.SellerName.trim()}\u0000${right.Id.trim()}\u0000${canonicalizeProduct({ name: right.Name, brand: right.Brand, category: right.Category }).fingerprint}`;
-      return l.localeCompare(r, "en");
+function compareText(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+function compareWork(left: SellerEntry, right: SellerEntry): number {
+  const bySeller = compareText(left.SellerName.trim(), right.SellerName.trim());
+  if (bySeller !== 0) return bySeller;
+  const bySellerProductId = compareText(left.Id.trim(), right.Id.trim());
+  if (bySellerProductId !== 0) return bySellerProductId;
+  return compareText(
+    canonicalizeProduct({ name: left.Name, brand: left.Brand, category: left.Category }).fingerprint,
+    canonicalizeProduct({ name: right.Name, brand: right.Brand, category: right.Category }).fingerprint,
+  );
+}
+
+/** Deterministic, adapter-independent batch orchestration. */
+export class ConsolidationService {
+  private readonly repository: CatalogRepository;
+  private readonly now: () => number;
+  constructor(repository: CatalogRepository, now: () => number = () => performance.now()) {
+    this.repository = repository;
+    this.now = now;
+  }
+
+  consolidate(input: ValidatedInput, dryRun: boolean, runId: string): ConsolidationSummary {
+    const started = this.now();
+    let matchedProducts = 0;
+    let insertedProducts = 0;
+    let insertedLinks = 0;
+    let alreadyPresentLinks = 0;
+    this.repository.transact(dryRun, (transaction) => {
+      transaction.migrate();
+      for (const entry of [...input.entries].sort(compareWork)) {
+        const identity = canonicalizeProduct({ name: entry.Name, brand: entry.Brand, category: entry.Category });
+        const candidates = transaction.findProductIds(identity.fingerprint);
+        let productId: number;
+        if (candidates.length > 1) throw new ConsolidationError("identity_ambiguity", "more than one product has the canonical identity");
+        if (candidates.length === 1) {
+          productId = candidates[0]!;
+          matchedProducts++;
+        } else {
+          productId = transaction.insertProduct(entry);
+          transaction.insertIdentity(productId, identity);
+          insertedProducts++;
+        }
+        const sellerName = entry.SellerName.trim();
+        const sellerProductId = entry.Id.trim();
+        const existingProductId = transaction.findSellerLink(sellerName, sellerProductId);
+        if (existingProductId !== undefined) {
+          if (existingProductId !== productId) throw new ConsolidationError("seller_link_conflict", "seller entry is already linked to a different product");
+          alreadyPresentLinks++;
+        } else {
+          transaction.insertSellerLink(sellerName, productId, sellerProductId);
+          insertedLinks++;
+        }
+      }
+      transaction.assertForeignKeysClean();
     });
-    for (const entry of work) {
-      const identity = canonicalizeProduct({ name: entry.Name, brand: entry.Brand, category: entry.Category });
-      const candidates = getIdentity.all(identity.fingerprint).map((row) => row.ProductId).filter((id): id is number => typeof id === "number");
-      let productId: number;
-      if (candidates.length > 1) throw new ConsolidationError("identity_ambiguity", "more than one product has the canonical identity");
-      if (candidates.length === 1) {
-        productId = candidates[0]!;
-        matchedProducts++;
-      } else {
-        const result = insertProduct.run(entry.Name, entry.Brand, entry.Category);
-        productId = Number(result.lastInsertRowid);
-        insertIdentity.run(productId, identity.normalizationVersion, identity.name, identity.brand, identity.category, identity.fingerprint);
-        insertedProducts++;
-      }
-      const existing = getLink.get(entry.SellerName.trim(), entry.Id.trim());
-      if (existing !== undefined) {
-        if (existing.ProductId !== productId) throw new ConsolidationError("seller_link_conflict", "seller entry is already linked to a different product");
-        alreadyPresentLinks++;
-      } else {
-        insertLink.run(entry.SellerName.trim(), productId, entry.Id.trim());
-        insertedLinks++;
-      }
-    }
-    if (database.prepare("PRAGMA foreign_key_check").all().length > 0) throw new ConsolidationError("database_integrity_failure", "foreign key check failed");
-    if (dryRun) database.exec("ROLLBACK"); else database.exec("COMMIT");
-    return { schemaVersion: CATALOG_SCHEMA_VERSION, normalizationVersion: 1, runId, inputRowCount: input.inputRowCount, distinctSellerEntryCount: input.distinctSellerEntryCount, duplicateInputCount: input.duplicateInputCount, matchedProducts, insertedProducts, insertedLinks, alreadyPresentLinks, rejectedRows: 0, ambiguousRows: 0, elapsedMilliseconds, dryRun, databasePath: "[redacted]" };
-  } catch (error) {
-    try { database.exec("ROLLBACK"); } catch { /* no transaction to roll back */ }
-    throw error;
-  } finally {
-    database.close();
+    return {
+      schemaVersion: 1,
+      normalizationVersion: 1,
+      runId,
+      inputRowCount: input.inputRowCount,
+      distinctSellerEntryCount: input.distinctSellerEntryCount,
+      duplicateInputCount: input.duplicateInputCount,
+      matchedProducts,
+      insertedProducts,
+      insertedLinks,
+      alreadyPresentLinks,
+      rejectedRows: 0,
+      ambiguousRows: 0,
+      elapsedMilliseconds: Math.max(0, Math.round(this.now() - started)),
+      dryRun,
+      databasePath: "[redacted]",
+    };
   }
 }

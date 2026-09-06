@@ -18,7 +18,12 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Install catalog project dependencies
+        run: npm --prefix projects/catalog-consolidation ci
       - name: DeepSeek Harness configuration compatibility
         run: npm run dsh:config
-      - run: npm run check
+      - name: Verify reusable SDD engine
+        run: npm run check
+      - name: Verify catalog consolidation project
+        run: npm --prefix projects/catalog-consolidation run check
       - run: git diff --check

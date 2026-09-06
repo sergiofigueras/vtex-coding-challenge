@@ -1,7 +1,7 @@
 # Delivery and engineering defense
 
 Spec ID: `SDD-008`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: `SDD-007`
 

@@ -8,6 +8,9 @@
     "catalog-consolidate": "src/cli.ts"
   },
   "scripts": {
+    "build": "npm run typecheck",
+    "lint": "node --experimental-strip-types --check src/*.ts test/*.ts",
+    "typecheck": "tsc --project tsconfig.json",
     "test": "node --test test/*.test.ts",
     "test:fixture": "node --test test/fixture.integration.ts test/migration.fixture.integration.ts test/identity.fixture.integration.ts",
     "sources:ingest": "npm --prefix ../../engine run sources:ingest -- --project catalog-consolidation",
@@ -16,6 +19,9 @@
     "sdd:validate": "npm --prefix ../../engine run sdd:validate -- --project catalog-consolidation",
     "cost:record": "npm --prefix ../../engine run cost:record -- --project catalog-consolidation",
     "cost:report": "npm --prefix ../../engine run cost:report -- --project catalog-consolidation",
-    "check": "npm run test && npm run sdd:validate"
+    "check": "npm run build && npm run lint && npm run test && npm run sdd:validate"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
   }
 }

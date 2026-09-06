@@ -1,7 +1,7 @@
 # Source brief and requirement ledger
 
 Spec ID: `SDD-000`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: none
 
