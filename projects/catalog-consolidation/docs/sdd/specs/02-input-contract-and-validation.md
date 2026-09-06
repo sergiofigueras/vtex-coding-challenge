@@ -1,7 +1,7 @@
 # Input contract and validation
 
 Spec ID: `SDD-002`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: `SDD-000`, `SDD-001`
 

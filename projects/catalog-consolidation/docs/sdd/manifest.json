@@ -17,7 +17,7 @@
       "title": "System boundary and interface",
       "path": "docs/sdd/specs/01-system-boundary-and-interface.md",
       "kind": "product",
-      "status": "ready",
+      "status": "verified",
       "dependsOn": ["SDD-000"],
       "requirements": ["ASM-001", "ASM-002", "USR-003", "USR-006"],
       "acceptanceCriteria": ["AC-001-01", "AC-001-02", "AC-001-03", "AC-001-04"]
@@ -27,7 +27,7 @@
       "title": "Input contract and validation",
       "path": "docs/sdd/specs/02-input-contract-and-validation.md",
       "kind": "product",
-      "status": "ready",
+      "status": "verified",
       "dependsOn": ["SDD-000", "SDD-001"],
       "requirements": ["USR-006", "ASM-001", "FIX-001", "FIX-003", "FIX-004"],
       "acceptanceCriteria": ["AC-002-01", "AC-002-02", "AC-002-03", "AC-002-04"]

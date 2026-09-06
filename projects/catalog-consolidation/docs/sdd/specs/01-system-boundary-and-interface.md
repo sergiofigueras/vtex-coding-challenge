@@ -1,7 +1,7 @@
 # System boundary and interface
 
 Spec ID: `SDD-001`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: `SDD-000`
 
