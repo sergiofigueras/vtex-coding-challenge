@@ -1,5 +1,7 @@
 # VTEX Catalog Consolidation
 
+[![CI](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml)
+
 Deterministic, model-free TypeScript CLI for consolidating seller product entries into a SQLite catalog. The runtime has no network or model dependency; source snapshots are private inputs and are never committed. See the Portuguese [tutorial](TUTORIAL.md) for the evaluator/maintainer evidence defense and [public SDD history](.sdd/README.md) for the reviewed portable snapshot.
 
 ## Prerequisites and clean-room setup
