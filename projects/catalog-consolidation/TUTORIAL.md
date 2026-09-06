@@ -122,13 +122,40 @@ npm run check                         # infraestrutura engine/SDD
 npm --prefix projects/catalog-consolidation run check  # gate separado do projeto
 ```
 
-A partir de `projects/catalog-consolidation`, `npm ci` continua sendo suficiente para o gate local:
+A sequência explícita completa abaixo começa na raiz do repositório; depois de entrar em `projects/catalog-consolidation`, `npm ci` continua sendo suficiente para o gate local. O comando preferido, mantido pelo repositório, é `npm run sources:ingest`: ele baixa as mesmas URLs fixadas e valida automaticamente tamanho e hash. O fluxo explícito abaixo também é reproduzível quando se quer ver cada URL e verificação; execute-o somente depois de `npm ci`:
 
 ```bash
+cd projects/catalog-consolidation
 npm ci
+mkdir -p .sdd/inputs
+
+curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+  'https://engineering-hiring-process.s3.us-east-1.amazonaws.com/ProductEntry.json' \
+  --output .sdd/inputs/ProductEntry.json
+curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+  'https://engineering-hiring-process.s3.us-east-1.amazonaws.com/catalog.db' \
+  --output .sdd/inputs/catalog.db
+
+shasum -a 256 -c - <<'EOF'
+1b0c861fe568c19e8b1cebcf774ee3d1d95baf8c42e35129e4ae806ece04b8f6  .sdd/inputs/ProductEntry.json
+733ff1d9cc20253da48a9f8b33d7241503e4a06e7c68f65f7fa00ef14466c404  .sdd/inputs/catalog.db
+EOF
+
+# .sdd/inputs é ignorado e privado; nunca escreva no banco baixado.
+cp .sdd/inputs/catalog.db /tmp/catalog-disposable.db
+node src/cli.ts --input .sdd/inputs/ProductEntry.json --database /tmp/catalog-disposable.db --dry-run --format json
+node src/cli.ts --input .sdd/inputs/ProductEntry.json --database /tmp/catalog-disposable.db --format json
+# Segunda execução idêntica: deve reportar zero produtos e zero links inseridos.
+node src/cli.ts --input .sdd/inputs/ProductEntry.json --database /tmp/catalog-disposable.db --format json
+```
+
+`/tmp/catalog-disposable.db` é uma cópia descartável; o arquivo original em `.sdd/inputs/catalog.db` não recebe operações de escrita do CLI. O `--format json` permanece para permitir inspeção estável e legível por máquina.
+
+Os testes públicos e demais comandos de SDD, custo e histórico permanecem:
+
+```bash
 npm run check                         # suite pública: 30 testes
 npm run sources:ingest && npm run test:fixture  # 4 testes, somente se fixtures configurados
-node src/cli.ts --input ./products.json --database /tmp/catalog-disposable.db --format json
 npm run sdd:prepare -- --change minha-feature --spec SDD-004
 npm run sdd:run -- --change minha-feature --spec SDD-004
 # inspeção de transcript/resultados de uma execução operacional local (se existir)
