@@ -1,7 +1,7 @@
 # Verification strategy
 
 Spec ID: `SDD-007`
-Status: `ready`
+Status: `verified`
 Kind: product specification
 Depends on: `SDD-001`, `SDD-002`, `SDD-003`, `SDD-004`, `SDD-005`, `SDD-006`
 

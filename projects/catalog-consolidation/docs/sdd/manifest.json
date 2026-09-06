@@ -77,7 +77,7 @@
       "title": "Verification strategy",
       "path": "docs/sdd/specs/07-verification-strategy.md",
       "kind": "product",
-      "status": "ready",
+      "status": "verified",
       "dependsOn": ["SDD-001", "SDD-002", "SDD-003", "SDD-004", "SDD-005", "SDD-006"],
       "requirements": ["USR-006", "ASM-003", "ASM-005", "PROC-002", "FIX-001", "FIX-002", "FIX-003", "FIX-004"],
       "acceptanceCriteria": ["AC-007-01", "AC-007-02", "AC-007-03", "AC-007-04"]

@@ -29,4 +29,13 @@
 | AC-006-03 | `node --test test/cli.test.ts` — JSON output is a single versioned envelope with generated run ID and no stderr on expected JSON errors. |
 | AC-006-04 | `npm test` — all catalog behavior is exercised solely through local Node, SQLite, and filesystem APIs; the production dependency graph contains no network or model SDK. |
 
+## SDD-007: Verification strategy
+
+| Acceptance criterion | Reproducible evidence |
+|---|---|
+| AC-007-01 | `npm test` runs the complete public unit, repository, and CLI suite using local Node/SQLite APIs; `npm run sdd:validate` passes with no model or network step. The separate opt-in command is `npm run test:fixture`. |
+| AC-007-02 | `npm run test:fixture` — fixture validation, migration retention, deterministic resolution, first-run counts (976 products, 268 links), foreign-key integrity, and zero-insert rerun all pass against temporary copies. |
+| AC-007-03 | `npm test` — dry-run byte identity, injected-write rollback, ambiguity/collision rollback, link conflicts, hostile strings, nullable brands, and opaque IDs are explicit tests in `test/cli.test.ts`, `test/consolidation.test.ts`, `test/migration.test.ts`, and `test/input.test.ts`. |
+| AC-007-04 | This index names executable evidence for SDD-000 through SDD-007; `npm run sdd:validate` validates the manifest and traceability ledger, and each prior product criterion is linked to a command above. |
+
 The source manifest and traceability ledger use a closed schema and do not accept evidence fields; this separate index preserves the criterion-to-command linkage without weakening their validation contract.
