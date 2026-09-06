@@ -1,17 +1,50 @@
-# VTEX Catalog Consolidation — SDD Agent Infrastructure
+# Reusable SDD Delivery Engine
 
-This repository is the delivery infrastructure and specification package for the catalog consolidation exercise. It intentionally does **not** contain the catalog application yet.
+This repository now separates a reusable software-delivery engine from the projects it develops. The complete DeepSeek Harness/OpenAI control plane lives in [`engine/`](engine/); the VTEX exercise is the first independently specified project under [`projects/catalog-consolidation/`](projects/catalog-consolidation/). The catalog application itself is intentionally not implemented yet.
 
-DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model call. The workflow turns a selected, dependency-ordered subset of the product specs into a bounded headless implementation run, verifies the result, and maps provider cost back to the change.
+DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model call. The engine selects one project, turns a dependency-ordered subset of that project's specs into a bounded headless implementation run, verifies the result, and maps provider cost back to the project and change.
 
 ## What is ready
 
-- Nine product specs (`SDD-000`–`SDD-008`) covering the boundary, input, SQLite migration, deterministic identity, consolidation, security, tests, and delivery.
-- Three verified infrastructure specs (`SDD-090`–`SDD-092`) covering Harness, OpenAI cost control, traceability, and release gates.
-- Pinned public fixture URLs, byte sizes, and SHA-256 hashes; downloads stay private under `.sdd/`.
-- DeepSeek Harness `0.1.2-rc.1`, an isolated headless runner, a project-local SDD skill, and an offline configuration smoke test.
+- A standalone `engine/` package with four verified infrastructure specs (`SDD-090`–`SDD-093`), pinned Harness, OpenAI cost control, multi-project selection, traceability, and release gates.
+- A `projects/<project-id>/project.json` contract plus a model-free project scaffolder for adding new deliverables without copying engine code.
+- Nine catalog product specs (`SDD-000`–`SDD-008`) covering the boundary, input, SQLite migration, deterministic identity, consolidation, security, tests, and delivery.
+- Pinned catalog fixture URLs, byte sizes, and SHA-256 hashes; downloads stay private under the selected project's `.sdd/`.
+- DeepSeek Harness `0.1.2-rc.1`, a project-confined headless runner, an engine-owned SDD skill, and an offline configuration smoke test.
 - OpenAI-only routing: Terra is the default, Luna is the economy model, and Sol is escalation-only.
-- Pre-call and live budget gates, provider-usage extraction, integer price arithmetic, and an append-only hash-chained per-change ledger.
+- Pre-call and live budget gates, provider-usage extraction, integer price arithmetic, and an append-only hash-chained project/change ledger.
+
+## Workspace boundary
+
+```mermaid
+flowchart LR
+  subgraph ENGINE["engine/ — reusable control plane"]
+    HARNESS["DeepSeek Harness patches"]
+    RUNNER["SDD runner + validator"]
+    COST["OpenAI budgets + global ledger"]
+    SKILL["Reusable delivery skill"]
+  end
+
+  SELECTOR["--project <id>"] --> CONTRACT["projects/<id>/project.json"]
+  CONTRACT --> SPECS["Project specs + traceability"]
+  CONTRACT --> SOURCES["Project source manifest"]
+  CONTRACT --> STATE["Ignored project .sdd/ state"]
+  ENGINE --> SELECTOR
+  RUNNER --> WORK["Project application code + tests"]
+  SPECS --> RUNNER
+  SOURCES --> RUNNER
+  RUNNER --> STATE
+  RUNNER --> COST
+```
+
+The separation is enforced at runtime, not merely documented:
+
+- Project-scoped commands require a validated lower-kebab-case project ID.
+- Descriptor paths must be relative and contained inside the selected project; real-path checks reject symlink escapes.
+- Harness starts with the selected project as its working directory and filesystem-sandbox root.
+- Prompts, downloaded inputs, session events, locks, and results stay in that project's ignored `.sdd/` directory.
+- The engine configuration, reusable skill, price books, tests, and tamper-evident cost ledger stay under `engine/`.
+- New projects reference the engine; they do not receive private copies of its runner or configuration.
 
 ## Why DeepSeek Harness
 
@@ -27,7 +60,7 @@ That combination provides several practical advantages for this project:
 - **Capability seams.** Models, tools, filesystem access, subprocesses, sandboxes, approvals, persistence, skills, and interfaces are swappable service-provider seams. Policy can intercept those seams without rewriting the agent loop.
 - **Cost containment.** A small spec-scoped prompt, restricted tools, no hidden subagent fan-out, exact model routes, durable usage events, and an outer budget supervisor make the cost of a change observable and subject to conservative reservations and stop thresholds.
 
-The project still pins Harness because upstream labels it a developer preview and warns that compatibility-breaking changes should be expected.
+The engine still pins Harness because upstream labels it a developer preview and warns that compatibility-breaking changes should be expected.
 
 ## Architectural foundation: spatiotemporal composability
 
@@ -102,7 +135,7 @@ A running `dsh` process is assembled from configuration rather than a privileged
 flowchart TB
   CLI["dsh CLI"] --> PROFILE["headless profile"]
   PROFILE --> BASE["dsh-base bundle"]
-  BASE --> PROJECT["automation.patch.yml"]
+  BASE --> PROJECT["engine/config/dsh/automation.patch.yml"]
   PROJECT --> ROUTE{"selected route"}
   ROUTE -->|economy| LUNA["economy.patch.yml<br/>OpenAI GPT-5.6 Luna / low"]
   ROUTE -->|default| TERRA["OpenAI GPT-5.6 Terra / medium"]
@@ -115,7 +148,7 @@ flowchart TB
     TOOLS["scoped tool registry"]
     SESSION["append-only session log"]
     POLICY["sandbox + approval policy"]
-    SKILLS["project skill loader"]
+    SKILLS["engine-owned skill loader"]
   end
 
   LUNA --> TREE
@@ -128,7 +161,7 @@ flowchart TB
   SKILLS --> PROMPT
 ```
 
-The selected profile contributes an ordered plugin tree. `dsh-base` supplies model adapters, the agent loop, session persistence, tools, credentials, sandboxing, approvals, and other services. `dsh-headless` adds the one-shot runner. Project `--patch` files target plugin rows by ID and replace their configuration; `npm run dsh:config` resolves and verifies every route without making a model call.
+The selected profile contributes an ordered plugin tree. `dsh-base` supplies model adapters, the agent loop, session persistence, tools, credentials, sandboxing, approvals, and other services. `dsh-headless` adds the one-shot runner. Engine `--patch` files target plugin rows by ID and replace their configuration; `npm run dsh:config` resolves and verifies every route without making a model call.
 
 One agent **turn** contains zero or more **steps**. Each step is one model request followed by the tool calls it requests:
 
@@ -141,8 +174,8 @@ sequenceDiagram
   participant Tools as Guarded local tools
   participant Cost as Cost observer
 
-  Runner->>Runner: validate specs + estimate budget
-  Runner->>Agent: start isolated headless task
+  Runner->>Runner: select project + validate specs + estimate budget
+  Runner->>Agent: start project-confined headless task
   Agent->>Log: turn/start + user/message
   Agent->>Agent: assemble prompt sections + tool schemas
   Agent->>OpenAI: llm/stream
@@ -163,31 +196,32 @@ Session events are the durable source of model history: resume, fork, replay, tr
 
 ## How this repository applies the architecture
 
-The outer scripts are intentionally outside the model-controlled runtime and form a delivery control plane:
+The engine scripts are intentionally outside the model-controlled runtime and form a delivery control plane around the selected project:
 
 ```mermaid
 flowchart TD
-  USER["Operator chooses change ID + spec IDs"] --> VALIDATE["Validate manifest, authority, dependencies, ledger, secrets"]
-  SOURCES["Public JSON + SQLite URLs"] --> INGEST["Deterministic download, hash verification, private profiling"]
-  INGEST --> PRIVATE["Ignored .sdd/inputs inventory"]
+  USER["Operator chooses project + change ID + spec IDs"] --> SELECT["Resolve projects/id/project.json<br/>reject path escape"]
+  SELECT --> VALIDATE["Validate engine, project manifest, authority, dependencies, ledger, secrets"]
+  SOURCES["Selected project's public source URLs"] --> INGEST["Deterministic download, hash verification, private profiling"]
+  INGEST --> PRIVATE["Project-local ignored .sdd/inputs inventory"]
   VALIDATE --> PROMPT["Compact dependency-ordered prompt<br/>IMPLEMENT vs CONTEXT ONLY"]
   PROMPT --> RESERVE["Price four estimated attempts<br/>reserve run/change budget"]
-  RESERVE --> DSH["Pinned DeepSeek Harness headless session"]
+  RESERVE --> DSH["Pinned DeepSeek Harness<br/>cwd + sandbox = selected project"]
   PRIVATE -.->|"available only through documented local checks"| DSH
   DSH --> OPENAI["Allow-listed OpenAI model"]
-  DSH --> WORKTREE["Workspace edits + deterministic tests"]
-  DSH --> EVENTS["Ignored durable Harness JSONL events"]
+  DSH --> WORKTREE["Selected project edits + deterministic tests"]
+  DSH --> EVENTS["Project-local ignored Harness JSONL events"]
   EVENTS --> METER["Normalize uncached/cache-read/cache-write/output usage"]
   METER --> GATE{"measured budget exceeded?"}
   GATE -->|yes| STOP["terminate + record unresolved/failed outcome"]
-  GATE -->|no| SETTLE["append hash-chained cost settlement"]
+  GATE -->|no| SETTLE["append project-attributed settlement<br/>engine/cost/ledger.jsonl"]
   WORKTREE --> REVIEW["human review + npm run check"]
   SETTLE --> REVIEW
   REVIEW --> COMMIT["commit with Cost-Entry trailer"]
   COMMIT --> CI["offline GitHub release gates"]
 ```
 
-The deterministic boundary is deliberate. Source downloading, hashing, schema profiling, dependency ordering, validation, pricing arithmetic, tests, and CI use no model. Harness and OpenAI are introduced only for bounded engineering work. The catalog application produced later must itself remain model-free.
+The deterministic boundary is deliberate. Project creation and selection, source downloading, hashing, schema profiling, dependency ordering, validation, pricing arithmetic, tests, and CI use no model. Harness and OpenAI are introduced only for bounded engineering work. A project's runtime remains model-free unless that project's own specifications explicitly require otherwise; the catalog application does not.
 
 ### Boundaries and non-guarantees
 
@@ -217,7 +251,27 @@ npm run check
 npm run cost:report
 ```
 
-`sources:ingest` downloads the public JSON and SQLite snapshots, verifies their pinned hashes, profiles them deterministically, and stores them only under ignored `.sdd/inputs`. CI stays offline and does not need an API key.
+The short commands above are compatibility aliases for `catalog-consolidation`. `sources:ingest` downloads that project's public JSON and SQLite snapshots, verifies their pinned hashes, profiles them deterministically, and stores them only under `projects/catalog-consolidation/.sdd/inputs`. CI stays offline and does not need an API key.
+
+## Create or select another project
+
+Create a valid empty project without copying the engine:
+
+```bash
+npm run project:create -- --id example-service --title "Example Service"
+npm run project:validate -- --project example-service
+```
+
+Then add requirements and specs to `projects/example-service/docs/sdd/`, register them in its manifest and traceability ledger, and use the generic commands:
+
+```bash
+npm run project:sources -- --project example-service
+npm run project:prepare -- --project example-service --change first-slice --spec SDD-001
+npm run project:run -- --project example-service --change first-slice --spec SDD-001
+npm run project:cost -- --project example-service
+```
+
+See [`engine/README.md`](engine/README.md) for the reusable command contract. Project creation, validation, preparation, source ingestion, and cost reporting make no model call. Only `project:run` invokes OpenAI through Harness.
 
 ## Run the SDD agent
 
@@ -235,7 +289,7 @@ npm run sdd:run -- --change cli-input-implementation --spec SDD-001,SDD-002
 
 Use `--route economy` for a deliberately low-cost mechanical change. The escalation route is intentionally noisy and requires both `--route escalation`, `--approve-escalation`, and `--escalation-reason "..."`.
 
-The inner agent may edit and test the working tree. It may not commit, push, or read raw PDFs. The outer runner validates scope, isolates Harness state, monitors durable usage, writes an ignored run result, and appends a public cost record. Review its changes and proof before committing:
+The inner agent may edit and test only the selected project. It may not commit, push, or read raw PDFs. The outer runner validates scope, isolates Harness state inside that project, monitors durable usage, writes an ignored run result, and appends a project-attributed public cost record under `engine/cost/ledger.jsonl`. Review its changes and proof before committing:
 
 ```bash
 npm run check
@@ -260,19 +314,19 @@ npm run cost:record -- --change manual-review --spec SDD-001 --reason "External 
 | 5 | `SDD-007` | Complete automated and fixture verification |
 | 6 | `SDD-008` | Public delivery and engineering defense |
 
-These spec IDs are the prompts: the runner builds a compact instruction from the manifest and dependency graph, while the full behavior stays versioned in `docs/sdd/specs/`. Do not ask the agent to “build everything” in one context window.
+These catalog spec IDs are the prompts: the runner builds a compact instruction from the selected project's manifest and dependency graph, while the full behavior stays versioned in `projects/catalog-consolidation/docs/sdd/specs/`. Do not ask the agent to “build everything” in one context window.
 
 ## Model and cost policy
 
 The default route is `openai/gpt-5.6-terra` at medium reasoning. Use `gpt-5.6-luna` for high-volume ingestion summaries, formatting, and mechanical test repair. `gpt-5.6-sol`, a request above 272,000 prompt tokens, or an unpriced model/tier requires an explicit policy change and review.
 
-Pricing comes from the dated repository price book, not from a transitive adapter. Provider usage is normalized into disjoint uncached-input, cache-read, cache-write, and output buckets. Reasoning is included in output and is never counted twice. Since the pinned Harness adapter does not preserve the actual OpenAI service tier, known costs are marked `standard-assumed`; missing usage remains `unreconciled`, never zero.
+Pricing comes from the dated engine price book, not from a transitive adapter. Provider usage is normalized into disjoint uncached-input, cache-read, cache-write, and output buckets. Reasoning is included in output and is never counted twice. Since the pinned Harness adapter does not preserve the actual OpenAI service tier, known costs are marked `standard-assumed`; missing usage remains `unreconciled`, never zero.
 
 The initial infrastructure change was authored in Codex outside the target Harness, whose exact token/currency usage was not exposed to this repository. Its ledger entry is therefore intentionally `unavailable`.
 
 ## Specification map
 
-The canonical graph is `docs/sdd/manifest.json`; requirement authority and ownership are in `docs/sdd/traceability.json`. Start at `SDD-000`, which explicitly separates the user's workflow request, the assessment behavior, and fixture observations. Architectural choices are recorded in `docs/adr/`.
+Engine infrastructure is specified under `engine/docs/sdd/`. The catalog graph is `projects/catalog-consolidation/docs/sdd/manifest.json`; its requirement authority and ownership are in `projects/catalog-consolidation/docs/sdd/traceability.json`. Start at `SDD-000`, which explicitly separates the user's workflow request, assessment behavior, and fixture observations. Catalog choices are recorded in its `docs/adr/`; shared routing and Harness choices are recorded in `engine/docs/adr/`.
 
 The source documents include a confidentiality notice. They are neither copied nor quoted in this public repository. Only paraphrased requirements, public URLs, hashes, and independently observed schema facts are retained.
 
@@ -287,4 +341,4 @@ A future product release requires:
 5. a valid cost entry for every commit and `npm run cost:report` reviewed;
 6. the final Git revision and CI result recorded in the delivery note.
 
-See `docs/sdd/specs/08-delivery-and-engineering-defense.md` for the finished application runbook requirements; they are deliberately not fabricated before the application exists.
+See `projects/catalog-consolidation/docs/sdd/specs/08-delivery-and-engineering-defense.md` for the finished catalog runbook requirements; they are deliberately not fabricated before the application exists.

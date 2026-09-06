@@ -1,0 +1,25 @@
+{
+  "name": "@sdd/delivery-engine",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Reusable cost-aware DeepSeek Harness engine for specification-driven software delivery",
+  "type": "module",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "scripts": {
+    "project:create": "node scripts/create-project.mjs",
+    "sources:ingest": "node scripts/ingest-sources.mjs",
+    "sdd:prepare": "node scripts/sdd-agent.mjs prepare",
+    "sdd:run": "node scripts/sdd-agent.mjs run",
+    "sdd:validate": "node scripts/validate.mjs",
+    "cost:record": "node scripts/cost-record.mjs",
+    "cost:report": "node scripts/cost-report.mjs",
+    "dsh:config": "node scripts/check-dsh-config.mjs",
+    "test": "node --test",
+    "check": "npm run dsh:config && npm run sdd:validate -- --all && npm test"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh": "0.1.2-rc.1"
+  }
+}

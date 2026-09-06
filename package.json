@@ -1,26 +1,33 @@
 {
-  "name": "vtex-catalog-consolidation-sdd",
-  "version": "0.1.0",
+  "name": "vtex-sdd-delivery-workspace",
+  "version": "0.2.0",
   "private": true,
-  "description": "Cost-aware DeepSeek Harness infrastructure and specifications for the VTEX catalog consolidation exercise",
-  "type": "module",
+  "description": "Reusable DeepSeek Harness SDD engine and independently specified software projects",
   "packageManager": "npm@11.12.1",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
   },
+  "workspaces": [
+    "engine"
+  ],
   "scripts": {
     "bootstrap": "npm ci && npm run sources:ingest",
-    "sources:ingest": "node scripts/ingest-sources.mjs",
-    "sdd:prepare": "node scripts/sdd-agent.mjs prepare",
-    "sdd:run": "node scripts/sdd-agent.mjs run",
-    "sdd:validate": "node scripts/validate.mjs",
-    "cost:record": "node scripts/cost-record.mjs",
-    "cost:report": "node scripts/cost-report.mjs",
-    "dsh:config": "node scripts/check-dsh-config.mjs",
-    "test": "node --test",
-    "check": "npm run sdd:validate && npm test"
-  },
-  "devDependencies": {
-    "@deepseek-ai/dsh": "0.1.2-rc.1"
+    "dsh:config": "npm --workspace @sdd/delivery-engine run dsh:config",
+    "engine:test": "npm --workspace @sdd/delivery-engine test",
+    "project:create": "npm --workspace @sdd/delivery-engine run project:create --",
+    "project:validate": "npm --workspace @sdd/delivery-engine run sdd:validate --",
+    "project:sources": "npm --workspace @sdd/delivery-engine run sources:ingest --",
+    "project:prepare": "npm --workspace @sdd/delivery-engine run sdd:prepare --",
+    "project:run": "npm --workspace @sdd/delivery-engine run sdd:run --",
+    "project:cost-record": "npm --workspace @sdd/delivery-engine run cost:record --",
+    "project:cost": "npm --workspace @sdd/delivery-engine run cost:report --",
+    "sources:ingest": "npm run project:sources -- --project catalog-consolidation",
+    "sdd:prepare": "npm run project:prepare -- --project catalog-consolidation",
+    "sdd:run": "npm run project:run -- --project catalog-consolidation",
+    "sdd:validate": "npm run project:validate -- --all",
+    "cost:record": "npm run project:cost-record -- --project catalog-consolidation",
+    "cost:report": "npm run project:cost --",
+    "test": "npm run engine:test",
+    "check": "npm run dsh:config && npm run sdd:validate && npm test"
   }
 }

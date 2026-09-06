@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "requirements": [
+    { "id": "ENG-USR-001", "authority": "user", "summary": "Use DeepSeek Harness as the software-delivery orchestration runtime.", "specIds": ["SDD-090"] },
+    { "id": "ENG-USR-002", "authority": "user", "summary": "Enable an agent to ingest evidence, implement from specifications, verify, and deliver software.", "specIds": ["SDD-090", "SDD-092"] },
+    { "id": "ENG-USR-003", "authority": "user", "summary": "Use OpenAI models through DeepSeek Harness and price OpenAI usage.", "specIds": ["SDD-090", "SDD-091"] },
+    { "id": "ENG-USR-004", "authority": "user", "summary": "Track and map model cost to every repository change.", "specIds": ["SDD-091", "SDD-092"] },
+    { "id": "ENG-USR-005", "authority": "user", "summary": "Keep the complete delivery engine in a separate project directory on the main branch.", "specIds": ["SDD-093"] },
+    { "id": "ENG-USR-006", "authority": "user", "summary": "Reuse one engine to develop multiple independently specified projects such as catalog consolidation.", "specIds": ["SDD-093"] },
+    { "id": "ENG-PROC-001", "authority": "process", "summary": "Validate agent output, preserve traceability, and enforce offline release gates.", "specIds": ["SDD-092"] }
+  ]
+}

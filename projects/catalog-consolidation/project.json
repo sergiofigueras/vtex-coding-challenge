@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0",
+  "id": "catalog-consolidation",
+  "name": "VTEX Catalog Consolidation",
+  "sddManifest": "docs/sdd/manifest.json",
+  "traceability": "docs/sdd/traceability.json",
+  "sourcesManifest": "config/sources.json",
+  "stateDirectory": ".sdd"
+}

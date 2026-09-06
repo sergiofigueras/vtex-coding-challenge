@@ -4,8 +4,8 @@ node_modules/
 !.env.example
 .DS_Store
 
-# Private/raw source material and DeepSeek Harness runtime state.
-.sdd/
+# Private/raw source material and per-project DeepSeek Harness runtime state.
+**/.sdd/
 
 # The public repository keeps normalized source facts, never the source PDFs.
 *.pdf

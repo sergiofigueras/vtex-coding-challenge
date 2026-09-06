@@ -1,0 +1,16 @@
+{
+  "name": "@vtex-challenge/catalog-consolidation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Specifications and future implementation for the VTEX catalog consolidation exercise",
+  "type": "module",
+  "scripts": {
+    "sources:ingest": "npm --prefix ../../engine run sources:ingest -- --project catalog-consolidation",
+    "sdd:prepare": "npm --prefix ../../engine run sdd:prepare -- --project catalog-consolidation",
+    "sdd:run": "npm --prefix ../../engine run sdd:run -- --project catalog-consolidation",
+    "sdd:validate": "npm --prefix ../../engine run sdd:validate -- --project catalog-consolidation",
+    "cost:record": "npm --prefix ../../engine run cost:record -- --project catalog-consolidation",
+    "cost:report": "npm --prefix ../../engine run cost:report -- --project catalog-consolidation",
+    "check": "npm run sdd:validate"
+  }
+}
