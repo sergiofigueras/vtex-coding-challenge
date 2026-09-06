@@ -1,0 +1,21 @@
+Change ID: `catalog-fix-boundary-limits-elapsed-and-determinism`
+
+Requested specifications: `SDD-001`, `SDD-002`, `SDD-005`, `SDD-006`, `SDD-007`
+
+The requested implementation is already present in the working tree; no additional files were changed during this pass.
+
+### Acceptance evidence
+
+- `npm test` — 28 public tests passed.
+- `npm run test:fixture` — 4 private fixture tests passed:
+  - input validation
+  - deterministic identity resolution
+  - first-run consolidation and idempotent rerun
+  - migration preservation and foreign-key integrity
+- `npm run check` — build, typecheck, lint, tests, and SDD validation passed.
+
+Covered behavior includes bounded input and diagnostics, explicit CLI boundaries, dry-run byte identity, elapsed-time reporting, deterministic ordering, transactional rollback, seller-scoped opaque IDs, parameterized SQL, stable error handling, and offline/model-free verification.
+
+### Remaining decisions
+
+No unresolved implementation decisions. Existing specification statuses and evidence were already marked `verified`; no status or traceability changes were necessary.

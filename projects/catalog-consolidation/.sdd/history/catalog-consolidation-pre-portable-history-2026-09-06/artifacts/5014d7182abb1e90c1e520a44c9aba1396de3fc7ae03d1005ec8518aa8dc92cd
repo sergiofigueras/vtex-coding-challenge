@@ -1,0 +1,23 @@
+# SDD delivery task
+
+Project: catalog-consolidation
+Change ID: catalog-complete-error-exit-property-and-lock-tests
+Requested specifications: SDD-006, SDD-007
+
+Use the repository skill `sdd-delivery` and obey AGENTS.md.
+Implement only the requested specification(s). Read dependencies for context but do not expand their implementation scope unless required by a stated acceptance criterion.
+Do not commit, push, or expose credentials. The outer runner records model cost after the Harness process exits.
+Run the narrow checks while iterating, then `npm run check` before reporting completion.
+Update the requested spec status and `docs/sdd/traceability.json` only when evidence exists.
+
+Specification reading order:
+- SDD-000: docs/sdd/specs/00-source-brief-and-requirement-ledger.md (CONTEXT ONLY)
+- SDD-001: docs/sdd/specs/01-system-boundary-and-interface.md (CONTEXT ONLY)
+- SDD-002: docs/sdd/specs/02-input-contract-and-validation.md (CONTEXT ONLY)
+- SDD-003: docs/sdd/specs/03-catalog-schema-and-migrations.md (CONTEXT ONLY)
+- SDD-004: docs/sdd/specs/04-product-identity-and-resolution.md (CONTEXT ONLY)
+- SDD-005: docs/sdd/specs/05-consolidation-and-idempotency.md (CONTEXT ONLY)
+- SDD-006: docs/sdd/specs/06-errors-security-and-observability.md (IMPLEMENT)
+- SDD-007: docs/sdd/specs/07-verification-strategy.md (IMPLEMENT)
+
+Deliver a concise result naming changed files, proof commands, unresolved decisions, and the change ID.

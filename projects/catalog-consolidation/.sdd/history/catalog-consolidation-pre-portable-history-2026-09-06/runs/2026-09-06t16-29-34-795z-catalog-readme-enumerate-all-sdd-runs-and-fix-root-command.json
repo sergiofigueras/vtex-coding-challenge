@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+  "source": "runs/2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "12fcdb6260ff5134df5a9c7c83782fda719399fa",
+    "changeId": "catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 0.1386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-luna",
+    "preparedAt": "2026-09-06T16:29:34.796Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "low",
+    "route": "economy",
+    "runId": "2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-008"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "426e8c3f-5bbc-4ca2-9614-2243ab49da78",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/2dfd05316c56223c6f149f884347bfdf631cdde422de7294fb83fe357558af86",
+      "sha256": "2dfd05316c56223c6f149f884347bfdf631cdde422de7294fb83fe357558af86",
+      "bytes": 1516,
+      "source": "runs/2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/d2b1593ae8b41146d4907a31e2aeb110e44cedb8bf722bae6c10dbddcd56876b",
+      "sha256": "d2b1593ae8b41146d4907a31e2aeb110e44cedb8bf722bae6c10dbddcd56876b",
+      "bytes": 895,
+      "source": "runs/2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command/session"
+    }
+  ]
+}

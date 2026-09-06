@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t14-42-15-924z-cli-input-implementation",
+  "source": "runs/2026-09-06t14-42-15-924z-cli-input-implementation",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "c498dbf193ab36ed7877cd8766a46962d46d4413",
+    "changeId": "cli-input-implementation",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T14:42:15.925Z",
+    "projectId": "catalog-consolidation",
+    "provenance": {
+      "attribution": "selected-project-legacy",
+      "originalManifestSha256": "18f69f19b05ec0c14a1bd425a27ab2c97da5b85fdac653c4d1ffa1d8509581a9"
+    },
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t14-42-15-924z-cli-input-implementation",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001",
+      "SDD-002"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/541a62b868529d2dfd3c26f47e940b31dd0cbd29d166ecc7039d11aca9723a87",
+      "sha256": "541a62b868529d2dfd3c26f47e940b31dd0cbd29d166ecc7039d11aca9723a87",
+      "bytes": 994,
+      "source": "runs/2026-09-06t14-42-15-924z-cli-input-implementation/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-15-924z-cli-input-implementation/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-15-924z-cli-input-implementation/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-15-924z-cli-input-implementation/session"
+    }
+  ]
+}

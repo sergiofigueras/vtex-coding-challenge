@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-02-11-650z-catalog-schema-migration",
+  "source": "runs/2026-09-06t16-02-11-650z-catalog-schema-migration",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "abd930103b831096e5110fb05888873b2419f7ba",
+    "changeId": "catalog-schema-migration",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T16:02:11.652Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t16-02-11-650z-catalog-schema-migration",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-003"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "8d86be1d-e677-462f-8ac5-57c7a5e3d06b",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/9e43a566ebe6683724bbe7c813a5eeb639ae37bf055baca2414306e5d4977a6b",
+      "sha256": "9e43a566ebe6683724bbe7c813a5eeb639ae37bf055baca2414306e5d4977a6b",
+      "bytes": 1096,
+      "source": "runs/2026-09-06t16-02-11-650z-catalog-schema-migration/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/32cd91b88c601383067500aa8c972360da7f8ac7c2c49fec5e388f94964821e4",
+      "sha256": "32cd91b88c601383067500aa8c972360da7f8ac7c2c49fec5e388f94964821e4",
+      "bytes": 1897,
+      "source": "runs/2026-09-06t16-02-11-650z-catalog-schema-migration/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-02-11-650z-catalog-schema-migration/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-02-11-650z-catalog-schema-migration/session"
+    }
+  ]
+}

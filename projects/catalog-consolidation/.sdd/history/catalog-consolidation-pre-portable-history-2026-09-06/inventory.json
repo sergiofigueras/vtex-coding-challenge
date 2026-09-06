@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "catalog-consolidation",
+  "sources": [
+    {
+      "id": "SRC-DATA-001",
+      "name": "ProductEntry.json",
+      "classification": "private-source-not-exported",
+      "bytes": 48938,
+      "sha256": "1b0c861fe568c19e8b1cebcf774ee3d1d95baf8c42e35129e4ae806ece04b8f6",
+      "provenance": "https://engineering-hiring-process.s3.us-east-1.amazonaws.com/ProductEntry.json"
+    },
+    {
+      "id": "SRC-DATA-002",
+      "name": "catalog.db",
+      "classification": "private-source-not-exported",
+      "bytes": 61440,
+      "sha256": "733ff1d9cc20253da48a9f8b33d7241503e4a06e7c68f65f7fa00ef14466c404",
+      "provenance": "https://engineering-hiring-process.s3.us-east-1.amazonaws.com/catalog.db"
+    }
+  ]
+}

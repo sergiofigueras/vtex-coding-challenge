@@ -1,0 +1,32 @@
+Implemented and verified **SDD-003** for change ID **`catalog-schema-migration`**.
+
+**Changed files**
+- `src/adapters/sqlite-catalog.ts`
+  - Added ordered `PRAGMA user_version` v1 migration support.
+  - Rebuilds `SellerProduct` with `SellerProductId TEXT NOT NULL`, seller-scoped uniqueness, and `ProductId` index.
+  - Creates/backfills `ProductIdentity` with canonical fields, version, unique SHA-256 fingerprint, and cascade FK.
+  - Enables foreign keys, uses `BEGIN IMMEDIATE`, rejects future versions, validates counts/FKs, and rolls back explicit identity collisions.
+- `test/migration.test.ts`
+  - Covers no-op reruns, future-version rejection without mutation, numeric-to-text seller IDs, opaque string IDs, and byte-exact collision rollback.
+- `test/migration.fixture.integration.ts`
+  - Covers migration of the private catalog copy: 975 products retained, schema/indexes/version, and clean FK checks.
+- `package.json`
+  - Extends `test:fixture` to run the migration fixture suite.
+- `docs/sdd/manifest.json`
+- `docs/sdd/specs/03-catalog-schema-and-migrations.md`
+  - Marked SDD-003 `verified`.
+
+**Acceptance evidence**
+- AC-003-01: `npm run test:fixture`
+- AC-003-02 through AC-003-04: `node --test test/migration.test.ts`
+- Complete gate: `npm run check` ✅
+  - 11 public tests passed.
+  - SDD validation passed.
+
+**Traceability**
+- `docs/sdd/traceability.json` was left unchanged. I attempted to add a criterion evidence index, but `npm run sdd:validate` rejects an `evidence` field as unsupported; retaining it would fail the complete gate. The executable evidence is in the tests above.
+
+**Remaining decision**
+- Migration backfill uses baseline deterministic v1 canonicalization; the alias-data expansion remains intentionally scoped to unrequested SDD-004.
+
+No commits or pushes were made. I did not modify the pre-existing outer-runner change in `../../engine/cost/ledger.jsonl`.

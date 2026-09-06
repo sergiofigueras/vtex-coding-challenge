@@ -1,0 +1,33 @@
+Change ID: `catalog-delivery-fix-runtime-and-replay-docs`  
+Requested specification: `SDD-008`
+
+Implemented delivery/runtime documentation fixes:
+
+- Corrected README runtime dependency documentation to reflect Node’s built-in `node:sqlite`, not `better-sqlite3`.
+- Added documented `build`, `lint`, and `typecheck` commands using Node’s TypeScript syntax checks.
+- Added an explicit replay command demonstrating zero inserted products and links on a second run.
+- Preserved existing SDD-008 evidence, ADR, traceability, and verified status updates.
+
+Changed files:
+
+- `README.md`
+- `package.json`
+
+Existing delivery evidence also present in:
+
+- `docs/sdd/evidence-index.md`
+- `docs/adr/0003-delivery-and-engineering-defense.md`
+- `docs/sdd/manifest.json`
+- `docs/sdd/specs/08-delivery-and-engineering-defense.md`
+
+Proof commands passed:
+
+- `npm run build`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run check`
+- `npm run check` passed 21 tests and SDD validation.
+- Revision recorded: `12fcdb6260ff5134df5a9c7c83782fda719399fa`
+
+Unresolved decisions: none.  
+Complete gate: passed.

@@ -5,7 +5,11 @@ node_modules/
 .DS_Store
 
 # Private/raw source material and per-project DeepSeek Harness runtime state.
-**/.sdd/
+# Only the policy README and reviewed portable history snapshots may be tracked.
+**/.sdd/*
+!**/.sdd/README.md
+!**/.sdd/history/
+!**/.sdd/history/**
 
 # The public repository keeps normalized source facts, never the source PDFs.
 *.pdf

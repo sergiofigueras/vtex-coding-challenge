@@ -1,0 +1,47 @@
+Implemented change ID **`catalog-fixture-identity-repair`** for **SDD-004** and **SDD-005**.
+
+### Changed files
+- `src/domain/product-identity.ts`
+  - Made reviewed aliases apply to exact normalized token sequences, not only whole-field values.
+  - Preserves deterministic, boundary-based matching and prevents substring replacements.
+- `test/product-identity.test.ts`
+  - Added exact-token matching and no-substring regression coverage.
+- `test/identity.fixture.integration.ts`
+  - Repaired fixture oracle to 267 matches / 1 new product.
+  - Added first-run consolidation and logical no-op rerun fixture proof.
+- `test/consolidation.test.ts`
+  - Added injected product-write failure rollback coverage.
+- `docs/adr/0002-deterministic-product-identity.md`
+  - Clarified reviewed alias boundary semantics.
+- `docs/sdd/evidence-index.md`
+  - Updated SDD-004 evidence and added complete SDD-005 acceptance evidence.
+- `docs/sdd/specs/05-consolidation-and-idempotency.md`
+  - Status updated to `verified`.
+- `docs/sdd/manifest.json`
+  - SDD-005 status updated to `verified`.
+
+`docs/sdd/traceability.json` was not changed: its closed schema has no evidence field, and the evidence index is the documented evidence location.
+
+### Proof commands
+- `node --test test/product-identity.test.ts test/consolidation.test.ts test/identity.fixture.integration.ts`
+  - **11/11 passed**
+- `npm test`
+  - **21/21 passed**
+- `npm run test:fixture`
+  - **4/4 passed**, including:
+    - 267 fixture matches, 1 new product
+    - 976 total products and 268 seller links after first run
+    - zero-insert logical no-op rerun
+    - foreign-key integrity
+- `npm run check`
+  - Passed.
+- Root `npm run check`
+  - Passed.
+- `git diff --check`
+  - Passed.
+
+### Remaining decisions / risks
+- No unresolved implementation decisions.
+- An existing unrelated modification remains in `engine/cost/ledger.jsonl`; it was not modified by this work.
+
+Complete gate: **passed**.

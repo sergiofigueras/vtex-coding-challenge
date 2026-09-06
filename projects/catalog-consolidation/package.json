@@ -19,6 +19,8 @@
     "sdd:validate": "npm --prefix ../../engine run sdd:validate -- --project catalog-consolidation",
     "cost:record": "npm --prefix ../../engine run cost:record -- --project catalog-consolidation",
     "cost:report": "npm --prefix ../../engine run cost:report -- --project catalog-consolidation",
+    "sdd:history:create": "npm --prefix ../../engine run project:history:create -- --project catalog-consolidation",
+    "sdd:history:validate": "npm --prefix ../../engine run project:history:validate -- --project catalog-consolidation",
     "check": "npm run build && npm run lint && npm run test && npm run sdd:validate"
   },
   "devDependencies": {

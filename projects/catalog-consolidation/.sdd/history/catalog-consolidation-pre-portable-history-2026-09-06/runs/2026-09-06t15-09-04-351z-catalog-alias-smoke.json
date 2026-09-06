@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t15-09-04-351z-catalog-alias-smoke",
+  "source": "runs/2026-09-06t15-09-04-351z-catalog-alias-smoke",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "87a701335385db260352855a8473c82a559dfeec",
+    "changeId": "catalog-alias-smoke",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T15:09:04.353Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t15-09-04-351z-catalog-alias-smoke",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/a8d4dbed65aca04ab46b902ccdd1dcbea7abbb0973ccfb53eda193edad9b3f9a",
+      "sha256": "a8d4dbed65aca04ab46b902ccdd1dcbea7abbb0973ccfb53eda193edad9b3f9a",
+      "bytes": 937,
+      "source": "runs/2026-09-06t15-09-04-351z-catalog-alias-smoke/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-09-04-351z-catalog-alias-smoke/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-09-04-351z-catalog-alias-smoke/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-09-04-351z-catalog-alias-smoke/session"
+    }
+  ]
+}

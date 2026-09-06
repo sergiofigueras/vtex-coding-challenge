@@ -7,6 +7,8 @@
     { "id": "ENG-USR-004", "authority": "user", "summary": "Track and map model cost to every repository change.", "specIds": ["SDD-091", "SDD-092"] },
     { "id": "ENG-USR-005", "authority": "user", "summary": "Keep the complete delivery engine in a separate project directory on the main branch.", "specIds": ["SDD-093"] },
     { "id": "ENG-USR-006", "authority": "user", "summary": "Reuse one engine to develop multiple independently specified projects such as catalog consolidation.", "specIds": ["SDD-093"] },
+    { "id": "ENG-USR-007", "authority": "user", "summary": "Provide a reusable portable SDD-history exporter and validator with safe semantic capture, provenance, exclusion accounting, cost reporting, and clean-clone verification.", "specIds": ["SDD-094"] },
+    { "id": "ENG-USR-008", "authority": "user", "summary": "Ensure reusable SDD delivery survives provider rate-limit interruptions with bounded, cost-aware, resumable retries and explicitly authorized Terra-to-Luna fallback without affecting the deterministic model-free catalog runtime.", "specIds": ["SDD-095"] },
     { "id": "ENG-PROC-001", "authority": "process", "summary": "Validate agent output, preserve traceability, and enforce offline release gates.", "specIds": ["SDD-092"] }
   ]
 }

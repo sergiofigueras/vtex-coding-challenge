@@ -1,0 +1,304 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "catalog-consolidation",
+  "entries": [
+    {
+      "runId": "2026-09-06t15-51-00-203z-catalog-cli-input",
+      "changeId": "catalog-cli-input",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t15-51-00-203z-catalog-cli-input",
+      "changeId": "catalog-cli-input",
+      "measurement": "unreconciled",
+      "actualUsd": null,
+      "estimatedUsd": null,
+      "accountingStatus": "unreconciled"
+    },
+    {
+      "runId": "2026-09-06t15-52-17-901z-catalog-cli-input",
+      "changeId": "catalog-cli-input",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t15-52-17-901z-catalog-cli-input",
+      "changeId": "catalog-cli-input",
+      "measurement": "unreconciled",
+      "actualUsd": null,
+      "estimatedUsd": null,
+      "accountingStatus": "unreconciled"
+    },
+    {
+      "runId": "2026-09-06t15-52-17-901z-catalog-cli-input",
+      "changeId": "catalog-cli-input",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5432407,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-02-11-650z-catalog-schema-migration",
+      "changeId": "catalog-schema-migration",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-02-11-650z-catalog-schema-migration",
+      "changeId": "catalog-schema-migration",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5204097,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-06-23-929z-catalog-product-identity",
+      "changeId": "catalog-product-identity",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-06-23-929z-catalog-product-identity",
+      "changeId": "catalog-product-identity",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.6085651,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-11-08-316z-catalog-atomic-consolidation",
+      "changeId": "catalog-atomic-consolidation",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-11-08-316z-catalog-atomic-consolidation",
+      "changeId": "catalog-atomic-consolidation",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.4612432,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-14-54-506z-catalog-fixture-identity-repair",
+      "changeId": "catalog-fixture-identity-repair",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-14-54-506z-catalog-fixture-identity-repair",
+      "changeId": "catalog-fixture-identity-repair",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5175018,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-18-45-750z-catalog-verification",
+      "changeId": "catalog-verification",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-18-45-750z-catalog-verification",
+      "changeId": "catalog-verification",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.01478899,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-20-10-165z-catalog-delivery",
+      "changeId": "catalog-delivery",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-20-10-165z-catalog-delivery",
+      "changeId": "catalog-delivery",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.01877629,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-22-06-302z-catalog-delivery-fix-runtime-and-replay-docs",
+      "changeId": "catalog-delivery-fix-runtime-and-replay-docs",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-22-06-302z-catalog-delivery-fix-runtime-and-replay-docs",
+      "changeId": "catalog-delivery-fix-runtime-and-replay-docs",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.0206504,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs",
+      "changeId": "catalog-real-tsc-and-document-all-sdd-replay-runs",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs",
+      "changeId": "catalog-real-tsc-and-document-all-sdd-replay-runs",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5832915,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-28-11-223z-catalog-readme-list-exact-sdd-run-commands-and-log-paths",
+      "changeId": "catalog-readme-list-exact-sdd-run-commands-and-log-paths",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-28-11-223z-catalog-readme-list-exact-sdd-run-commands-and-log-paths",
+      "changeId": "catalog-readme-list-exact-sdd-run-commands-and-log-paths",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.01545891,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+      "changeId": "catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-29-34-795z-catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+      "changeId": "catalog-readme-enumerate-all-sdd-runs-and-fix-root-command",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.02252837,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism",
+      "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism",
+      "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5914406,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-35-37-413z-catalog-fix-boundary-limits-elapsed-and-determinism",
+      "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 1.386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-35-37-413z-catalog-fix-boundary-limits-elapsed-and-determinism",
+      "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.7397733,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-40-19-277z-catalog-fix-boundary-limits-elapsed-and-determinism",
+      "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-40-19-277z-catalog-fix-boundary-limits-elapsed-and-determinism",
+      "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.01664424,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests",
+      "changeId": "catalog-complete-error-exit-property-and-lock-tests",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.1386432,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests",
+      "changeId": "catalog-complete-error-exit-property-and-lock-tests",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.02372857,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t17-32-12-069z-portable-project-history-tutorial",
+      "changeId": "portable-project-history-tutorial",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t17-32-12-069z-portable-project-history-tutorial",
+      "changeId": "portable-project-history-tutorial",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.2417218,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-06t17-37-06-001z-portable-project-history-tutorial",
+      "changeId": "portable-project-history-tutorial",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-06t17-37-06-001z-portable-project-history-tutorial",
+      "changeId": "portable-project-history-tutorial",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.3537882,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    }
+  ],
+  "knownActualUsd": 5.293551669999999,
+  "unavailableEntries": 20
+}

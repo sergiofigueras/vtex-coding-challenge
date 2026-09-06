@@ -1,0 +1,28 @@
+Implemented **change ID `catalog-cli-input`** for **SDD-001** and **SDD-002**.
+
+### Changed files
+- `src/cli.ts` — executable CLI argument parsing, exit-code handling, explicit paths, output modes.
+- `src/domain/input.ts` — closed-schema JSON validation, bounded diagnostics, duplicate/conflict policy, length limits.
+- `src/application/consolidation.ts` — deterministic input-planning summary boundary.
+- `src/adapters/{fs-input,sqlite-catalog,reporter}.ts` — filesystem, read-only SQLite validation, reporting adapters.
+- `test/cli.test.ts` — help/flag/exit/JSON/dry-run-byte-identity coverage.
+- `test/input.test.ts` — validation, duplicate/conflict, hostile-string, and bounded-diagnostic coverage.
+- `test/fixture.integration.ts` — opt-in private input fixture validation.
+- `package.json`, `package-lock.json` — CLI bin, test scripts, npm lockfile.
+- `README.md` — CLI contract, documented 1,000-character input limit, test commands.
+- `docs/sdd/manifest.json`
+- `docs/sdd/specs/01-system-boundary-and-interface.md`
+- `docs/sdd/specs/02-input-contract-and-validation.md`
+
+`SDD-001` and `SDD-002` are now marked `verified`. I did **not** alter `docs/sdd/traceability.json`: its validator rejects an evidence field, and its requirement-to-spec mappings already covered these specs.
+
+### Evidence
+- `npm test` — **8 passing** public CLI and validation tests.
+- `npm run test:fixture` — **1 passing** private fixture-validation test.
+- `npm run check` — **passed** public tests and `sdd:validate`.
+
+### Decisions / remaining scope
+- This slice validates and plans consolidation only. Actual migrations, identity resolution, and database mutation remain intentionally deferred to the unrequested SDD-003–SDD-005 specifications.
+- The supplied fixture contains one seller-entry repetition whose name differs only under deterministic accent/case/punctuation normalization; it is treated as duplicate input while original values remain preserved.
+
+No commits or pushes were made.

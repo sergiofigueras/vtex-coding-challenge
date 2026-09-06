@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests",
+  "source": "runs/2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "12fcdb6260ff5134df5a9c7c83782fda719399fa",
+    "changeId": "catalog-complete-error-exit-property-and-lock-tests",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 0.1386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-luna",
+    "preparedAt": "2026-09-06T16:42:30.350Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "low",
+    "route": "economy",
+    "runId": "2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-006",
+      "SDD-007"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "d9411780-6b0a-45e8-ba90-68992b3b4ba3",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/5014d7182abb1e90c1e520a44c9aba1396de3fc7ae03d1005ec8518aa8dc92cd",
+      "sha256": "5014d7182abb1e90c1e520a44c9aba1396de3fc7ae03d1005ec8518aa8dc92cd",
+      "bytes": 1435,
+      "source": "runs/2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/0ed31455455b42cc4a49af3c5e4f794bfd488fac291f161aac09932ca07f4f43",
+      "sha256": "0ed31455455b42cc4a49af3c5e4f794bfd488fac291f161aac09932ca07f4f43",
+      "bytes": 1018,
+      "source": "runs/2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-42-30-349z-catalog-complete-error-exit-property-and-lock-tests/session"
+    }
+  ]
+}

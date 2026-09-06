@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs",
+  "source": "runs/2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "12fcdb6260ff5134df5a9c7c83782fda719399fa",
+    "changeId": "catalog-real-tsc-and-document-all-sdd-replay-runs",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T16:23:49.099Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001",
+      "SDD-007",
+      "SDD-008"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "0a7cab4a-2a79-4928-8814-8bcee9328043",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/edcbd95001e06f5b663608f951e0e275347955d1749636503b2dd563d7d78f6f",
+      "sha256": "edcbd95001e06f5b663608f951e0e275347955d1749636503b2dd563d7d78f6f",
+      "bytes": 1519,
+      "source": "runs/2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/22d1e737e9d92cbacbb3d13d1662062ddabdd8432b80648d533027d2ada2e02f",
+      "sha256": "22d1e737e9d92cbacbb3d13d1662062ddabdd8432b80648d533027d2ada2e02f",
+      "bytes": 1721,
+      "source": "runs/2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-23-49-097z-catalog-real-tsc-and-document-all-sdd-replay-runs/session"
+    }
+  ]
+}

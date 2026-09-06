@@ -1,0 +1,18 @@
+# SDD delivery task
+
+Project: catalog-consolidation
+Change ID: catalog-cli-input
+Requested specifications: SDD-001, SDD-002
+
+Use the repository skill `sdd-delivery` and obey AGENTS.md.
+Implement only the requested specification(s). Read dependencies for context but do not expand their implementation scope unless required by a stated acceptance criterion.
+Do not commit, push, or expose credentials. The outer runner records model cost after the Harness process exits.
+Run the narrow checks while iterating, then `npm run check` before reporting completion.
+Update the requested spec status and `docs/sdd/traceability.json` only when evidence exists.
+
+Specification reading order:
+- SDD-000: docs/sdd/specs/00-source-brief-and-requirement-ledger.md (CONTEXT ONLY)
+- SDD-001: docs/sdd/specs/01-system-boundary-and-interface.md (IMPLEMENT)
+- SDD-002: docs/sdd/specs/02-input-contract-and-validation.md (IMPLEMENT)
+
+Deliver a concise result naming changed files, proof commands, unresolved decisions, and the change ID.

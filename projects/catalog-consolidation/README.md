@@ -1,6 +1,6 @@
 # VTEX Catalog Consolidation
 
-Deterministic, model-free TypeScript CLI for consolidating seller product entries into a SQLite catalog. The runtime has no network or model dependency; source snapshots are private inputs and are never committed.
+Deterministic, model-free TypeScript CLI for consolidating seller product entries into a SQLite catalog. The runtime has no network or model dependency; source snapshots are private inputs and are never committed. See the Portuguese [tutorial](TUTORIAL.md) for the evaluator/maintainer evidence defense and [public SDD history](.sdd/README.md) for the reviewed portable snapshot.
 
 ## Prerequisites and clean-room setup
 
@@ -21,7 +21,7 @@ npm run sdd:validate
 npm run check
 ```
 
-`npm ci` plus the commands above is the clean-room reproduction. `typecheck` invokes the pinned TypeScript compiler (`tsc --project tsconfig.json`) in strict, no-emit mode across production and test sources; `build` is the same compile gate, while `lint` runs Node's TypeScript syntax check. The runtime intentionally has no transpiler or model dependency. `npm test` is deterministic and offline after installation. `npm run check` is the complete project gate: build/typecheck, lint, public tests, and SDD validation. From the repository root, run `npm ci` and `npm --prefix projects/catalog-consolidation run check`; the project is intentionally not declared as a root npm workspace.
+`npm ci` plus the commands above is the clean-room reproduction. `typecheck` invokes the pinned TypeScript compiler (`tsc --project tsconfig.json`) in strict, no-emit mode across production and test sources; `build` is the same compile gate, while `lint` runs Node's TypeScript syntax check. The runtime intentionally has no transpiler or model dependency. `npm test` is deterministic and offline after installation. `npm run check` is the complete project gate: build/typecheck, lint, public tests, and SDD validation. From the repository root, install both dependency sets before checking the project: `npm ci && npm --prefix projects/catalog-consolidation ci`, then run `npm --prefix projects/catalog-consolidation run check`; the project is intentionally not declared as a root npm workspace. Root `npm run check` checks engine/SDD infrastructure and does not provide this project's `tsc`.
 
 ## Source ingestion and fixture acceptance
 
@@ -42,7 +42,10 @@ Run each replay independently from this project directory. They are deterministi
 npm run check                         # public compiler, syntax, test, and SDD-ledger replay
 npm run sources:ingest && npm run test:fixture  # hash-verified private-fixture replay
 npm run sdd:validate                  # manifest and traceability replay only
+npm run sdd:history:validate -- --snapshot catalog-consolidation-pre-portable-history-2026-09-06
 ```
+
+The last command validates the reviewed public snapshot described in [`.sdd/README.md`](.sdd/README.md). `sdd:history:create` is available only for an explicitly authorized *new* snapshot; it must never be used to regenerate or modify the immutable reviewed one.
 
 [`docs/sdd/evidence-index.md`](docs/sdd/evidence-index.md) lists the criterion-level command and test name for every product SDD, including fixture-only proof. Do not run `sdd:run` as a validation substitute: it is an engineering-workflow command, not a reproducible acceptance-evidence command.
 
@@ -56,7 +59,7 @@ npm run sdd:run -- --change catalog-readme-enumerate-all-sdd-runs-and-fix-root-c
 npm run cost:report
 ```
 
-Each invocation creates a timestamped run directory under `.sdd/runs/<run-id>/` in this project. The exact artifacts are `.sdd/runs/<run-id>/prompt.md`, `manifest.json`, `stdout.txt`, `stderr.txt`, and (after `sdd:run`) `result.json`. The run command also records the measured event in `../../engine/cost/ledger.jsonl`; `npm run cost:report` reads that engine ledger and prints the local report. `.sdd/` and the engine ledger are local delivery state, not public application artifacts.
+Each invocation creates a timestamped run directory under `.sdd/runs/<run-id>/` in this project. The exact artifacts are `.sdd/runs/<run-id>/prompt.md`, `manifest.json`, `stdout.txt`, `stderr.txt`, and (after `sdd:run`) `result.json`. The run command also records the measured event in `../../engine/cost/ledger.jsonl`; `npm run cost:report` reads that engine ledger and prints the local report. Raw operational `.sdd/` state remains private, but the reviewed public exceptions are [`.sdd/README.md`](.sdd/README.md) and [`.sdd/history/**`](.sdd/history/catalog-consolidation-pre-portable-history-2026-09-06); do not alter the immutable snapshot.
 
 For auditability, the complete local SDD run inventory at this delivery is:
 

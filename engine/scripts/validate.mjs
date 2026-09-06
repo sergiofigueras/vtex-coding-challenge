@@ -289,7 +289,9 @@ async function validateNoSecrets(projects) {
     /OPENAI_API_KEY\s*=\s*(?!replace-me)[^\s#]+/,
   ]
   for (const path of listed.stdout.split(/\r?\n/).filter(Boolean)) {
-    if (/\.pdf$/i.test(path) || /\.(?:db|sqlite|sqlite3)$/i.test(path) || privateSourceNames.has(basename(path)) || /(^|\/)\.sdd\//.test(path)) {
+    const sddPath = /(^|\/)\.sdd\/(.*)$/.exec(path)
+    const allowedHistory = sddPath && (sddPath[2] === 'README.md' || /^history\/[a-z0-9][a-z0-9-]{2,62}\//.test(sddPath[2]))
+    if (/\.pdf$/i.test(path) || /\.(?:db|sqlite|sqlite3)$/i.test(path) || privateSourceNames.has(basename(path)) || (sddPath && !allowedHistory)) {
       fail(`${path}: private source or generated Harness state must not be tracked`)
     }
     if (/\.(?:db|png|jpg|jpeg|gif|pdf)$/.test(path)) continue

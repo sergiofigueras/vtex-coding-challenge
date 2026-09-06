@@ -82,4 +82,14 @@
 | AC-008-03 | `README.md` and ADRs 0001–0003 explain identity, schema preservation, transaction/idempotency, security, AI governance, cost boundaries, limitations, and rejected alternatives. |
 | AC-008-04 | `npm run sdd:validate` validates manifest/traceability links; this index provides evidence for every SDD-000 through SDD-008 criterion. The README records exact `sdd:prepare`, `sdd:run`, and `cost:report` commands, enumerates every local `.sdd/runs/<run-id>/` directory, and identifies its per-run log paths. The root reproduction command is `npm --prefix projects/catalog-consolidation run check`; the delivery operator records `git rev-parse HEAD` before handoff. |
 
+## SDD-009: Portable project history and Portuguese tutorial
+
+| Acceptance criterion | Reproducible evidence |
+|---|---|
+| AC-009-01 | `npm run sdd:history:validate -- --snapshot catalog-consolidation-pre-portable-history-2026-09-06` validates the immutable cutoff `2026-09-06T17:58:48.000Z`, 25 runs, 17 sessions, semantic capture and retry coverage. The regenerated manifest reports 86 published files and SHA-256 `d1a417f58a0e955bdd1904654c2f0580a6eef24b7ae58b70fe493b2ab836f390`. |
+| AC-009-02 | The same validator verifies hashes, source-to-published mappings and exclusion accounting. Safe audit found no snapshot symlinks, absolute `/Users/` paths, credentials, PDFs, raw SQLite/ProductEntry artifacts or encrypted replay payloads; inventory/exclusion metadata can name excluded source classes without publishing them. |
+| AC-009-03 | `TUTORIAL.md` sections 1–4 are Portuguese evidence for authority separation, requirement→decision→spec→implementation→test map, four Mermaid diagrams, deterministic consolidator/security behavior, observed fixture counts, Harness/Cordis architecture, scoped arXiv citation, OpenAI routing, costs, and SDD-095 recovery. |
+| AC-009-04 | `TUTORIAL.md` sections 5–6 gives exact clean-clone installation (`npm ci` and `npm --prefix projects/catalog-consolidation ci` from the root, or `npm ci` after changing into the project), separate root infrastructure and project checks, public/fixture tests, CLI, SDD prepare/run, transcript inspection, cost report and project-local history create/validate commands, plus a deterministic SDD-004-bounded exercise verified by `node --test test/product-identity.test.ts`. |
+| AC-009-05 | `TUTORIAL.md` section 7 and `.sdd/README.md` document the identity, fixture, confidentiality, cutoff, observable/private-reasoning and provider-cost limits. `npm run sdd:history:validate -- --snapshot catalog-consolidation-pre-portable-history-2026-09-06` passes offline without model or private input. |
+
 The source manifest and traceability ledger use a closed schema and do not accept evidence fields; this separate index preserves the criterion-to-command linkage without weakening their validation contract.

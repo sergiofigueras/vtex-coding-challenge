@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t17-37-06-001z-portable-project-history-tutorial",
+  "source": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "6439bc7e97f5b97adf5a27ae709349f4fd4c92fd",
+    "changeId": "portable-project-history-tutorial",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 150000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 49152,
+      "uncachedInputTokens": 210000
+    },
+    "estimatedUsd": 1.039824,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T17:37:06.002Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t17-37-06-001z-portable-project-history-tutorial",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-009"
+    ]
+  },
+  "result": {
+    "accounting": {
+      "cumulativeKnownActualUsd": 0.3537882,
+      "knownActualAttempts": 1,
+      "reservations": [
+        null
+      ],
+      "unreconciledAttempts": 0
+    },
+    "attempts": [
+      {
+        "accountingStatus": "standard-assumed",
+        "actualUsd": 0.3537882,
+        "classification": "terminal",
+        "costEntryId": "5666290c-4c09-4f99-88cd-14f9cbffc2df",
+        "metadata": {
+          "accountingStatus": "standard-assumed",
+          "actualUsd": 0.3537882,
+          "costEntryId": "5666290c-4c09-4f99-88cd-14f9cbffc2df",
+          "model": "gpt-5.6-terra",
+          "outcome": "completed",
+          "route": "default",
+          "stderrPath": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/attempt-1.stderr.txt",
+          "stdoutPath": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/attempt-1.stdout.txt",
+          "success": true
+        },
+        "model": "gpt-5.6-terra",
+        "number": 1,
+        "outcome": "completed",
+        "providerDelayMs": null,
+        "route": "default",
+        "stderrPath": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/attempt-1.stderr.txt",
+        "stdoutPath": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/attempt-1.stdout.txt",
+        "success": true
+      }
+    ],
+    "changeId": "portable-project-history-tutorial",
+    "exitCode": 0,
+    "nextAction": null,
+    "outcome": "completed",
+    "projectId": "catalog-consolidation",
+    "rateLimitFallback": "economy",
+    "requestedRoute": "default",
+    "runId": "2026-09-06t17-37-06-001z-portable-project-history-tutorial",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-009"
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/437d6bf65f45031c1474b1ab2611347cf47ac62d073aa075d0a0135e772d654b",
+      "sha256": "437d6bf65f45031c1474b1ab2611347cf47ac62d073aa075d0a0135e772d654b",
+      "bytes": 1576,
+      "source": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/b4ce84c053e4f6c7fbe46eb6f4c0b40bb3d219dab9a6942467499198c5fecaf6",
+      "sha256": "b4ce84c053e4f6c7fbe46eb6f4c0b40bb3d219dab9a6942467499198c5fecaf6",
+      "bytes": 2106,
+      "source": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t17-37-06-001z-portable-project-history-tutorial/session"
+    }
+  ]
+}

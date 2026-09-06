@@ -36,11 +36,25 @@ npm run project:sources -- --project example-service
 npm run project:prepare -- --project example-service --change first-slice --spec SDD-001
 npm run project:run -- --project example-service --change first-slice --spec SDD-001
 npm run project:cost -- --project example-service
+npm run project:history:create -- --project example-service --snapshot review-2026 --cutoff 2026-09-06T00:00:00Z
+npm run project:history:validate -- --project example-service --snapshot review-2026
 ```
 
 Project creation is model-free and refuses to overwrite an existing directory. It creates a valid empty manifest and traceability graph; write and register product specs before preparing a run.
 
 `project:prepare` validates the engine and selected project, computes a dependency-ordered prompt, and writes it under the project's ignored `.sdd/` directory without calling a model. `project:run` performs the same preparation, reserves the OpenAI budget, starts pinned Harness with the project directory as its working/sandbox root, exposes the engine-owned skill, settles provider usage, and appends a project-attributed cost event.
+
+### Bounded rate-limit recovery
+
+The catalog application runtime is deterministic and model-free: it never calls OpenAI and this recovery feature does not alter it. Recovery applies only to an interrupted engine `project:run`. The default policy makes at most three total provider attempts, waits at most 60 seconds per recognized delayed `429`/`RATE_LIMIT`, preserves the existing tree and run lock, and writes per-attempt plus aggregate logs and `result.json` under `.sdd/runs/<run-id>/`. Authentication, quota, other HTTP failures, transport, validation, budget, reconciliation, and unknown failures are terminal.
+
+Observe the run output and its result JSON; after capacity is available, invoke the same command again with the identical project/change/spec scope. An operator may reserve the final attempt for the only permitted fallback (Terra/default to economy/Luna) explicitly:
+
+```bash
+npm run project:run -- --project example-service --change first-slice --spec SDD-001 --route default --rate-limit-fallback economy
+```
+
+No fallback is automatic, it is rejected for economy or escalation routes, and rate-limit recovery never selects Sol. Exhaustion exits `75` with an actionable resume/capacity/fallback message; Ctrl-C exits `130` and terminates an active child with SIGTERM followed by the configured grace-period SIGKILL only if necessary. Provider availability is not promised. Usage is isolated by durable event identity per attempt, including appends to an existing session file.
 
 ## Engine verification
 

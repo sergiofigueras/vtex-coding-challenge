@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t15-51-00-203z-catalog-cli-input",
+  "source": "runs/2026-09-06t15-51-00-203z-catalog-cli-input",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "261480c865b6a29f2b958eca03f0a2d30b996450",
+    "changeId": "catalog-cli-input",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T15:51:00.204Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t15-51-00-203z-catalog-cli-input",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001",
+      "SDD-002"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "760e207d-627f-4b90-83f6-c6cd0a0a09f1",
+    "exit": {
+      "code": 1,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/5f86b7af6c70726fdce8309b8cc963b82e159476df3834cae03e80b34464dd8b",
+      "sha256": "5f86b7af6c70726fdce8309b8cc963b82e159476df3834cae03e80b34464dd8b",
+      "bytes": 1018,
+      "source": "runs/2026-09-06t15-51-00-203z-catalog-cli-input/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t15-51-00-203z-catalog-cli-input/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/b01b1a11b2a0585bd98245b8949b66f7931742706fa1f5e60886934fe2bfa074",
+      "sha256": "b01b1a11b2a0585bd98245b8949b66f7931742706fa1f5e60886934fe2bfa074",
+      "bytes": 3417,
+      "source": "runs/2026-09-06t15-51-00-203z-catalog-cli-input/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-51-00-203z-catalog-cli-input/session"
+    }
+  ]
+}

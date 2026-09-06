@@ -41,6 +41,26 @@
       "dependsOn": ["SDD-090", "SDD-091", "SDD-092"],
       "requirements": ["ENG-USR-005", "ENG-USR-006"],
       "acceptanceCriteria": ["AC-093-01", "AC-093-02", "AC-093-03", "AC-093-04", "AC-093-05"]
+    },
+    {
+      "id": "SDD-094",
+      "title": "Portable SDD-history export and validation",
+      "path": "docs/sdd/specs/94-portable-sdd-history.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090", "SDD-091", "SDD-092", "SDD-093"],
+      "requirements": ["ENG-USR-007"],
+      "acceptanceCriteria": ["AC-094-01", "AC-094-02", "AC-094-03", "AC-094-04", "AC-094-05"]
+    },
+    {
+      "id": "SDD-095",
+      "title": "Bounded OpenAI rate-limit resilience for SDD delivery",
+      "path": "docs/sdd/specs/95-rate-limit-resilience.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090", "SDD-091", "SDD-092", "SDD-093", "SDD-094"],
+      "requirements": ["ENG-USR-008"],
+      "acceptanceCriteria": ["AC-095-01", "AC-095-02", "AC-095-03", "AC-095-04", "AC-095-05", "AC-095-06", "AC-095-07"]
     }
   ]
 }

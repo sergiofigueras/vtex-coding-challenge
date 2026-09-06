@@ -1,0 +1,30 @@
+**Change ID:** `portable-project-history-tutorial`  
+**Requested spec:** SDD-009
+
+### Result
+Blocked by an external prerequisite / scope conflict. No project files were changed, and SDD-009 remains `ready`; `docs/sdd/traceability.json` was not changed because no acceptance evidence exists.
+
+The required engine export command failed before producing a snapshot:
+
+```bash
+npm --prefix ../../engine run project:history:create -- \
+  --project catalog-consolidation \
+  --snapshot catalog-consolidation-pre-portable-history-2026-09-06 \
+  --cutoff 2026-09-06T16:30:00.000Z
+```
+
+It fails because the engine history exporter attempts to read a missing `result.json` from a historical SDD run. Therefore it cannot create the required complete semantic history snapshot or baseline reconciliation for AC-009-01/02/05.
+
+Fixing that exporter behavior is an `engine` / SDD-094 change, which this project request and `AGENTS.md` explicitly do not authorize. Creating `TUTORIAL.md` alone would not provide honest evidence for the required portable snapshot criteria.
+
+### Files changed
+None.
+
+### Proof commands
+- ✅ `npm run sdd:validate`
+- ✅ `npm run check`
+  - Typecheck, syntax check, 30 public tests, and SDD validation all passed.
+- ❌ History-export command above, blocked by the missing historical result artifact.
+
+### Unresolved decision / required follow-up
+Repair or clarify engine SDD-094 history-export handling of historical runs that have manifests but lack `result.json`; it must either capture/reconcile those records safely or produce a documented exclusion accounting compatible with SDD-009’s declared 23-run/15-session baseline. After that engine prerequisite is verified, re-run the history create/validate commands, add the snapshot evidence, create Portuguese `TUTORIAL.md`, and then update SDD-009 status and evidence index.

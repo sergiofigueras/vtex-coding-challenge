@@ -1,0 +1,35 @@
+Implemented change ID `catalog-real-tsc-and-document-all-sdd-replay-runs` for requested SDD-001, SDD-007, and SDD-008.
+
+### Changed files
+- `package.json` — added pinned `typescript@5.9.3`; made `typecheck` use real `tsc`; expanded complete gate.
+- `package-lock.json` — recorded pinned TypeScript compiler.
+- `tsconfig.json` — added strict no-emit NodeNext configuration covering `src/` and `test/`.
+- `src/domain/input.ts` — made validated row construction type-safe under real TypeScript checking.
+- `test/fixture.integration.ts`
+- `test/identity.fixture.integration.ts` — corrected assertion message typing for strict `tsc`.
+- `README.md` — documented real TypeScript compilation and public/fixture/SDD evidence replay commands.
+- `docs/sdd/evidence-index.md` — added criterion-level evidence for SDD-001 through SDD-003 and updated clean-room compiler evidence.
+
+The requested specs were already marked `verified`; no status or traceability-ledger change was needed. Evidence now supports the replay/documentation requirements.
+
+### Proof commands
+Passed:
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run sources:ingest && npm run test:fixture
+npm run sdd:validate
+npm run check
+```
+
+Also passed the required root gate:
+```bash
+npm run check
+```
+from the repository root.
+
+Fixture replay hash-verified both private sources and passed all 4 fixture integration tests. Project gate passed 21 public tests plus strict TypeScript, syntax, and SDD validation checks. Root gate passed configuration, all-project SDD validation, and engine tests.
+
+### Unresolved decisions
+None for this change. I preserved pre-existing working-tree edits, including the engine cost ledger, and did not commit or push.

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t15-09-03-881z-reusable-engine-smoke",
+  "source": "runs/2026-09-06t15-09-03-881z-reusable-engine-smoke",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "87a701335385db260352855a8473c82a559dfeec",
+    "changeId": "reusable-engine-smoke",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T15:09:03.883Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t15-09-03-881z-reusable-engine-smoke",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/1ff1bd671b81f36d8dccf850f5d82aabc35a278a6a6895a37b4ff1aea71b95c9",
+      "sha256": "1ff1bd671b81f36d8dccf850f5d82aabc35a278a6a6895a37b4ff1aea71b95c9",
+      "bytes": 939,
+      "source": "runs/2026-09-06t15-09-03-881z-reusable-engine-smoke/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-09-03-881z-reusable-engine-smoke/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-09-03-881z-reusable-engine-smoke/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-09-03-881z-reusable-engine-smoke/session"
+    }
+  ]
+}

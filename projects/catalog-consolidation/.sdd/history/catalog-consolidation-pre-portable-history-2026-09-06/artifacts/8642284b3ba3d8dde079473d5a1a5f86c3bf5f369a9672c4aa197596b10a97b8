@@ -1,0 +1,30 @@
+Implemented change **`catalog-readme-list-exact-sdd-run-commands-and-log-paths`** for **SDD-008**.
+
+### Changed files
+- `README.md`
+  - Added exact `sdd:prepare`, `sdd:run`, and `cost:report` commands.
+  - Documented required change/spec arguments.
+  - Documented run artifact paths:
+    - `.sdd/runs/<run-id>/prompt.md`
+    - `manifest.json`
+    - `stdout.txt`
+    - `stderr.txt`
+    - `result.json`
+  - Documented the engine cost ledger path.
+- `docs/sdd/evidence-index.md`
+  - Updated AC-008-04 evidence to include the exact SDD command and log-path documentation.
+
+No status changes were necessary: SDD-008 was already `verified`, and existing traceability evidence remained valid.
+
+### Proof commands
+- `npm run sdd:validate` — passed.
+- `npm run check` — passed:
+  - Typecheck/build
+  - Lint
+  - 21 tests
+  - SDD validation
+
+### Unresolved decisions
+- None. SDD Harness commands remain credential-dependent engineering workflow commands and are explicitly separate from the offline release gate.
+
+The public tree and existing repository state were not committed or pushed.

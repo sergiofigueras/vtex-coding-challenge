@@ -1,0 +1,37 @@
+file://<WORKSPACE>/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1511
+		throw new Error(`${binName}: ${stage}: ${detail}${stack}`, { cause });
+		      ^
+
+Error: dsh: plugin tree failed to load: failed to apply loader entry include (cordis:include): failed to apply loader entry permission (@deepseek-ai/dsh-permission-presets): permission: composed sandbox and approval defaults match no preset; configure defaultPreset explicitly
+Error: permission: composed sandbox and approval defaults match no preset; configure defaultPreset explicitly
+    at new PermissionPresetService (file://<WORKSPACE>/node_modules/@deepseek-ai/dsh-permission-presets/lib/index.js:112:41)
+    at Fiber.execute (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis/lib/index.js:1067:24)
+    at file://<WORKSPACE>/node_modules/@deepseek-ai/cordis/lib/index.js:1141:34
+    at file://<PROJECT>/.sdd/dsh-home/profiles/headless/#permission
+    at file://<PROJECT>/.sdd/dsh-home/profiles/headless/#include
+    at boot (file://<WORKSPACE>/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:1511:9)
+    at async runProfile (file://<WORKSPACE>/node_modules/@deepseek-ai/dsh/lib/profile-boot-BTzzdrGY.js:261:14)
+    at async file://<WORKSPACE>/node_modules/@deepseek-ai/dsh/lib/bin.js:130:3 {
+  [cause]: Error: failed to apply loader entry include (cordis:include): failed to apply loader entry permission (@deepseek-ai/dsh-permission-presets): permission: composed sandbox and approval defaults match no preset; configure defaultPreset explicitly
+      at updateError (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:309:9)
+      at Entry._init (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:529:10) {
+    [cause]: Error: failed to apply loader entry permission (@deepseek-ai/dsh-permission-presets): permission: composed sandbox and approval defaults match no preset; configure defaultPreset explicitly
+        at updateError (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:309:9)
+        at Entry._await (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:516:10)
+        at async Entry.init (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:510:3)
+        at async Entry.update (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:426:37)
+        at async EntryGroup.create (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:65:4)
+        at async Promise.allSettled (index 35)
+        at async EntryGroup.update (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis-plugin-loader/lib/index.js:97:21)
+        at async Include._apply (file://<WORKSPACE>/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js:240:3) {
+      [cause]: Error: permission: composed sandbox and approval defaults match no preset; configure defaultPreset explicitly
+          at new PermissionPresetService (file://<WORKSPACE>/node_modules/@deepseek-ai/dsh-permission-presets/lib/index.js:112:41)
+          at Fiber.execute (file://<WORKSPACE>/node_modules/@deepseek-ai/cordis/lib/index.js:1067:24)
+          at file://<WORKSPACE>/node_modules/@deepseek-ai/cordis/lib/index.js:1141:34
+          at file://<PROJECT>/.sdd/dsh-home/profiles/headless/#permission
+          at file://<PROJECT>/.sdd/dsh-home/profiles/headless/#include
+    }
+  }
+}
+
+Node.js v26.0.0

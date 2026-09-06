@@ -12,6 +12,7 @@ DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model
 - Pinned catalog fixture URLs, byte sizes, and SHA-256 hashes; downloads stay private under the selected project's `.sdd/`.
 - DeepSeek Harness `0.1.2-rc.1`, a project-confined headless runner, an engine-owned SDD skill, and an offline configuration smoke test.
 - OpenAI-only routing: Terra is the default, Luna is the economy model, and Sol is escalation-only.
+- A deterministic portable-history exporter and offline validator; only reviewed `.sdd/history/**` snapshots (and `.sdd/README.md`) may be tracked, never raw runtime state.
 - Pre-call and live budget gates, provider-usage extraction, integer price arithmetic, and an append-only hash-chained project/change ledger.
 
 ## Workspace boundary
@@ -245,11 +246,15 @@ The paper's guarantees are conditional, not magic cleanup:
 
 ```bash
 npm ci
+npm --prefix projects/catalog-consolidation ci
 npm run dsh:config
 npm run sources:ingest
 npm run check
+npm --prefix projects/catalog-consolidation run check
 npm run cost:report
 ```
+
+`npm ci` installs the root/engine dependencies; the separate `npm --prefix projects/catalog-consolidation ci` installs the intentionally non-workspace project's compiler and runtime dependencies. Root `npm run check` verifies engine/SDD infrastructure. Run the project check separately as shown above.
 
 The short commands above are compatibility aliases for `catalog-consolidation`. `sources:ingest` downloads that project's public JSON and SQLite snapshots, verifies their pinned hashes, profiles them deterministically, and stores them only under `projects/catalog-consolidation/.sdd/inputs`. CI stays offline and does not need an API key.
 
@@ -269,6 +274,8 @@ npm run project:sources -- --project example-service
 npm run project:prepare -- --project example-service --change first-slice --spec SDD-001
 npm run project:run -- --project example-service --change first-slice --spec SDD-001
 npm run project:cost -- --project example-service
+npm run project:history:create -- --project example-service --snapshot review-2026 --cutoff 2026-09-06T00:00:00Z
+npm run project:history:validate -- --project example-service --snapshot review-2026
 ```
 
 See [`engine/README.md`](engine/README.md) for the reusable command contract. Project creation, validation, preparation, source ingestion, and cost reporting make no model call. Only `project:run` invokes OpenAI through Harness.

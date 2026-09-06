@@ -11,7 +11,7 @@
     "engine"
   ],
   "scripts": {
-    "bootstrap": "npm ci && npm run sources:ingest",
+    "bootstrap": "npm ci && npm --prefix projects/catalog-consolidation ci && npm run sources:ingest",
     "dsh:config": "npm --workspace @sdd/delivery-engine run dsh:config",
     "engine:test": "npm --workspace @sdd/delivery-engine test",
     "project:create": "npm --workspace @sdd/delivery-engine run project:create --",
@@ -21,6 +21,8 @@
     "project:run": "npm --workspace @sdd/delivery-engine run sdd:run --",
     "project:cost-record": "npm --workspace @sdd/delivery-engine run cost:record --",
     "project:cost": "npm --workspace @sdd/delivery-engine run cost:report --",
+    "project:history:create": "npm --workspace @sdd/delivery-engine run project:history:create --",
+    "project:history:validate": "npm --workspace @sdd/delivery-engine run project:history:validate --",
     "sources:ingest": "npm run project:sources -- --project catalog-consolidation",
     "sdd:prepare": "npm run project:prepare -- --project catalog-consolidation",
     "sdd:run": "npm run project:run -- --project catalog-consolidation",

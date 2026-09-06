@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t14-42-24-497z-security-escalation",
+  "source": "runs/2026-09-06t14-42-24-497z-security-escalation",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "c498dbf193ab36ed7877cd8766a46962d46d4413",
+    "changeId": "security-escalation",
+    "currency": "USD",
+    "escalationReason": "Independent security adjudication",
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 2.51072,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-sol",
+    "preparedAt": "2026-09-06T14:42:24.498Z",
+    "projectId": "catalog-consolidation",
+    "provenance": {
+      "attribution": "selected-project-legacy",
+      "originalManifestSha256": "e7bc8f1a54c37a5ee82869ed6702cb197f3fe57b20feaf4567af4cb76dca033f"
+    },
+    "provider": "openai",
+    "reasoningEffort": "high",
+    "route": "escalation",
+    "runId": "2026-09-06t14-42-24-497z-security-escalation",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-006"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/3235ff55c54eb40b6f3c601b8f01aa0ed18ae9f926aa84c771c67dd6ddac15f4",
+      "sha256": "3235ff55c54eb40b6f3c601b8f01aa0ed18ae9f926aa84c771c67dd6ddac15f4",
+      "bytes": 1297,
+      "source": "runs/2026-09-06t14-42-24-497z-security-escalation/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-24-497z-security-escalation/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-24-497z-security-escalation/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-24-497z-security-escalation/session"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t14-42-15-908z-documentation-formatting",
+  "source": "runs/2026-09-06t14-42-15-908z-documentation-formatting",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "c498dbf193ab36ed7877cd8766a46962d46d4413",
+    "changeId": "documentation-formatting",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 0.1386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-luna",
+    "preparedAt": "2026-09-06T14:42:15.910Z",
+    "projectId": "catalog-consolidation",
+    "provenance": {
+      "attribution": "selected-project-legacy",
+      "originalManifestSha256": "01da998a808a3a28b5b04c3a461c24f090935d6fcae4f53eec94d1ba2bbd58dd"
+    },
+    "provider": "openai",
+    "reasoningEffort": "low",
+    "route": "economy",
+    "runId": "2026-09-06t14-42-15-908z-documentation-formatting",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-008"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/2adbf1a4234494859f36776163fa28eb1c40e15ff4603ce4da3c733af279bc02",
+      "sha256": "2adbf1a4234494859f36776163fa28eb1c40e15ff4603ce4da3c733af279bc02",
+      "bytes": 1451,
+      "source": "runs/2026-09-06t14-42-15-908z-documentation-formatting/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-15-908z-documentation-formatting/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-15-908z-documentation-formatting/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t14-42-15-908z-documentation-formatting/session"
+    }
+  ]
+}

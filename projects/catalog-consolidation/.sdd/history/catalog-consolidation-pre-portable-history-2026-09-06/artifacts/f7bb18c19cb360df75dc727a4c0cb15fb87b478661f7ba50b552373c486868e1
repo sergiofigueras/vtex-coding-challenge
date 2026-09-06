@@ -1,0 +1,43 @@
+Change ID: `catalog-atomic-consolidation`  
+Requested specs: `SDD-005`, `SDD-006`
+
+Implemented atomic consolidation and safe operational behavior:
+
+- Added transactional consolidation, deterministic work ordering, canonical identity lookup/insertion, seller-link idempotency, conflict detection, foreign-key verification, and dry-run rollback.
+- Refactored migration internals so migration and import share one `BEGIN IMMEDIATE` transaction.
+- Added bounded input-byte handling, SQLite busy timeout, stable expected-error codes, JSON expected-error envelopes, generated run IDs, redacted database path output, and debug-only stack emission.
+- Added public consolidation/rollback/idempotency/hostile-text tests and expanded CLI coverage.
+- Updated README, SDD statuses to `implemented`, manifest statuses, and evidence index.
+- Did not modify `docs/sdd/traceability.json`: its closed schema intentionally does not accept evidence fields; evidence is recorded in `docs/sdd/evidence-index.md`.
+
+Changed files:
+
+- `src/application/consolidation.ts`
+- `src/adapters/sqlite-catalog.ts`
+- `src/adapters/fs-input.ts`
+- `src/adapters/reporter.ts`
+- `src/cli.ts`
+- `test/consolidation.test.ts`
+- `test/cli.test.ts`
+- `README.md`
+- `docs/sdd/evidence-index.md`
+- `docs/sdd/manifest.json`
+- `docs/sdd/specs/05-consolidation-and-idempotency.md`
+- `docs/sdd/specs/06-errors-security-and-observability.md`
+
+Proof commands passed:
+
+```bash
+node --test test/consolidation.test.ts test/cli.test.ts
+npm test
+npm run test:fixture
+npm run check
+# from repository root:
+npm run check
+```
+
+Complete gate: **passed**.
+
+Unresolved decision / scope conflict:
+
+- `AC-005-03` remains unverified. The existing private SDD-004 fixture oracle proves **265 matched / 3 new** entries, whereas SDD-005 requires **267 matched / 1 new** (976 products). Achieving the SDD-005 snapshot number requires an identity alias/policy change governed by SDD-004 and its ADR process, outside the authorized implementation scope. Consequently, SDD-005 remains `implemented`, not `verified`.

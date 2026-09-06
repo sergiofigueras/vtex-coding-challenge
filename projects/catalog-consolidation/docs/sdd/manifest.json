@@ -91,6 +91,16 @@
       "dependsOn": ["SDD-007"],
       "requirements": ["ASM-005", "PROC-001", "PROC-002", "USR-001"],
       "acceptanceCriteria": ["AC-008-01", "AC-008-02", "AC-008-03", "AC-008-04"]
+    },
+    {
+      "id": "SDD-009",
+      "title": "Portable project history and Portuguese tutorial",
+      "path": "docs/sdd/specs/09-portable-project-history-and-tutorial.md",
+      "kind": "product",
+      "status": "verified",
+      "dependsOn": ["SDD-000", "SDD-007", "SDD-008"],
+      "requirements": ["USR-001", "USR-007"],
+      "acceptanceCriteria": ["AC-009-01", "AC-009-02", "AC-009-03", "AC-009-04", "AC-009-05"]
     }
   ]
 }

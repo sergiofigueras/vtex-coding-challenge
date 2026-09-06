@@ -1,0 +1,21 @@
+Change ID: `catalog-complete-error-exit-property-and-lock-tests`
+
+Implemented requested specifications: SDD-006 and SDD-007.
+
+### Changed files
+- `src/cli.ts`
+  - Maps SQLite “database is locked” errors to stable `database_busy`.
+- `test/property-and-lock.test.ts`
+  - Adds input-permutation invariance coverage.
+  - Adds SQLite lock-contention coverage.
+- `docs/sdd/evidence-index.md`
+  - Links the new property and lock tests to SDD-006/SDD-007 acceptance criteria.
+
+### Proof commands
+- `node --test test/property-and-lock.test.ts` — 2 passed.
+- `npm run check` — build, lint, all 30 tests, and SDD validation passed.
+- `npm run sdd:validate` — traceability and secret checks passed transitively through `npm run check`.
+
+The requested specifications were already marked `verified`; no status transition was necessary. No credentials, commits, or pushes were made.
+
+Remaining decision: SQLite lock tests use the production 5-second bounded busy timeout, so the lock test takes approximately five seconds.

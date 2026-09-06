@@ -4,7 +4,7 @@ Read `project.json`, `docs/sdd/manifest.json`, `docs/sdd/traceability.json`, the
 
 - Implement only explicitly requested `ready` product specs. Dependencies marked context-only do not authorize unrelated implementation.
 - Keep user requests, assessment requirements, process guidance, assumptions, and fixture observations separate.
-- Never read, copy, commit, or quote the assessment PDFs. Never commit `.sdd/`, fixture files, databases, credentials, or generated transcripts.
+- Never read, copy, commit, or quote the assessment PDFs. Never commit fixture files, databases, credentials, generated transcripts, or raw operational `.sdd/` state. The reviewed public exceptions are `.sdd/README.md` and `.sdd/history/**`; preserve their snapshot bytes unless an explicitly authorized history export creates a new snapshot.
 - The catalog runtime must stay deterministic and model-free. OpenAI models are design-time engineering tools orchestrated by DeepSeek Harness.
 - Preserve strict types, parameterized SQL, transactional safety, seller-scoped opaque IDs, and the deterministic identity decision in `SDD-004`.
 - Use the smallest useful context. Prefer local deterministic inspection and tests over model calls.

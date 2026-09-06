@@ -1,0 +1,30 @@
+Implemented `catalog-verification` for **SDD-007**.
+
+### Changed files
+- `docs/sdd/specs/07-verification-strategy.md`
+  - Updated status from `ready` to `verified`.
+- `docs/sdd/manifest.json`
+  - Updated SDD-007 status to `verified`.
+- `docs/sdd/evidence-index.md`
+  - Added executable evidence mappings for AC-007-01 through AC-007-04.
+
+`docs/sdd/traceability.json` was not modified because its schema is intentionally closed and already contains the required SDD-007 requirement mappings; evidence is recorded in the dedicated evidence index.
+
+### Proof commands
+- `npm test` — 21 public tests passed.
+- `npm run test:fixture` — 4 private fixture tests passed, including:
+  - 975-product migration retention
+  - 976 products and 268 seller links after first run
+  - clean foreign-key state
+  - zero-insert idempotent rerun
+- `npm run check` — tests and SDD validation passed.
+- `npm run sdd:validate` — manifest, traceability, source, secret, and cost checks passed.
+
+### Unresolved decisions
+- None for SDD-007.
+- Fixture inputs remain private and are only accessed through the opt-in fixture command.
+
+### Change ID
+`catalog-verification`
+
+The complete project gate passed.

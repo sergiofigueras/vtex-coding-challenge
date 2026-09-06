@@ -1,0 +1,21 @@
+Implemented change `catalog-readme-enumerate-all-sdd-runs-and-fix-root-command` for `SDD-008`.
+
+### Changed files
+- `README.md`
+  - Enumerated all local SDD run directories.
+  - Documented per-run artifact paths.
+  - Updated exact SDD engineering-run commands to the active change ID.
+  - Fixed the root invocation to:
+    ```bash
+    npm --prefix projects/catalog-consolidation run check
+    ```
+- `docs/sdd/evidence-index.md`
+  - Updated AC-008-04 evidence for the complete run inventory and corrected root command.
+
+### Proof commands
+- `npm run check` — passed.
+- `npm --prefix ../.. run check --silent` — passed root engine checks.
+- `npm run sdd:validate` — passed traceability, source, cost, and secret checks.
+- Revision reported: `12fcdb6260ff5134df5a9c7c83782fda719399fa`
+
+No unresolved implementation decisions. `SDD-008` was already `verified`; no status change was necessary.

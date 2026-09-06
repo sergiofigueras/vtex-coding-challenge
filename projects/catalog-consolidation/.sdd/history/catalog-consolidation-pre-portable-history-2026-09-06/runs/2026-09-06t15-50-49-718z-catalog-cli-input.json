@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t15-50-49-718z-catalog-cli-input",
+  "source": "runs/2026-09-06t15-50-49-718z-catalog-cli-input",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "261480c865b6a29f2b958eca03f0a2d30b996450",
+    "changeId": "catalog-cli-input",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T15:50:49.720Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t15-50-49-718z-catalog-cli-input",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001",
+      "SDD-002"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/5f86b7af6c70726fdce8309b8cc963b82e159476df3834cae03e80b34464dd8b",
+      "sha256": "5f86b7af6c70726fdce8309b8cc963b82e159476df3834cae03e80b34464dd8b",
+      "bytes": 1018,
+      "source": "runs/2026-09-06t15-50-49-718z-catalog-cli-input/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-50-49-718z-catalog-cli-input/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-50-49-718z-catalog-cli-input/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-50-49-718z-catalog-cli-input/session"
+    }
+  ]
+}

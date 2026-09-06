@@ -2,14 +2,8 @@
   "schemaVersion": "1.0",
   "currency": "USD",
   "pricingSnapshot": "config/pricing.openai-2026-09-06.json",
-  "estimateBasis": "four conservatively sized model attempts; provider usage remains authoritative",
+  "estimateBasis": "three conservatively sized model attempts; provider usage remains authoritative",
   "estimatedCalls": [
-    {
-      "uncachedInputTokens": 70000,
-      "cacheReadTokens": 50000,
-      "cacheWriteTokens": 0,
-      "outputTokens": 16384
-    },
     {
       "uncachedInputTokens": 70000,
       "cacheReadTokens": 50000,
@@ -33,5 +27,11 @@
   "maximumMeasuredRunUsd": 3.0,
   "maximumMeasuredChangeUsd": 8.0,
   "monitorIntervalMs": 1000,
-  "terminationGraceMs": 10000
+  "terminationGraceMs": 10000,
+  "rateLimit": {
+    "maximumAttempts": 3,
+    "baseDelayMs": 1000,
+    "maximumDelayMs": 60000,
+    "jitterRatio": 0.2
+  }
 }

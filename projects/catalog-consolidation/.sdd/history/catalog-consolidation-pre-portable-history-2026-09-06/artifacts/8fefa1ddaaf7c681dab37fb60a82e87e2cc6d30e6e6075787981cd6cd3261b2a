@@ -1,0 +1,23 @@
+Implemented `catalog-delivery` for `SDD-008`.
+
+### Changed files
+- `README.md` — clean-room setup, exact CLI/runbook commands, fixture guidance, design decisions, security, limitations, cost boundaries, and delivery checks.
+- `docs/adr/0003-delivery-and-engineering-defense.md` — AI governance, evidence policy, rejected alternatives, and delivery trade-offs.
+- `docs/sdd/evidence-index.md` — evidence mappings for SDD-000 and SDD-008.
+- `docs/sdd/manifest.json` — SDD-000 and SDD-008 marked `verified`.
+- `docs/sdd/specs/00-source-brief-and-requirement-ledger.md` — status updated to `verified`.
+- `docs/sdd/specs/08-delivery-and-engineering-defense.md` — status updated to `verified`.
+
+### Proof commands
+- `npm test` — 21 tests passed.
+- `npm run sdd:validate` — manifest, traceability, source, cost, and secret checks passed.
+- `npm run check` — complete project gate passed.
+- Revision reported with `git rev-parse HEAD`: `12fcdb6260ff5134df5a9c7c83782fda719399fa`
+
+### Unresolved decisions / limitations
+- Deterministic canonical identity intentionally does not claim universal product identity.
+- Fixture acceptance remains opt-in and requires private source ingestion.
+- SQLite contention and local cost metadata are documented limitations, not production-scale guarantees.
+- `docs/sdd/traceability.json` uses a closed schema and does not accept evidence fields; criterion evidence is recorded in `docs/sdd/evidence-index.md`.
+
+The engine cost ledger showed an existing uncommitted update from the outer Harness; it was not modified by this delivery.

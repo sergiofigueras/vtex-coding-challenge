@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism",
+  "source": "runs/2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "12fcdb6260ff5134df5a9c7c83782fda719399fa",
+    "changeId": "catalog-fix-boundary-limits-elapsed-and-determinism",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T16:32:05.416Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001",
+      "SDD-002",
+      "SDD-005",
+      "SDD-006",
+      "SDD-007"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "b3d6c323-b632-4e95-8391-14900d1bc06f",
+    "exit": {
+      "code": 1,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/a3879c7361658b70e59f65954d697c0cf965f2e585e633375156e3cbccf2b0b9",
+      "sha256": "a3879c7361658b70e59f65954d697c0cf965f2e585e633375156e3cbccf2b0b9",
+      "bytes": 1453,
+      "source": "runs/2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1,
+      "source": "runs/2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/22eaa5b2e45e476dfa8348abd79c773ccddcb3dfe00354fd923d7524f1c97296",
+      "sha256": "22eaa5b2e45e476dfa8348abd79c773ccddcb3dfe00354fd923d7524f1c97296",
+      "bytes": 264,
+      "source": "runs/2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-32-05-415z-catalog-fix-boundary-limits-elapsed-and-determinism/session"
+    }
+  ]
+}

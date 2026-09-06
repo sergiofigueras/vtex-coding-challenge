@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-11-08-316z-catalog-atomic-consolidation",
+  "source": "runs/2026-09-06t16-11-08-316z-catalog-atomic-consolidation",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "73388e269f41dfb975a8bdb1a58712b309e8bf34",
+    "changeId": "catalog-atomic-consolidation",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T16:11:08.318Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t16-11-08-316z-catalog-atomic-consolidation",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-005",
+      "SDD-006"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "16d7e463-d23c-43f2-9722-5590ac41d51d",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/e5f00acb2d269b1c3ccd3e571ee1d1103f406d81f8df028f7bcf6fec64b4393f",
+      "sha256": "e5f00acb2d269b1c3ccd3e571ee1d1103f406d81f8df028f7bcf6fec64b4393f",
+      "bytes": 1343,
+      "source": "runs/2026-09-06t16-11-08-316z-catalog-atomic-consolidation/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/f7bb18c19cb360df75dc727a4c0cb15fb87b478661f7ba50b552373c486868e1",
+      "sha256": "f7bb18c19cb360df75dc727a4c0cb15fb87b478661f7ba50b552373c486868e1",
+      "bytes": 2043,
+      "source": "runs/2026-09-06t16-11-08-316z-catalog-atomic-consolidation/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-11-08-316z-catalog-atomic-consolidation/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-11-08-316z-catalog-atomic-consolidation/session"
+    }
+  ]
+}

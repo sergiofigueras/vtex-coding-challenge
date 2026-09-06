@@ -4,15 +4,18 @@ import { mkdir, open, readFile } from 'node:fs/promises'
 import { spawn, spawnSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { relative, resolve } from 'node:path'
-import { appendCostEntry, calculateUsd, collectUsageFromSessions, summarizeUsage, ZERO_USAGE, addUsage } from './lib/cost.mjs'
+import { appendCostEntry, calculateUsd, collectUsageFromSessions, snapshotUsageEventIdentities, summarizeUsage, ZERO_USAGE, addUsage } from './lib/cost.mjs'
 import { atomicWrite, readJson, sha256 } from './lib/files.mjs'
 import { loadProject, parseProjectArgs, resolveDshExecutable } from './lib/project.mjs'
 import { buildAgentPrompt, estimatedPromptTokens } from './lib/sdd.mjs'
+import { CANCELLATION_EXIT_CODE, RATE_LIMIT_EXIT_CODE, classifyProviderFailure, runRateLimitLifecycle, validateRateLimitPolicy } from './lib/rate-limit.mjs'
+import { installChildTermination } from './lib/child-termination.mjs'
+import { formatSuccessfulRunFooter } from './lib/cli-output.mjs'
 
 function parseArgs(argv) {
   const command = argv.shift()
-  if (!['prepare', 'run'].includes(command)) throw new Error('Usage: sdd-agent.mjs <prepare|run> --project <id> --change <id> --spec <SDD-ID[,SDD-ID]> [--route economy|default|escalation]')
-  const options = { command, specIds: [], route: 'default', approveEscalation: false }
+  if (!['prepare', 'run'].includes(command)) throw new Error('Usage: sdd-agent.mjs <prepare|run> --project <id> --change <id> --spec <SDD-ID[,SDD-ID]> [--route economy|default|escalation] [--rate-limit-fallback economy]')
+  const options = { command, specIds: [], route: 'default', approveEscalation: false, rateLimitFallback: null }
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
     if (argument === '--change') options.changeId = argv[++index]
@@ -20,6 +23,7 @@ function parseArgs(argv) {
     else if (argument === '--route') options.route = argv[++index]
     else if (argument === '--escalation-reason') options.escalationReason = argv[++index]
     else if (argument === '--approve-escalation') options.approveEscalation = true
+    else if (argument === '--rate-limit-fallback') options.rateLimitFallback = argv[++index]
     else throw new Error(`Unknown argument: ${argument}`)
   }
   if (!options.changeId || !/^[a-z0-9][a-z0-9-]{4,80}$/.test(options.changeId)) {
@@ -30,6 +34,8 @@ function parseArgs(argv) {
   if (options.route === 'escalation' && (!options.approveEscalation || !options.escalationReason?.trim())) {
     throw new Error('The escalation route requires --approve-escalation and a non-empty --escalation-reason')
   }
+  if (options.rateLimitFallback !== null && options.rateLimitFallback !== 'economy') throw new Error('--rate-limit-fallback only supports economy')
+  if (options.rateLimitFallback === 'economy' && options.route !== 'default') throw new Error('--rate-limit-fallback economy is valid only with --route default')
   options.specIds = [...new Set(options.specIds)]
   return options
 }
@@ -156,20 +162,23 @@ async function changeBudgetCommitted(engineRoot, projectId, changeId) {
   }, 0)
 }
 
-async function runHarness(engineRoot, project, options, prepared, agent, policy, pricing) {
+async function runHarnessAttempt(engineRoot, project, options, prepared, agent, policy, pricing, lifecycle = {}) {
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey || apiKey === 'replace-me') throw new Error('OPENAI_API_KEY is required for a live Harness run')
   const executable = resolveDshExecutable(engineRoot)
 
   const lockPath = resolve(project.stateRoot, 'run.lock')
   await mkdir(project.stateRoot, { recursive: true })
-  let lock
-  try {
-    lock = await open(lockPath, 'wx')
-    await lock.writeFile(`${process.pid}\n`)
-  } catch (error) {
-    if (error.code === 'EEXIST') throw new Error('Another SDD run is active (.sdd/run.lock exists)')
-    throw error
+  let lock = lifecycle.lock
+  const ownsLock = !lock
+  if (ownsLock) {
+    try {
+      lock = await open(lockPath, 'wx')
+      await lock.writeFile(`${process.pid}\n`)
+    } catch (error) {
+      if (error.code === 'EEXIST') throw new Error('Another SDD run is active (.sdd/run.lock exists)')
+      throw error
+    }
   }
 
   const startedAt = new Date()
@@ -177,8 +186,9 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
   const dshHome = resolve(project.stateRoot, 'dsh-home')
   const sessionsRoot = resolve(dshHome, 'sessions')
   const before = await dirtySnapshot(project.workspaceRoot)
-  const stdoutPath = resolve(prepared.runRoot, 'stdout.txt')
-  const stderrPath = resolve(prepared.runRoot, 'stderr.txt')
+  const attemptLabel = `attempt-${lifecycle.attemptNumber ?? 1}`
+  const stdoutPath = resolve(prepared.runRoot, `${attemptLabel}.stdout.txt`)
+  const stderrPath = resolve(prepared.runRoot, `${attemptLabel}.stderr.txt`)
   const stdoutFile = createWriteStream(stdoutPath, { flags: 'w' })
   const stderrFile = createWriteStream(stderrPath, { flags: 'w' })
   let budgetExceeded = false
@@ -186,9 +196,15 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
   let child
   try {
     const committed = await changeBudgetCommitted(engineRoot, project.id, options.changeId)
-    if (committed + prepared.manifest.estimatedUsd > policy.maximumMeasuredChangeUsd) {
+    const attemptUsageEstimate = prepared.manifest.estimatedCalls[0]
+    const attemptEstimatedUsd = calculateUsd(attemptUsageEstimate, agent.model, pricing)
+    if (committed + attemptEstimatedUsd > policy.maximumMeasuredChangeUsd) {
       throw new Error(`Change budget would exceed $${policy.maximumMeasuredChangeUsd.toFixed(2)}`)
     }
+    if ((lifecycle.cumulativeRunUsd ?? 0) + attemptEstimatedUsd > policy.maximumMeasuredRunUsd) {
+      throw new Error(`Run budget would exceed $${policy.maximumMeasuredRunUsd.toFixed(2)}`)
+    }
+    const usageBeforeAttempt = await snapshotUsageEventIdentities(sessionsRoot)
     const reservation = await appendCostEntry(engineRoot, {
       schemaVersion: '1.0',
       entryId: randomUUID(),
@@ -200,9 +216,9 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
       measurement: 'estimated',
       provider: agent.provider,
       model: agent.model,
-      usage: prepared.manifest.estimatedUsage,
+      usage: attemptUsageEstimate,
       pricingSnapshotId: pricing.id,
-      estimatedUsd: prepared.manifest.estimatedUsd,
+      estimatedUsd: attemptEstimatedUsd,
       actualUsd: null,
       currency: pricing.currency,
       baselineCommit: prepared.manifest.baselineCommit,
@@ -230,11 +246,12 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
     })
     child.stdout.on('data', chunk => { stdoutFile.write(chunk); process.stdout.write(chunk) })
     child.stderr.on('data', chunk => { stderrFile.write(chunk); process.stderr.write(chunk) })
+    const cleanupTermination = installChildTermination({ child, signal: lifecycle.signal, graceMs: policy.terminationGraceMs ?? 2000 })
 
     const monitor = setInterval(async () => {
       if (budgetExceeded || reconciliationError) return
       try {
-        const observed = await collectUsageFromSessions(sessionsRoot, startedMs - 2000)
+        const observed = await collectUsageFromSessions(sessionsRoot, 0, { excludeKeys: usageBeforeAttempt })
         const summary = summarizeUsage(observed.events, pricing)
         if (summary.totalUsd >= policy.maximumMeasuredRunUsd) {
           budgetExceeded = true
@@ -246,15 +263,20 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
       }
     }, policy.monitorIntervalMs)
 
-    const exit = await new Promise((resolveExit, reject) => {
-      child.once('error', reject)
-      child.once('close', (code, signal) => resolveExit({ code, signal }))
-    })
-    clearInterval(monitor)
-    stdoutFile.end()
-    stderrFile.end()
+    let exit
+    try {
+      exit = await new Promise((resolveExit, reject) => {
+        child.once('error', reject)
+        child.once('close', (code, signal) => resolveExit({ code, signal }))
+      })
+    } finally {
+      clearInterval(monitor)
+      cleanupTermination()
+      stdoutFile.end()
+      stderrFile.end()
+    }
 
-    const observed = await collectUsageFromSessions(sessionsRoot, startedMs - 2000)
+    const observed = await collectUsageFromSessions(sessionsRoot, 0, { excludeKeys: usageBeforeAttempt })
     let summary
     try {
       summary = summarizeUsage(observed.events, pricing)
@@ -265,7 +287,8 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
     const filesTouched = changedPaths(before, after)
     const totalUsage = summary?.routes.reduce((total, route) => addUsage(total, route.usage), { ...ZERO_USAGE }) ?? null
     const reconciled = Boolean(summary && observed.events.length > 0)
-    const outcome = budgetExceeded ? 'budget-exceeded' : exit.code === 0 ? 'completed' : 'failed'
+    const cancelled = lifecycle.signal?.aborted || exit.signal === 'SIGTERM' && lifecycle.signal?.aborted
+    const outcome = cancelled ? 'cancelled' : budgetExceeded ? 'budget-exceeded' : exit.code === 0 ? 'completed' : 'failed'
     const entry = await appendCostEntry(engineRoot, {
       schemaVersion: '1.0',
       entryId: randomUUID(),
@@ -293,11 +316,13 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
       runId: prepared.manifest.runId,
       sourceSessionFiles: observed.files.map(path => relative(project.root, path)),
       outcome,
-      exitCode: exit.code,
+      exitCode: cancelled ? CANCELLATION_EXIT_CODE : exit.code,
       signal: exit.signal,
       reason: reconciliationError?.message ?? (budgetExceeded ? 'Measured run budget reached; process terminated.' : 'Harness run settled.'),
     })
-    await atomicWrite(resolve(prepared.runRoot, 'result.json'), `${JSON.stringify({ exit, budgetExceeded, costEntryId: entry.entryId }, null, 2)}\n`)
+    await atomicWrite(resolve(prepared.runRoot, `attempt-${lifecycle.attemptNumber ?? 1}.result.json`), `${JSON.stringify({ exit, cancelled, budgetExceeded, costEntryId: entry.entryId, reservationEntryId: reservation.entryId, accountingStatus: entry.accountingStatus, actualUsd: entry.actualUsd, estimatedUsd: reservation.estimatedUsd, sourceSessionFiles: entry.sourceSessionFiles }, null, 2)}\n`)
+    await atomicWrite(resolve(prepared.runRoot, 'attempt-result.json'), `${JSON.stringify({ exit, cancelled, budgetExceeded, costEntryId: entry.entryId, reservationEntryId: reservation.entryId, accountingStatus: entry.accountingStatus, actualUsd: entry.actualUsd, estimatedUsd: reservation.estimatedUsd, sourceSessionFiles: entry.sourceSessionFiles }, null, 2)}\n`)
+    if (cancelled) return { ...entry, cancelled: true, success: false, exitCode: CANCELLATION_EXIT_CODE }
     if (reconciliationError) throw new Error(`Cost reconciliation failed closed: ${reconciliationError.message}`)
     if (!reconciled) throw new Error('Harness finished without provider usage; cost is unreconciled')
     if (budgetExceeded) throw new Error(`Measured cost reached the $${policy.maximumMeasuredRunUsd.toFixed(2)} run limit`)
@@ -306,7 +331,84 @@ async function runHarness(engineRoot, project, options, prepared, agent, policy,
   } finally {
     stdoutFile.end()
     stderrFile.end()
-    await lock?.close()
+    if (ownsLock) {
+      await lock?.close()
+      const { unlink } = await import('node:fs/promises')
+      await unlink(lockPath).catch(error => { if (error.code !== 'ENOENT') throw error })
+    }
+  }
+}
+
+async function runHarness(engineRoot, project, options, prepared, agent, policy, pricing) {
+  const lockPath = resolve(project.stateRoot, 'run.lock')
+  await mkdir(project.stateRoot, { recursive: true })
+  let lock
+  try {
+    lock = await open(lockPath, 'wx')
+    await lock.writeFile(`${process.pid}\n`)
+  } catch (error) {
+    if (error.code === 'EEXIST') throw new Error('Another SDD run is active (.sdd/run.lock exists)')
+    throw error
+  }
+  const controller = new AbortController()
+  const onSigint = () => controller.abort()
+  process.once('SIGINT', onSigint)
+  const attemptsMetadata = []
+  let cumulativeRunUsd = 0
+  try {
+    const lifecycle = await runRateLimitLifecycle({
+      policy: policy.rateLimit,
+      requestedRoute: options.route,
+      fallbackAuthorized: options.rateLimitFallback === 'economy',
+      signal: controller.signal,
+      status: event => console.error(`Rate-limit status: ${JSON.stringify(event)}`),
+      attempt: async ({ number, route, signal }) => {
+        const attemptAgent = selectRoute(await readJson(resolve(engineRoot, 'config/agent.json')), { ...options, route })
+        const resume = number === 1 ? '' : `\n\nRetry resume context: this is attempt ${number}; inspect the existing working tree, preserve all partial changes, and continue only the identical project/change/spec dependency scope after the prior rate-limit outcome.\n`
+        const attemptPrepared = { ...prepared, prompt: `${prepared.prompt}${resume}` }
+        const stdoutPath = resolve(prepared.runRoot, `attempt-${number}.stdout.txt`)
+        const stderrPath = resolve(prepared.runRoot, `attempt-${number}.stderr.txt`)
+        try {
+          const entry = await runHarnessAttempt(engineRoot, project, options, attemptPrepared, attemptAgent, policy, pricing, { lock, attemptNumber: number, cumulativeRunUsd, signal })
+          cumulativeRunUsd += entry.actualUsd ?? entry.estimatedUsd ?? 0
+          const cancelled = entry.cancelled === true || signal.aborted
+          const record = { success: !cancelled, cancelled, route, model: attemptAgent.model, outcome: cancelled ? 'cancelled' : 'completed', exitCode: cancelled ? CANCELLATION_EXIT_CODE : 0, costEntryId: entry.entryId, actualUsd: typeof entry.actualUsd === 'number' ? entry.actualUsd : null, accountingStatus: entry.accountingStatus ?? (typeof entry.actualUsd === 'number' ? 'reported' : 'unreconciled'), accounting: { costEntryId: entry.entryId, reservationEntryId: entry.reservationEntryId ?? null }, stdoutPath: relative(project.stateRoot, stdoutPath), stderrPath: relative(project.stateRoot, stderrPath) }
+          attemptsMetadata.push(record)
+          return record
+        } catch (error) {
+          const stderr = await readFile(stderrPath, 'utf8').catch(() => '')
+          const accounting = await readJson(resolve(prepared.runRoot, 'attempt-result.json')).catch(() => null)
+          cumulativeRunUsd += accounting?.actualUsd ?? accounting?.estimatedUsd ?? 0
+          const classification = classifyProviderFailure({ message: `${error.message}\n${stderr}`, stderr })
+          const record = { success: false, cancelled: signal.aborted || error.cancelled || accounting?.cancelled === true, route, model: attemptAgent.model, outcome: signal.aborted || error.cancelled || accounting?.cancelled === true ? 'cancelled' : 'failed', error: { message: error.message, stderr }, classification, accounting, stdoutPath: relative(project.stateRoot, stdoutPath), stderrPath: relative(project.stateRoot, stderrPath) }
+          attemptsMetadata.push(record)
+          return record
+        }
+      },
+    })
+    const result = {
+      schemaVersion: '1.0', runId: prepared.manifest.runId, projectId: project.id, changeId: options.changeId, specIds: options.specIds,
+      requestedRoute: options.route, rateLimitFallback: options.rateLimitFallback, attempts: lifecycle.attempts.map((attempt, index) => ({ ...attempt, metadata: attemptsMetadata[index] ?? null })), outcome: lifecycle.outcome, exitCode: lifecycle.exitCode,
+      nextAction: lifecycle.outcome === 'rate-limit-exhausted' ? 'Resume later, adjust provider capacity, or explicitly authorize --rate-limit-fallback economy on the default route.' : null,
+      accounting: { cumulativeKnownActualUsd: attemptsMetadata.reduce((sum, attempt) => sum + (typeof attempt.actualUsd === 'number' ? attempt.actualUsd : 0), 0), knownActualAttempts: attemptsMetadata.filter(attempt => typeof attempt.actualUsd === 'number').length, unreconciledAttempts: attemptsMetadata.filter(attempt => attempt.accountingStatus === 'unreconciled').length, reservations: attemptsMetadata.map(attempt => attempt.accounting?.reservationEntryId ?? attempt.reservationEntryId ?? null) },
+    }
+    await atomicWrite(resolve(prepared.runRoot, 'result.json'), `${JSON.stringify(result, null, 2)}\n`)
+    // Attempt files are durable individually; aggregate streams keep the original
+    // run-level stdout/stderr contract for operators and history export.
+    for (const stream of ['stdout', 'stderr']) {
+      const combined = (await Promise.all(attemptsMetadata.map((_, index) => readFile(resolve(prepared.runRoot, `attempt-${index + 1}.${stream}.txt`), 'utf8').catch(() => '')))).join('')
+      await atomicWrite(resolve(prepared.runRoot, `${stream}.txt`), combined)
+    }
+    if (lifecycle.exitCode !== 0) {
+      const message = lifecycle.exitCode === RATE_LIMIT_EXIT_CODE ? result.nextAction : lifecycle.exitCode === CANCELLATION_EXIT_CODE ? 'Operator cancelled the run.' : `Harness terminated: ${lifecycle.outcome}`
+      const failure = new Error(message)
+      failure.exitCode = lifecycle.exitCode
+      throw failure
+    }
+    return result
+  } finally {
+    process.removeListener('SIGINT', onSigint)
+    await lock.close()
     const { unlink } = await import('node:fs/promises')
     await unlink(lockPath).catch(error => { if (error.code !== 'ENOENT') throw error })
   }
@@ -319,17 +421,18 @@ try {
   const options = parseArgs(projectArgs.remaining)
   const agent = selectRoute(await readJson(resolve(engineRoot, 'config/agent.json')), options)
   const policy = await readJson(resolve(engineRoot, 'config/cost-policy.json'))
+  validateRateLimitPolicy(policy)
   const pricing = await readJson(resolve(engineRoot, policy.pricingSnapshot))
   validateRepository(engineRoot, project)
   const prepared = await prepare(project, options, agent, policy, pricing)
   console.log(`Prepared ${prepared.manifest.runId}; projected OpenAI cost $${prepared.manifest.estimatedUsd.toFixed(6)}.`)
   if (options.command === 'run') {
     const entry = await runHarness(engineRoot, project, options, prepared, agent, policy, pricing)
-    console.log(`Measured OpenAI cost $${entry.actualUsd.toFixed(6)}; ledger entry ${entry.entryId}.`)
+    console.log(formatSuccessfulRunFooter(entry))
   } else {
     console.log(`Prompt: ${resolve(prepared.runRoot, 'prompt.md')}`)
   }
 } catch (error) {
   console.error(`SDD agent failed: ${error.message}`)
-  process.exitCode = 1
+  process.exitCode = error.exitCode ?? 1
 }

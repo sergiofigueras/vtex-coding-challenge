@@ -149,7 +149,7 @@ function scanCompleteZstdFrames(buffer) {
   return frames
 }
 
-async function readSessionText(path) {
+export async function readSessionText(path) {
   const contents = await readFile(path)
   if (!path.endsWith('.zstd')) return contents.toString('utf8')
   return Buffer.concat(scanCompleteZstdFrames(contents).map(frame => zstdDecompressSync(frame))).toString('utf8')
@@ -185,7 +185,13 @@ export async function usageEventsFromJsonl(path) {
   return records
 }
 
-export async function collectUsageFromSessions(sessionRoot, changedSinceMs = 0) {
+export async function snapshotUsageEventIdentities(sessionRoot) {
+  const files = await walkFiles(sessionRoot, path => path.endsWith('.jsonl') || path.endsWith('.jsonl.zstd'))
+  const events = (await Promise.all(files.map(usageEventsFromJsonl))).flat()
+  return new Set(events.map(event => event.key))
+}
+
+export async function collectUsageFromSessions(sessionRoot, changedSinceMs = 0, options = {}) {
   const { stat } = await import('node:fs/promises')
   const files = await walkFiles(sessionRoot, path => path.endsWith('.jsonl') || path.endsWith('.jsonl.zstd'))
   const selected = []
@@ -193,9 +199,13 @@ export async function collectUsageFromSessions(sessionRoot, changedSinceMs = 0) 
     const metadata = await stat(path)
     if (metadata.mtimeMs >= changedSinceMs) selected.push(path)
   }
-  const events = (await Promise.all(selected.map(usageEventsFromJsonl))).flat()
+  const perFile = await Promise.all(selected.map(async path => ({ path, events: await usageEventsFromJsonl(path) })))
+  const events = perFile.flatMap(item => item.events)
   const unique = [...new Map(events.map(event => [event.key, event])).values()]
-  return { files: selected, events: unique }
+  const excluded = options.excludeKeys instanceof Set ? options.excludeKeys : new Set()
+  const fresh = unique.filter(event => !excluded.has(event.key))
+  const contributing = [...new Set(fresh.map(event => event.sessionFile))]
+  return { files: contributing, events: fresh }
 }
 
 export function summarizeUsage(events, pricing, options = {}) {

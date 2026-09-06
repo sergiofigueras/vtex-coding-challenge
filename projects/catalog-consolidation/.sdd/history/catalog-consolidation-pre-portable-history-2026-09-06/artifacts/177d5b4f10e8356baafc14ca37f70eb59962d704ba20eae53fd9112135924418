@@ -1,0 +1,42 @@
+Implemented and verified change **`catalog-product-identity`** for **SDD-004**.
+
+### Changed files
+- `src/domain/product-identity.ts` — versioned, deterministic canonicalization; exact field-specific aliases; canonical fingerprints; explicit `matched`/`new`/`ambiguous` resolution.
+- `src/domain/product-aliases.json` — reviewed initial aliases:
+  - `roteador → router`
+  - `processador → processor`
+  - category `photo → photography`
+- `src/adapters/sqlite-catalog.ts` — migration backfill now uses the shared SDD-004 identity rules while preserving display fields.
+- `test/product-identity.test.ts` — golden normalization, alias, hostile-text/new, collision, and ambiguity coverage.
+- `test/identity.fixture.integration.ts` — private fixture resolution oracle.
+- `test/migration.test.ts` — verifies aliases do not mutate historical `Product` display fields.
+- `package.json` — fixture test command includes identity fixture coverage.
+- `docs/adr/0002-deterministic-product-identity.md` — accepted decision and alias-review constraints.
+- `docs/sdd/specs/04-product-identity-and-resolution.md` — status changed to `verified`.
+- `docs/sdd/manifest.json` — `SDD-004` status changed to `verified`.
+- `docs/sdd/evidence-index.md` — criterion-to-command evidence index.
+- `README.md` — deterministic identity behavior and proof commands.
+
+### Acceptance evidence
+- **AC-004-01:** golden deterministic canonical identities and fingerprints.
+- **AC-004-02:** aliases and fixture resolution verified via the opt-in fixture suite.
+- **AC-004-03:** injection-shaped display text remains a `new` product and is unchanged.
+- **AC-004-04:** colliding canonical candidates return stable `ambiguous` results.
+- **AC-004-05:** alias mappings are collision-checked; migration proves aliases do not modify `Product` display fields.
+
+Commands run successfully:
+```bash
+node --test test/product-identity.test.ts test/migration.test.ts
+npm run test:fixture
+npm run check
+# from repository root:
+npm run check
+```
+
+Both project and repository complete gates passed.
+
+### Traceability note
+`docs/sdd/traceability.json` already maps SDD-004 to its owning requirements. Its validator uses a closed schema and rejects an `evidence` field, so executable acceptance evidence was recorded in the new validated documentation artifact `docs/sdd/evidence-index.md` instead.
+
+### Unresolved decisions
+None for SDD-004. The conservative matcher intentionally leaves unmatched semantic variants as new products; broader aliases or manual resolution remain future scope.

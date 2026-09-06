@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-14-54-506z-catalog-fixture-identity-repair",
+  "source": "runs/2026-09-06t16-14-54-506z-catalog-fixture-identity-repair",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "ce8b133356e2a0595e5d678e67b67244d370a285",
+    "changeId": "catalog-fixture-identity-repair",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T16:14:54.508Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t16-14-54-506z-catalog-fixture-identity-repair",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-004",
+      "SDD-005"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "c03edc3f-ac51-43dc-a047-5c2f7df6f6c0",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/4aa229748e6e1466ff87d41062462d6a92b580c34507ae41ddffda81fee125bd",
+      "sha256": "4aa229748e6e1466ff87d41062462d6a92b580c34507ae41ddffda81fee125bd",
+      "bytes": 1265,
+      "source": "runs/2026-09-06t16-14-54-506z-catalog-fixture-identity-repair/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/8431dbbdfa1c6d669947fb1e041103c0a4d24d5a55d2d8f06a1d376eb08e9f9d",
+      "sha256": "8431dbbdfa1c6d669947fb1e041103c0a4d24d5a55d2d8f06a1d376eb08e9f9d",
+      "bytes": 1939,
+      "source": "runs/2026-09-06t16-14-54-506z-catalog-fixture-identity-repair/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-14-54-506z-catalog-fixture-identity-repair/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-14-54-506z-catalog-fixture-identity-repair/session"
+    }
+  ]
+}

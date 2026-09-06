@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t15-15-08-252z-post-migration-smoke",
+  "source": "runs/2026-09-06t15-15-08-252z-post-migration-smoke",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "87a701335385db260352855a8473c82a559dfeec",
+    "changeId": "post-migration-smoke",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T15:15:08.253Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t15-15-08-252z-post-migration-smoke",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-001"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/97b0a6a78369c1054731c3f2807e0d98a73b3509a4130bf07d92f129986c7045",
+      "sha256": "97b0a6a78369c1054731c3f2807e0d98a73b3509a4130bf07d92f129986c7045",
+      "bytes": 938,
+      "source": "runs/2026-09-06t15-15-08-252z-post-migration-smoke/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-15-08-252z-post-migration-smoke/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-15-08-252z-post-migration-smoke/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t15-15-08-252z-post-migration-smoke/session"
+    }
+  ]
+}

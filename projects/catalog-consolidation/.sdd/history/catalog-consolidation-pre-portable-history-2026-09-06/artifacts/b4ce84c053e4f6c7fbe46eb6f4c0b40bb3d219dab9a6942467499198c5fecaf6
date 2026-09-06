@@ -1,0 +1,43 @@
+Change ID: `portable-project-history-tutorial`  
+Requested spec: `SDD-009`
+
+**Implemented**
+- Added Portuguese public tutorial: `TUTORIAL.md`
+  - Authority-to-evidence defense and public links
+  - Mermaid catalog and delivery-history provenance diagrams
+  - Scoped DeepSeek Harness/Cordis citation context (`arXiv:2608.25512`)
+  - Luna/Terra/Sol routing and dated-cost-accounting boundaries
+  - Exact reproduction, portable-history, and bounded extension commands
+  - Explicit confidentiality, fixture, identity, cutoff, private-reasoning, and billing limitations
+- Updated `docs/sdd/specs/09-portable-project-history-and-tutorial.md` status to `implemented`.
+- Updated `docs/sdd/manifest.json` SDD-009 status to `implemented`.
+- Added criterion-level SDD-009 entries to `docs/sdd/evidence-index.md`, including the declared snapshot:
+  - ID: `catalog-consolidation-pre-portable-history-2026-09-06`
+  - Cutoff: `2026-09-07T00:00:00.000Z`
+
+**Proof commands**
+- Passed: `npm run sdd:validate`
+- Passed: `git diff --check`
+- Passed: tutorial-reference static check for Mermaid, arXiv citation, and history commands
+- Passed complete gate: `npm run check`
+  - 30 tests passed
+  - typecheck, syntax check, and SDD validation passed
+
+**Unresolved external prerequisite**
+- SDD-009 cannot yet be marked `verified`, and no portable snapshot was published.
+- Required engine SDD-094 history export fails reproducibly:
+  ```bash
+  npm --prefix ../../engine run project:history:create -- \
+    --project catalog-consolidation \
+    --snapshot catalog-consolidation-pre-portable-history-2026-09-06 \
+    --cutoff 2026-09-07T00:00:00.000Z
+  ```
+  Failure:
+  ```text
+  History create failed: Invalid required run record:
+  2026-09-06t14-42-15-908z-documentation-formatting
+  ```
+- This is an engine-history record/SDD-094 issue outside the requested project implementation scope. The evidence index records it without claiming snapshot coverage, mappings, hashes, or clean-clone history validation.
+
+**Complete gate:** passed (`npm run check`).  
+**SDD-009 verification:** blocked by the external SDD-094 export failure.

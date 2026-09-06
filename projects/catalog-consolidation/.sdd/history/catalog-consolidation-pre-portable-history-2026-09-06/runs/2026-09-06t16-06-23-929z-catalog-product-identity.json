@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-06t16-06-23-929z-catalog-product-identity",
+  "source": "runs/2026-09-06t16-06-23-929z-catalog-product-identity",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "5948fee944083dc6fd1613fb61911003c394fb6e",
+    "changeId": "catalog-product-identity",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 200000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 65536,
+      "uncachedInputTokens": 280000
+    },
+    "estimatedUsd": 1.386432,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-06T16:06:23.931Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-06t16-06-23-929z-catalog-product-identity",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-004"
+    ]
+  },
+  "result": {
+    "budgetExceeded": false,
+    "costEntryId": "1f8eed37-d436-44eb-9877-85ed5d78da48",
+    "exit": {
+      "code": 0,
+      "signal": null
+    }
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/c8c75495d758965d029f705646cfa006d0ec906e02011882f3304e7c34ec29aa",
+      "sha256": "c8c75495d758965d029f705646cfa006d0ec906e02011882f3304e7c34ec29aa",
+      "bytes": 1175,
+      "source": "runs/2026-09-06t16-06-23-929z-catalog-product-identity/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/177d5b4f10e8356baafc14ca37f70eb59962d704ba20eae53fd9112135924418",
+      "sha256": "177d5b4f10e8356baafc14ca37f70eb59962d704ba20eae53fd9112135924418",
+      "bytes": 2566,
+      "source": "runs/2026-09-06t16-06-23-929z-catalog-product-identity/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-06t16-06-23-929z-catalog-product-identity/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-06t16-06-23-929z-catalog-product-identity/session"
+    }
+  ]
+}

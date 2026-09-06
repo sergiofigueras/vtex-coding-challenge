@@ -1,10 +1,11 @@
 {
   "schemaVersion": "1.0",
   "requirements": [
-    { "id": "USR-001", "authority": "user", "summary": "Create and publish the catalog delivery in the named GitHub repository.", "specIds": ["SDD-008"] },
+    { "id": "USR-001", "authority": "user", "summary": "Create and publish the catalog delivery in the named GitHub repository.", "specIds": ["SDD-008", "SDD-009"] },
     { "id": "USR-003", "authority": "user", "summary": "Specify the catalog application without implementing it in the infrastructure bootstrap.", "specIds": ["SDD-000", "SDD-001"] },
     { "id": "USR-005", "authority": "user", "summary": "Divide the future catalog work into multiple specifications.", "specIds": ["SDD-000"] },
     { "id": "USR-006", "authority": "user", "summary": "Use the supplied ProductEntry JSON and catalog SQLite URLs as future system inputs.", "specIds": ["SDD-000", "SDD-001", "SDD-002", "SDD-003", "SDD-007"] },
+    { "id": "USR-007", "authority": "user", "summary": "Publish portable project history and a Portuguese tutorial with safe observable evidence, DeepSeek Harness/Cordis architecture, OpenAI routing and dated cost accounting, reproducible commands, and honest limitations.", "specIds": ["SDD-009"] },
     { "id": "ASM-001", "authority": "assessment", "summary": "Receive a file containing products supplied by multiple sellers.", "specIds": ["SDD-001", "SDD-002"] },
     { "id": "ASM-002", "authority": "assessment", "summary": "Persist consolidated results into the supplied SQLite catalog.", "specIds": ["SDD-001", "SDD-003", "SDD-005"] },
     { "id": "ASM-003", "authority": "assessment", "summary": "Do not insert a duplicate product; link the existing product to the seller.", "specIds": ["SDD-004", "SDD-005", "SDD-007"] },
