@@ -5,6 +5,7 @@ import { basename, resolve } from 'node:path'
 import { calculateUsd } from './lib/cost.mjs'
 import { readJson, sha256 } from './lib/files.mjs'
 import { discoverProjects, loadProject, PROJECT_ID_PATTERN, resolveContainedPath } from './lib/project.mjs'
+import { isProhibitedTrackedArtifact, parseLegacyCommitCostManifest, resolveCommitCostEntry, verifyPublicArtifacts } from './lib/repository-policy.mjs'
 import { orderedClosure } from './lib/sdd.mjs'
 
 const engineRoot = resolve(import.meta.dirname, '..')
@@ -222,6 +223,12 @@ async function validateLedger(options) {
   let previous = null
   const changeIds = new Set()
   const entryIds = new Set()
+  let legacyCorrections = new Map()
+  try {
+    legacyCorrections = parseLegacyCommitCostManifest(await readJson(resolve(engineRoot, 'config/legacy-commit-cost-entries.json')))
+  } catch (error) {
+    fail(error.message)
+  }
   for (const [index, line] of text.split(/\r?\n/).filter(Boolean).entries()) {
     let entry
     try {
@@ -268,9 +275,11 @@ async function validateLedger(options) {
     if (log.status === 0) {
       for (const record of log.stdout.split('\x1e').filter(value => value.trim())) {
         const [sha, body = ''] = record.split('\x1f')
-        const trailer = /^Cost-Entry:\s*([a-z0-9][a-z0-9-]{4,80})\s*$/mi.exec(body)
-        if (!trailer) fail(`commit ${sha.trim().slice(0, 12)}: missing Cost-Entry trailer`)
-        else if (!changeIds.has(trailer[1])) fail(`commit ${sha.trim().slice(0, 12)}: unknown Cost-Entry ${trailer[1]}`)
+        try {
+          resolveCommitCostEntry(sha.trim(), body, changeIds, legacyCorrections)
+        } catch (error) {
+          fail(error.message)
+        }
       }
     }
   }
@@ -279,6 +288,17 @@ async function validateLedger(options) {
 async function validateNoSecrets(projects) {
   const listed = git(['ls-files', '--cached', '--others', '--exclude-standard'])
   if (listed.status !== 0) return
+  const trackedPaths = listed.stdout.split(/\r?\n/).filter(Boolean)
+  let publicArtifacts = new Map()
+  try {
+    publicArtifacts = await verifyPublicArtifacts(
+      workspaceRoot,
+      trackedPaths,
+      await readJson(resolve(engineRoot, 'config/public-artifacts.json')),
+    )
+  } catch (error) {
+    fail(error.message)
+  }
   const privateSourceNames = new Set()
   for (const project of projects) {
     const sources = await readJson(project.sourcesPath)
@@ -288,10 +308,10 @@ async function validateNoSecrets(projects) {
     /sk-(?:proj-)?[A-Za-z0-9_-]{20,}/,
     /OPENAI_API_KEY\s*=\s*(?!replace-me)[^\s#]+/,
   ]
-  for (const path of listed.stdout.split(/\r?\n/).filter(Boolean)) {
+  for (const path of trackedPaths) {
     const sddPath = /(^|\/)\.sdd\/(.*)$/.exec(path)
     const allowedHistory = sddPath && (sddPath[2] === 'README.md' || /^history\/[a-z0-9][a-z0-9-]{2,62}\//.test(sddPath[2]))
-    if (/\.pdf$/i.test(path) || /\.(?:db|sqlite|sqlite3)$/i.test(path) || privateSourceNames.has(basename(path)) || (sddPath && !allowedHistory)) {
+    if (isProhibitedTrackedArtifact(path, publicArtifacts, privateSourceNames, sddPath ? Boolean(allowedHistory) : undefined)) {
       fail(`${path}: private source or generated Harness state must not be tracked`)
     }
     if (/\.(?:db|png|jpg|jpeg|gif|pdf)$/.test(path)) continue

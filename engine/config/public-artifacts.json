@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "artifacts": [
+    {
+      "path": "catalog-consolidation-vtex.pdf",
+      "kind": "generated-presentation",
+      "bytes": 407090,
+      "sha256": "10dde40f3947f83c60a576232582b588fb05ccf7ffa233ad94ed18945e5775f7"
+    },
+    {
+      "path": "engine-sdd-deepseek-harness.pdf",
+      "kind": "generated-presentation",
+      "bytes": 423006,
+      "sha256": "2123a584a865de0c104a727c4ef5cefcf8b82992874bb55a2064ce9a90b55ec3"
+    }
+  ]
+}

@@ -61,6 +61,16 @@
       "dependsOn": ["SDD-090", "SDD-091", "SDD-092", "SDD-093", "SDD-094"],
       "requirements": ["ENG-USR-008"],
       "acceptanceCriteria": ["AC-095-01", "AC-095-02", "AC-095-03", "AC-095-04", "AC-095-05", "AC-095-06", "AC-095-07"]
+    },
+    {
+      "id": "SDD-096",
+      "title": "Public presentation artifacts and historical trailer correction",
+      "path": "docs/sdd/specs/96-public-presentation-ci-policy.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-091", "SDD-092", "SDD-094"],
+      "requirements": ["ENG-USR-009"],
+      "acceptanceCriteria": ["AC-096-01", "AC-096-02", "AC-096-03", "AC-096-04", "AC-096-05"]
     }
   ]
 }

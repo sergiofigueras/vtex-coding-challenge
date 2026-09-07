@@ -377,6 +377,13 @@ The product release gate requires:
 
 See [`projects/catalog-consolidation/README.md`](projects/catalog-consolidation/README.md) for clean-room install, test, fixture, CLI, SDD replay, log, and cost-report commands, and `projects/catalog-consolidation/docs/sdd/specs/08-delivery-and-engineering-defense.md` for the delivery requirements and evidence policy.
 
+## Presentation decks
+
+- [Catalog consolidation: requirements, design, verification, and trade-offs](catalog-consolidation-vtex.pdf)
+- [SDD engine: DeepSeek Harness, OpenAI routing, traceability, and cost](engine-sdd-deepseek-harness.pdf)
+
+These are reviewed, generated presentation artifacts. The confidential assessment PDFs and raw input fixtures remain outside the repository.
+
 ## Feature Template
 ```
 Quero que você crie a especificação SDD necessária e depois execute a implementação exclusivamente através da SDD engine.

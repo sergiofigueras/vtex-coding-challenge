@@ -9,6 +9,7 @@
     { "id": "ENG-USR-006", "authority": "user", "summary": "Reuse one engine to develop multiple independently specified projects such as catalog consolidation.", "specIds": ["SDD-093"] },
     { "id": "ENG-USR-007", "authority": "user", "summary": "Provide a reusable portable SDD-history exporter and validator with safe semantic capture, provenance, exclusion accounting, cost reporting, and clean-clone verification.", "specIds": ["SDD-094"] },
     { "id": "ENG-USR-008", "authority": "user", "summary": "Ensure reusable SDD delivery survives provider rate-limit interruptions with bounded, cost-aware, resumable retries and explicitly authorized Terra-to-Luna fallback without affecting the deterministic model-free catalog runtime.", "specIds": ["SDD-095"] },
+    { "id": "ENG-USR-009", "authority": "user", "summary": "Repair the failing main-branch CI caused by the README template commit and preserve the two generated public presentation PDFs without weakening private-source or cost-trailer enforcement.", "specIds": ["SDD-096"] },
     { "id": "ENG-PROC-001", "authority": "process", "summary": "Validate agent output, preserve traceability, and enforce offline release gates.", "specIds": ["SDD-092"] }
   ]
 }

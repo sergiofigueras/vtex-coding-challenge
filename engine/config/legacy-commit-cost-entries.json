@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "commits": {
+    "b0cb69b4a1ab9cc35787871882c0b18d2c257524": {
+      "observedTrailer": "Template adding",
+      "changeId": "template-adding",
+      "reason": "Exact correction for the malformed trailer created by the GitHub README edit; future malformed trailers remain invalid."
+    }
+  }
+}
