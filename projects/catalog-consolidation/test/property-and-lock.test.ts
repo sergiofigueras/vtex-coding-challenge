@@ -6,6 +6,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { consolidate, SqliteCatalogRepository } from "../src/adapters/sqlite-catalog.ts";
 import { parseAndValidateInput } from "../src/domain/input.ts";
+import { withOperationalLimits } from "../src/domain/operational-limits.ts";
 
 function database(path: string): void {
   const db = new DatabaseSync(path);
@@ -35,13 +36,13 @@ test("consolidation is invariant under every input permutation", () => {
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
-test("write transaction reports SQLite lock as a bounded busy failure", () => {
+test("repository accepts an injected zero busy timeout and reports a lock failure", () => {
   const directory = mkdtempSync(join(tmpdir(), "catalog-lock-"));
   const path = join(directory, "locked.db");
   const holder = new DatabaseSync(path); holder.exec("CREATE TABLE Product(Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Brand TEXT, Category TEXT); CREATE TABLE SellerProduct(Id INTEGER PRIMARY KEY AUTOINCREMENT, SellerName TEXT NOT NULL, ProductId INTEGER NOT NULL REFERENCES Product(Id), SellerProductId INTEGER NOT NULL);");
   holder.exec("BEGIN EXCLUSIVE");
   try {
-    assert.throws(() => new SqliteCatalogRepository(path).transact(false, () => {}), (error: unknown) => {
+    assert.throws(() => new SqliteCatalogRepository(path, withOperationalLimits({ busyTimeoutMs: 0 })).transact(false, () => {}), (error: unknown) => {
       const code = typeof error === "object" && error !== null && "code" in error ? (error as { code?: unknown }).code : undefined;
       return code === "ERR_SQLITE_BUSY" || code === "SQLITE_BUSY" || (error instanceof Error && /database is locked/i.test(error.message));
     });

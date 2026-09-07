@@ -3,6 +3,7 @@ import { DatabaseSync, type SQLInputValue, type SQLOutputValue } from "node:sqli
 import { CANONICALIZATION_VERSION, canonicalizeProduct, type CanonicalProductIdentity } from "../domain/product-identity.ts";
 import { ConsolidationService, type CatalogRepository, type CatalogTransaction, type ConsolidationSummary } from "../application/consolidation.ts";
 import type { SellerEntry, ValidatedInput } from "../domain/input.ts";
+import { DEFAULT_OPERATIONAL_LIMITS, withOperationalLimits, type OperationalLimits } from "../domain/operational-limits.ts";
 
 export const CATALOG_SCHEMA_VERSION = 1;
 export { CANONICALIZATION_VERSION };
@@ -110,11 +111,12 @@ class SqliteTransaction implements CatalogTransaction {
 /** SQLite adapter: owns connections, busy limits, transaction lifecycle, and rollback-only dry runs. */
 export class SqliteCatalogRepository implements CatalogRepository {
   private readonly path: string;
-  constructor(path: string) { this.path = path; }
+  private readonly limits: OperationalLimits;
+  constructor(path: string, limits: OperationalLimits = DEFAULT_OPERATIONAL_LIMITS) { this.path = path; this.limits = withOperationalLimits(limits); }
   transact(dryRun: boolean, work: (transaction: CatalogTransaction) => void): void {
     const database = new DatabaseSync(this.path, { enableForeignKeyConstraints: true });
     try {
-      database.exec("PRAGMA busy_timeout = 5000");
+      database.exec(`PRAGMA busy_timeout = ${this.limits.busyTimeoutMs}`);
       database.exec("BEGIN IMMEDIATE");
       work(new SqliteTransaction(database));
       database.exec(dryRun ? "ROLLBACK" : "COMMIT");
@@ -126,6 +128,6 @@ export class SqliteCatalogRepository implements CatalogRepository {
 }
 
 /** Convenience production entrypoint; core orchestration remains adapter independent. */
-export function consolidate(input: ValidatedInput, databasePath: string, dryRun: boolean, runId: string): ConsolidationSummary {
-  return new ConsolidationService(new SqliteCatalogRepository(databasePath)).consolidate(input, dryRun, runId);
+export function consolidate(input: ValidatedInput, databasePath: string, dryRun: boolean, runId: string, limits: OperationalLimits = DEFAULT_OPERATIONAL_LIMITS): ConsolidationSummary {
+  return new ConsolidationService(new SqliteCatalogRepository(databasePath, limits)).consolidate(input, dryRun, runId);
 }

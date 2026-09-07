@@ -40,7 +40,7 @@ Fixtures JSON/SQLite confirmam a amostra, mas não elevam observações a requis
 
 ## 2. O consolidator: regras fechadas e explicáveis
 
-A entrada passa por validação fechada: objetos e campos permitidos, limites de tamanho/linhas, diagnósticos limitados e deduplicação estável. IDs de produto do vendedor são texto opaco e só têm significado no vendedor. A identidade para comparação é canônica, explicável e versionada: `(Name, Brand, Category)` normalizado, com aliases pequenos, revisados e versionados. Não há distância fuzzy, embeddings ou LLM em runtime.
+A entrada passa por validação fechada: objetos e campos permitidos, limites de tamanho/linhas configuráveis, diagnósticos limitados e deduplicação estável. Os padrões são 256 MiB de entrada, 1.000.000 linhas, 16.384 caracteres por campo, 100 diagnósticos renderizados e 30.000 ms de espera SQLite. IDs de produto do vendedor são texto opaco e só têm significado no vendedor. A identidade para comparação é canônica, explicável e versionada: `(Name, Brand, Category)` normalizado, com aliases pequenos, revisados e versionados. Não há distância fuzzy, embeddings ou LLM em runtime.
 
 A migração SQLite preserva campos de apresentação e acrescenta a identidade de comparação. As restrições de unicidade (inclusive a relação vendedor/ID opaco) são a última autoridade de idempotência. Uma única transação `BEGIN IMMEDIATE` cobre migração, resolução, inserção e links; qualquer ambiguidade, conflito ou erro desfaz o lote. Colisão canônica não escolhe arbitrariamente: devolve candidatos estáveis e aborta. SQL é parametrizado, caminhos são fornecidos explicitamente, entrada e saída são limitadas e o resumo do CLI não expõe linhas, SQL, segredos ou telemetria.
 
@@ -80,6 +80,18 @@ flowchart TB
 ```
 
 Em vez de um script monolítico de agente, Harness é preferível aqui porque componentes podem ser trocados sem redesenhar o fluxo, sessões são duráveis/auditáveis, cada projeto é isolado, efeitos podem ser revertidos, execuções são reproduzíveis e o modelo é portátil por seam. A ressalva é importante: Harness está em developer preview e a versão/configuração é fixada; atualizações exigem revisão e nova validação, não confiança em compatibilidade implícita.
+
+### Limites operacionais para catálogos maiores
+
+O parser continua sendo um parser de array JSON **em memória**: ele não é streaming e não promete capacidade ilimitada; todo o arquivo e a estrutura analisada precisam caber no envelope de memória do processo Node configurado. Para um catálogo maior que os padrões, use apenas valores inteiros seguros:
+
+```bash
+node src/cli.ts --input ./products.json --database /tmp/catalog-disposable.db \
+  --max-input-bytes 536870912 --max-rows 2000000 --max-field-length 32768 \
+  --max-diagnostics 200 --busy-timeout-ms 60000 --format json
+```
+
+Os quatro primeiros limites devem ser positivos; `--busy-timeout-ms 0` significa deliberadamente não esperar por lock. `--max-diagnostics` só limita o volume de detalhes renderizados—o total de linhas inválidas continua completo—e não limita ingestão. O timeout SQLite é política de espera de lock, não limite de arquivo ou linhas.
 
 ## 4. Modelos, custos e recuperação de rate limit
 

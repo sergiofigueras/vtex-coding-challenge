@@ -1,8 +1,5 @@
 import { canonicalizeProduct } from "./product-identity.ts";
-
-export const MAX_FIELD_LENGTH = 1_000;
-export const MAX_DIAGNOSTICS = 20;
-export const MAX_INPUT_ROWS = 10_000;
+import { DEFAULT_OPERATIONAL_LIMITS, withOperationalLimits, type OperationalLimits } from "./operational-limits.ts";
 
 export interface SellerEntry {
   readonly Id: string;
@@ -57,11 +54,11 @@ function sellerEntryKey(entry: Pick<SellerEntry, "SellerName" | "Id">): string {
   return JSON.stringify([entry.SellerName.trim(), entry.Id.trim()]);
 }
 
-function addDiagnostic(diagnostics: RowDiagnostic[], value: RowDiagnostic): void {
-  if (diagnostics.length < MAX_DIAGNOSTICS) diagnostics.push(value);
+function addDiagnostic(diagnostics: RowDiagnostic[], value: RowDiagnostic, limits: OperationalLimits): void {
+  if (diagnostics.length < limits.maxDiagnostics) diagnostics.push(value);
 }
 
-function validateRow(value: unknown, index: number): SellerEntry | RowDiagnostic {
+function validateRow(value: unknown, index: number, limits: OperationalLimits): SellerEntry | RowDiagnostic {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     return diagnostic(index, "invalid_row_type", "row must be an object");
   }
@@ -74,13 +71,13 @@ function validateRow(value: unknown, index: number): SellerEntry | RowDiagnostic
     const fieldValue = row[field];
     if (typeof fieldValue !== "string") return diagnostic(index, "invalid_type", `${field} must be a string`);
     if (fieldValue.trim().length === 0) return diagnostic(index, "invalid_value", `${field} must not be whitespace only`);
-    if (fieldValue.length > MAX_FIELD_LENGTH) return diagnostic(index, "length_exceeded", `${field} exceeds ${MAX_FIELD_LENGTH} characters`);
+    if (fieldValue.length > limits.maxFieldLength) return diagnostic(index, "length_exceeded", `${field} exceeds ${limits.maxFieldLength} characters`);
   }
   if (row.Brand !== null && typeof row.Brand !== "string") {
     return diagnostic(index, "invalid_type", "Brand must be a string or null");
   }
-  if (typeof row.Brand === "string" && row.Brand.length > MAX_FIELD_LENGTH) {
-    return diagnostic(index, "length_exceeded", `Brand exceeds ${MAX_FIELD_LENGTH} characters`);
+  if (typeof row.Brand === "string" && row.Brand.length > limits.maxFieldLength) {
+    return diagnostic(index, "length_exceeded", `Brand exceeds ${limits.maxFieldLength} characters`);
   }
   return {
     Id: row.Id as string,
@@ -91,7 +88,8 @@ function validateRow(value: unknown, index: number): SellerEntry | RowDiagnostic
   };
 }
 
-export function parseAndValidateInput(bytes: string): ValidationResult {
+export function parseAndValidateInput(bytes: string, limits: OperationalLimits = DEFAULT_OPERATIONAL_LIMITS): ValidationResult {
+  limits = withOperationalLimits(limits);
   let root: unknown;
   try {
     root = JSON.parse(bytes);
@@ -101,8 +99,8 @@ export function parseAndValidateInput(bytes: string): ValidationResult {
   if (!Array.isArray(root)) {
     return { ok: false, error: { invalidCount: 1, diagnostics: [diagnostic(0, "invalid_root", "root must be an array")], diagnosticsTruncated: false } };
   }
-  if (root.length > MAX_INPUT_ROWS) {
-    return { ok: false, error: { invalidCount: 1, diagnostics: [diagnostic(0, "row_limit_exceeded", `input exceeds ${MAX_INPUT_ROWS} rows`)], diagnosticsTruncated: false } };
+  if (root.length > limits.maxRows) {
+    return { ok: false, error: { invalidCount: 1, diagnostics: [diagnostic(0, "row_limit_exceeded", `input exceeds ${limits.maxRows} rows`)], diagnosticsTruncated: false } };
   }
 
   const diagnostics: RowDiagnostic[] = [];
@@ -112,10 +110,10 @@ export function parseAndValidateInput(bytes: string): ValidationResult {
   let duplicates = 0;
   for (const [zeroIndex, value] of root.entries()) {
     const index = zeroIndex + 1;
-    const row = validateRow(value, index);
+    const row = validateRow(value, index, limits);
     if ("code" in row) {
       invalidCount++;
-      addDiagnostic(diagnostics, row);
+      addDiagnostic(diagnostics, row, limits);
       continue;
     }
     const key = sellerEntryKey(row);
@@ -131,7 +129,7 @@ export function parseAndValidateInput(bytes: string): ValidationResult {
       if (compareOriginalAttributes(row, retained) < 0) entries[existing.entryIndex] = row;
     } else {
       invalidCount++;
-      addDiagnostic(diagnostics, diagnostic(index, "seller_entry_conflict", "seller entry conflicts with an earlier row"));
+      addDiagnostic(diagnostics, diagnostic(index, "seller_entry_conflict", "seller entry conflicts with an earlier row"), limits);
     }
   }
   if (invalidCount > 0) {

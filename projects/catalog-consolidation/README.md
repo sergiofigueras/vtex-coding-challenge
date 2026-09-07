@@ -102,7 +102,17 @@ node src/cli.ts --input ./products.json --database /tmp/catalog-disposable.db --
 node src/cli.ts --input ./products.json --database /tmp/catalog-disposable.db --format json
 ```
 
-The repository test suite invokes the TypeScript entrypoint directly with Node's type-stripping support. A dry run plans the same migration and writes but rolls back the complete transaction; the disposable-copy command is the safe real-run example. Input, database, and format are explicit; expected failures have stable exit codes and JSON envelopes. Input is bounded to 5 MiB, 10,000 rows, 1,000 characters per field, and 20 rendered diagnostics; SQLite uses a 5-second busy timeout.
+The repository test suite invokes the TypeScript entrypoint directly with Node's type-stripping support. A dry run plans the same migration and writes but rolls back the complete transaction; the disposable-copy command is the safe real-run example. Input, database, and format are explicit; expected failures have stable exit codes and JSON envelopes. The in-memory parser defaults to a 256 MiB input file, 1,000,000 rows, 16,384 characters per field, and 100 rendered diagnostics; SQLite defaults to a 30,000 ms busy timeout. These are explicit policy values, not claims of streaming or unbounded capacity: the complete JSON array must fit within the configured Node.js/process memory envelope.
+
+For a larger catalog within that memory envelope, override limits explicitly:
+
+```bash
+node src/cli.ts --input ./products.json --database /tmp/catalog-disposable.db \
+  --max-input-bytes 536870912 --max-rows 2000000 --max-field-length 32768 \
+  --max-diagnostics 200 --busy-timeout-ms 60000 --format json
+```
+
+All overrides must be safe integers. The first four are positive; `--busy-timeout-ms 0` deliberately means no lock wait. `--max-diagnostics` limits rendered error detail only—the complete invalid-row count is still calculated—while `--busy-timeout-ms` controls only SQLite lock waiting. Neither changes ingestion capacity.
 
 ## Design and engineering defense
 

@@ -92,4 +92,14 @@
 | AC-009-04 | `TUTORIAL.md` sections 5–6 gives exact clean-clone installation (`npm ci` and `npm --prefix projects/catalog-consolidation ci` from the root, or `npm ci` after changing into the project), separate root infrastructure and project checks, public/fixture tests, CLI, SDD prepare/run, transcript inspection, cost report and project-local history create/validate commands, plus a deterministic SDD-004-bounded exercise verified by `node --test test/product-identity.test.ts`. |
 | AC-009-05 | `TUTORIAL.md` section 7 and `.sdd/README.md` document the identity, fixture, confidentiality, cutoff, observable/private-reasoning and provider-cost limits. `npm run sdd:history:validate -- --snapshot catalog-consolidation-pre-portable-history-2026-09-06` passes offline without model or private input. |
 
+## SDD-010: Configurable operational limits for larger catalogs
+
+| Acceptance criterion | Reproducible evidence |
+|---|---|
+| AC-010-01 | `node --test test/input.test.ts` — `has immutable large operational defaults and rejects invalid programmatic policies before I/O` proves frozen defaults and rejects invalid policy values at validation, filesystem, and SQLite boundaries before their I/O. |
+| AC-010-02 | `node --test test/cli.test.ts` — `documents and validates configurable operational limit flags before database access` covers documented defaults, duplicate, missing, zero, fractional, and unsafe values, and a valid zero busy timeout. |
+| AC-010-03 | `node --test test/input.test.ts test/cli.test.ts test/property-and-lock.test.ts` injects small row, field, diagnostic, byte, and lock thresholds. `accepts a generated valid catalog above all former operational limits` generates a valid file simultaneously above 5 MiB, 10,000 rows, and 1,000 field characters under default policy. |
+| AC-010-04 | `npm test` exercises existing validation, identity, transaction, rollback, idempotency, error, output, lock, and dry-run tests with the policy defaults; `npm run test:fixture` remains the separate hash-verified fixture command when private inputs are available. |
+| AC-010-05 | `README.md` and `TUTORIAL.md` document defaults, the copyable override command, diagnostic-versus-lock policy distinction, and in-memory limitation. `npm run check`, `npm --prefix ../.. run check`, and `git diff --check` are delivery gates. |
+
 The source manifest and traceability ledger use a closed schema and do not accept evidence fields; this separate index preserves the criterion-to-command linkage without weakening their validation contract.

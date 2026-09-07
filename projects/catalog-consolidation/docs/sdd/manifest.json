@@ -7,7 +7,7 @@
       "title": "Source brief and requirement ledger",
       "path": "docs/sdd/specs/00-source-brief-and-requirement-ledger.md",
       "kind": "product",
-      "status": "verified",
+      "status": "ready",
       "dependsOn": [],
       "requirements": ["USR-003", "USR-005", "USR-006", "ASM-005", "PROC-002", "FIX-001", "FIX-002", "FIX-003", "FIX-004"],
       "acceptanceCriteria": ["AC-000-01", "AC-000-02", "AC-000-03"]
@@ -101,6 +101,16 @@
       "dependsOn": ["SDD-000", "SDD-007", "SDD-008"],
       "requirements": ["USR-001", "USR-007"],
       "acceptanceCriteria": ["AC-009-01", "AC-009-02", "AC-009-03", "AC-009-04", "AC-009-05"]
+    },
+    {
+      "id": "SDD-010",
+      "title": "Configurable operational limits for larger catalogs",
+      "path": "docs/sdd/specs/10-configurable-operational-limits.md",
+      "kind": "product",
+      "status": "verified",
+      "dependsOn": ["SDD-001", "SDD-002", "SDD-005", "SDD-006", "SDD-007"],
+      "requirements": ["USR-008"],
+      "acceptanceCriteria": ["AC-010-01", "AC-010-02", "AC-010-03", "AC-010-04", "AC-010-05"]
     }
   ]
 }
