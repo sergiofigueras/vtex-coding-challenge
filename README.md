@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml)
 
+<img src="69cba9b378fbdcbc9db3067e_image.png"/>
+
 This repository separates a reusable software-delivery engine from the projects it develops. The complete DeepSeek Harness/OpenAI control plane lives in [`engine/`](engine/); the fully implemented VTEX catalog consolidator is the first independently specified project under [`projects/catalog-consolidation/`](projects/catalog-consolidation/). Its application source, migrations, tests, specifications, evidence, and runbook were produced through bounded engine runs rather than a direct outer-agent implementation.
 
 DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model call. The engine selects one project, turns a dependency-ordered subset of that project's specs into a bounded headless implementation run, verifies the result, and maps provider cost back to the project and change.
