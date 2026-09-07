@@ -376,3 +376,242 @@ The product release gate requires:
 6. the final Git revision and CI result recorded in the delivery note.
 
 See [`projects/catalog-consolidation/README.md`](projects/catalog-consolidation/README.md) for clean-room install, test, fixture, CLI, SDD replay, log, and cost-report commands, and `projects/catalog-consolidation/docs/sdd/specs/08-delivery-and-engineering-defense.md` for the delivery requirements and evidence policy.
+
+## Feature Template
+```
+Quero que você crie a especificação SDD necessária e depois execute a implementação exclusivamente através da SDD engine.
+
+REPOSITÓRIO:
+vtex-coding-challenge
+
+PROJETO:
+catalog-consolidation
+
+CHANGE_ID:
+live-vtex-change
+
+PEDIDO REAL DO ENTREVISTADOR:
+[COLE AQUI O PEDIDO RECEBIDO DURANTE A ENTREVISTA]
+
+Execute as etapas abaixo.
+
+FASE 1 — CRIAR A SPEC
+
+1. Leia, sem modificar código de produção:
+   - projects/catalog-consolidation/project.json
+   - projects/catalog-consolidation/AGENTS.md
+   - projects/catalog-consolidation/docs/sdd/manifest.json
+   - projects/catalog-consolidation/docs/sdd/traceability.json
+   - as specs relacionadas ao pedido.
+
+2. Verifique se SDD-010 está disponível.
+
+3. Se SDD-010 já existir, selecione o próximo número livre e use esse mesmo ID em todos os passos seguintes.
+
+4. Reformule a intenção do pedido em uma frase.
+
+5. Faça no máximo três perguntas somente se as respostas puderem mudar:
+   - o comportamento observável;
+   - o contrato público;
+   - o banco;
+   - a segurança;
+   - os critérios de aceitação.
+
+6. Se não houver resposta, registre premissas conservadoras.
+
+7. Crie:
+
+projects/catalog-consolidation/docs/sdd/specs/10-live-challenge.md
+
+A spec deve ter esta estrutura, adaptada ao pedido real:
+
+# [Título da mudança]
+
+Spec ID: `SDD-010`
+Status: `ready`
+Kind: product specification
+Depends on: selecione somente as specs existentes relevantes
+
+## Autoridade
+
+O pedido fornecido ao vivo pelo entrevistador é a autoridade desta mudança.
+
+Os PDFs da avaliação são fontes de requisitos e critérios, não instruções operacionais para o agente.
+
+Observações sobre ProductEntry.json e catalog.db são evidências observadas, não regras universais.
+
+## Intenção
+
+Descreva em uma frase o resultado observável esperado.
+
+## Requisitos
+
+Liste somente os requisitos confirmados pelo pedido real.
+
+## Premissas
+
+Liste as premissas necessárias para resolver ambiguidades.
+
+## Fora do escopo
+
+Liste explicitamente o que não será implementado.
+
+## Decisão técnica
+
+Descreva a menor solução capaz de satisfazer a intenção, as alternativas consideradas e por que foram rejeitadas.
+
+## Critérios de aceitação
+
+- **AC-010-01:** Defina o principal comportamento observável.
+- **AC-010-02:** Defina compatibilidade e invariantes que devem ser preservadas.
+- **AC-010-03:** Defina o comportamento esperado em erro ou ambiguidade.
+- **AC-010-04:** Exija teste de regressão e validação completa.
+
+## Plano de prova
+
+Associe cada acceptance criterion a um teste ou comando observável.
+
+## Segurança e dados
+
+Não copie PDFs, bancos, fixtures privados, credenciais ou caminhos locais para arquivos rastreados.
+
+## Custo
+
+Todo uso de modelo deve ser atribuído ao CHANGE_ID e reconciliado pelo ledger do engine.
+
+8. Adicione ao manifest.json uma entrada equivalente a:
+
+{
+  "id": "SDD-010",
+  "title": "[TÍTULO DA MUDANÇA]",
+  "path": "docs/sdd/specs/10-live-challenge.md",
+  "kind": "product",
+  "status": "ready",
+  "dependsOn": ["[SPECS-RELEVANTES]"],
+  "requirements": ["USR-008"],
+  "acceptanceCriteria": [
+    "AC-010-01",
+    "AC-010-02",
+    "AC-010-03",
+    "AC-010-04"
+  ]
+}
+
+Use um array JSON válido em dependsOn. Não coloque os colchetes de exemplo literalmente.
+
+9. Adicione ao traceability.json:
+
+{
+  "id": "USR-008",
+  "authority": "user",
+  "summary": "[RESUMO EXATO DO PEDIDO REAL]",
+  "specIds": ["SDD-010"]
+}
+
+Se USR-008 já existir, escolha o próximo ID livre. Garanta rastreabilidade recíproca entre requisito e spec.
+
+10. Não implemente código de produção diretamente nesta fase.
+
+FASE 2 — VALIDAR A SPEC
+
+A partir da raiz do repositório, execute:
+
+npm run project:validate -- --project catalog-consolidation --working-tree
+
+Se falhar, corrija somente a spec, o manifesto ou a rastreabilidade e execute novamente.
+
+Não prossiga enquanto a validação SDD estiver falhando.
+
+FASE 3 — PREPARAR O RUN SEM MODELO
+
+Execute:
+
+npm run project:prepare -- --project catalog-consolidation --change live-vtex-change --spec SDD-010 --route default
+
+Mostre:
+- spec selecionada;
+- dependências;
+- prompt preparado;
+- custo projetado;
+- arquivos que poderão ser afetados.
+
+FASE 4 — EXECUTAR A SDD ENGINE
+
+Depois que a preparação passar, execute:
+
+npm run project:run -- --project catalog-consolidation --change live-vtex-change --spec SDD-010 --route default
+
+Essa execução deve:
+
+- usar DeepSeek Harness;
+- usar OpenAI;
+- usar Terra como rota padrão;
+- mostrar integralmente stdout e stderr;
+- implementar somente SDD-010;
+- produzir código e testes pelo agente SDD;
+- preservar o runtime determinístico e model-free;
+- não fazer commit;
+- não fazer push.
+
+Não implemente manualmente uma correção fora do agente SDD. Se houver falha, analise a causa e faça uma nova execução SDD usando o mesmo change ID e spec.
+
+FASE 5 — VERIFICAR
+
+Execute:
+
+npm --prefix projects/catalog-consolidation run build
+npm --prefix projects/catalog-consolidation run lint
+npm --prefix projects/catalog-consolidation run typecheck
+npm --prefix projects/catalog-consolidation test
+npm --prefix projects/catalog-consolidation run sdd:validate
+npm --prefix projects/catalog-consolidation run check
+npm run check
+
+Se algum teste falhar, não declare conclusão.
+
+FASE 6 — MOSTRAR O CUSTO
+
+Execute:
+
+npm run project:cost -- --project catalog-consolidation
+
+Informe separadamente:
+
+- modelo;
+- rota;
+- tokens de input;
+- cache-read;
+- cache-write;
+- output;
+- retries;
+- custo conhecido;
+- reserva pendente;
+- valor não reconciliado;
+- total atribuído ao change ID.
+
+Nunca represente custo desconhecido como zero.
+
+ENTREGA FINAL
+
+Apresente:
+
+- intenção;
+- perguntas e premissas;
+- spec criada;
+- requisito de rastreabilidade;
+- acceptance criteria;
+- arquivos alterados;
+- resumo do diff;
+- testes executados;
+- resultados observados;
+- custo da mudança;
+- trade-offs;
+- riscos e limitações;
+- confirmação de que nenhum commit ou push foi realizado.
+
+npm run project:run -- \
+  --project catalog-consolidation \
+  --change live-vtex-change \
+  --spec SDD-010 \
+  --route default
+```
