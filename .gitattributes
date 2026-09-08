@@ -1,0 +1,2 @@
+# Immutable content-addressed history artifacts preserve payload bytes, including Markdown hard breaks.
+projects/*/.sdd/history/*/artifacts/* whitespace=-trailing-space

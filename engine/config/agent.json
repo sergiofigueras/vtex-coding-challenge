@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "harnessPackage": "@deepseek-ai/dsh",
+  "harnessVersion": "0.1.2-rc.1",
+  "profile": "headless",
+  "patch": "config/dsh/automation.patch.yml",
+  "provider": "openai",
+  "model": "gpt-5.6-terra",
+  "economyModel": "gpt-5.6-luna",
+  "escalationModel": "gpt-5.6-sol",
+  "reasoningEffort": "medium",
+  "maxOutputTokensPerRequest": 16384,
+  "longContextInputTokenLimit": 272000,
+  "serviceTierRequested": null,
+  "requiredOpenAIProjectTier": "standard/default",
+  "serviceTierAccounting": "standard-assumed",
+  "routes": {
+    "economy": {
+      "model": "gpt-5.6-luna",
+      "reasoningEffort": "low",
+      "patch": "config/dsh/economy.patch.yml"
+    },
+    "default": {
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "patch": null
+    },
+    "escalation": {
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "high",
+      "patch": "config/dsh/escalation.patch.yml",
+      "requiresApproval": true
+    }
+  },
+  "permissionMode": "workspace-write"
+}
