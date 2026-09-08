@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "project": "sdd-delivery-engine",
+  "specifications": [
+    {
+      "id": "SDD-090",
+      "title": "DeepSeek Harness SDD workflow with OpenAI models",
+      "path": "docs/sdd/specs/90-agent-sdd-workflow.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": [],
+      "requirements": ["ENG-USR-001", "ENG-USR-002", "ENG-USR-003"],
+      "acceptanceCriteria": ["AC-090-01", "AC-090-02", "AC-090-03", "AC-090-04", "AC-090-05"]
+    },
+    {
+      "id": "SDD-091",
+      "title": "OpenAI cost accounting and budgets",
+      "path": "docs/sdd/specs/91-cost-accounting-and-budgets.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090"],
+      "requirements": ["ENG-USR-003", "ENG-USR-004"],
+      "acceptanceCriteria": ["AC-091-01", "AC-091-02", "AC-091-03", "AC-091-04", "AC-091-05"]
+    },
+    {
+      "id": "SDD-092",
+      "title": "Traceability and release gates",
+      "path": "docs/sdd/specs/92-traceability-and-release-gates.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090", "SDD-091"],
+      "requirements": ["ENG-USR-002", "ENG-USR-004", "ENG-PROC-001"],
+      "acceptanceCriteria": ["AC-092-01", "AC-092-02", "AC-092-03", "AC-092-04"]
+    },
+    {
+      "id": "SDD-093",
+      "title": "Reusable multi-project engine boundary",
+      "path": "docs/sdd/specs/93-reusable-multi-project-engine.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090", "SDD-091", "SDD-092"],
+      "requirements": ["ENG-USR-005", "ENG-USR-006"],
+      "acceptanceCriteria": ["AC-093-01", "AC-093-02", "AC-093-03", "AC-093-04", "AC-093-05"]
+    },
+    {
+      "id": "SDD-094",
+      "title": "Portable SDD-history export and validation",
+      "path": "docs/sdd/specs/94-portable-sdd-history.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090", "SDD-091", "SDD-092", "SDD-093"],
+      "requirements": ["ENG-USR-007"],
+      "acceptanceCriteria": ["AC-094-01", "AC-094-02", "AC-094-03", "AC-094-04", "AC-094-05"]
+    },
+    {
+      "id": "SDD-095",
+      "title": "Bounded OpenAI rate-limit resilience for SDD delivery",
+      "path": "docs/sdd/specs/95-rate-limit-resilience.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-090", "SDD-091", "SDD-092", "SDD-093", "SDD-094"],
+      "requirements": ["ENG-USR-008"],
+      "acceptanceCriteria": ["AC-095-01", "AC-095-02", "AC-095-03", "AC-095-04", "AC-095-05", "AC-095-06", "AC-095-07"]
+    },
+    {
+      "id": "SDD-096",
+      "title": "Public presentation artifacts and historical trailer correction",
+      "path": "docs/sdd/specs/96-public-presentation-ci-policy.md",
+      "kind": "infrastructure",
+      "status": "verified",
+      "dependsOn": ["SDD-091", "SDD-092", "SDD-094"],
+      "requirements": ["ENG-USR-009"],
+      "acceptanceCriteria": ["AC-096-01", "AC-096-02", "AC-096-03", "AC-096-04", "AC-096-05"]
+    }
+  ]
+}

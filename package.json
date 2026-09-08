@@ -1,0 +1,35 @@
+{
+  "name": "vtex-sdd-delivery-workspace",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Reusable DeepSeek Harness SDD engine and independently specified software projects",
+  "packageManager": "npm@11.12.1",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "workspaces": [
+    "engine"
+  ],
+  "scripts": {
+    "bootstrap": "npm ci && npm --prefix projects/catalog-consolidation ci && npm run sources:ingest",
+    "dsh:config": "npm --workspace @sdd/delivery-engine run dsh:config",
+    "engine:test": "npm --workspace @sdd/delivery-engine test",
+    "project:create": "npm --workspace @sdd/delivery-engine run project:create --",
+    "project:validate": "npm --workspace @sdd/delivery-engine run sdd:validate --",
+    "project:sources": "npm --workspace @sdd/delivery-engine run sources:ingest --",
+    "project:prepare": "npm --workspace @sdd/delivery-engine run sdd:prepare --",
+    "project:run": "npm --workspace @sdd/delivery-engine run sdd:run --",
+    "project:cost-record": "npm --workspace @sdd/delivery-engine run cost:record --",
+    "project:cost": "npm --workspace @sdd/delivery-engine run cost:report --",
+    "project:history:create": "npm --workspace @sdd/delivery-engine run project:history:create --",
+    "project:history:validate": "npm --workspace @sdd/delivery-engine run project:history:validate --",
+    "sources:ingest": "npm run project:sources -- --project catalog-consolidation",
+    "sdd:prepare": "npm run project:prepare -- --project catalog-consolidation",
+    "sdd:run": "npm run project:run -- --project catalog-consolidation",
+    "sdd:validate": "npm run project:validate -- --all",
+    "cost:record": "npm run project:cost-record -- --project catalog-consolidation",
+    "cost:report": "npm run project:cost --",
+    "test": "npm run engine:test",
+    "check": "npm run dsh:config && npm run sdd:validate && npm test"
+  }
+}
