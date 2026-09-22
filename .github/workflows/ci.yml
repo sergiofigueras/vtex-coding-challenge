@@ -36,6 +36,7 @@ jobs:
             npm run project:validate -- --project "${project_id}" --working-tree
 
             if test -f "${project_dir}/package-lock.json"; then
+              npm run project:sources -- --project "${project_id}"
               npm --prefix "${project_dir}" ci
               npm --prefix "${project_dir}" run check
             fi
