@@ -1,0 +1,33 @@
+**Change ID:** `catalog-one-consolidation`  
+**Requested spec:** SDD-005
+
+Implemented the SDD-005 transactional consolidation slice, but it is **not verified** because the fixture oracle acceptance criterion fails. I therefore did **not** update SDD-005 status or `docs/sdd/traceability.json`.
+
+### Changed files
+- `src/domain/contracts.ts`
+  - Added atomic consolidation repository capability and resolution typing.
+- `src/application/consolidation-service.ts`
+  - Uses the repository’s atomic consolidate operation when available.
+- `src/adapters/sqlite-catalog-repository.ts`
+  - Implements a single `BEGIN IMMEDIATE` transaction covering migration, resolution, product/identity insertion, seller linking, FK validation, commit/rollback, dry run, link-conflict detection, and idempotent links.
+  - Uses shared SDD-004 canonicalization for identity migration and inserts.
+- `src/cli.ts`
+  - Removes the prior separate durable migration call so migration/import are one transaction.
+- `src/types/node-shim.d.ts`
+  - Types SQLite insert results needed for generated product IDs.
+- `test/sdd-consolidation-idempotency.test.mjs`
+  - Adds executable coverage for AC-005-01 through AC-005-06.
+
+### Proof commands run
+- `npm run build` — passed.
+- `node --test test/sdd-system-boundary.test.mjs test/sdd-catalog-schema.test.mjs test/sdd-product-identity.test.mjs` — passed (15/15).
+- `npm run build && node --test test/sdd-consolidation-idempotency.test.mjs` — 2/3 tests passed.
+- `npm run check` — **failed**: 24/25 tests passed.
+
+### Unresolved decision / blocker
+`AC-005-03` specifies that the private clean fixture must insert exactly one new product and finish with 976 products. The new fixture acceptance test deterministically observes **three** new products (rather than one), so the transaction produces a state inconsistent with the stated fixture oracle.
+
+I kept the failing assertion in place rather than weaken the acceptance criterion or change the SDD status. Resolving it requires reconciling the current SDD-004 normalization/alias rules with the fixture oracle; I did not inspect or expose raw fixture contents outside executable test handling.
+
+### Complete gate
+**No — `npm run check` did not pass.**

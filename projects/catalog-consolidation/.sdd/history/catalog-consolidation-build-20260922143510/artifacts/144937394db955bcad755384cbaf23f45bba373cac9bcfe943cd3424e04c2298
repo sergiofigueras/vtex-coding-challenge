@@ -1,0 +1,43 @@
+Change ID: `catalog-one-safety`  
+Requested spec: `SDD-006`
+
+### Changed files
+- `src/cli.ts` — stable expected-error taxonomy, JSON failure envelope, `--debug`, `--verbose-local`, input-byte limit, safe error rendering.
+- `src/domain/contracts.ts` — success/failure output contract types and application error codes.
+- `src/application/consolidation-service.ts` — generated run metadata, normalization/schema versions, default path redaction.
+- `src/types/node-shim.d.ts` — filesystem stat size typing.
+- `README.md` — documented limits, safe output, stable error codes, and local/debug options.
+- `test/sdd-errors-security-observability.test.mjs` — SDD-006 acceptance evidence for AC-006-01 through AC-006-04.
+- `test/sdd-system-boundary.test.mjs` — aligned path assertions with SDD-006’s default-redaction requirement.
+- `docs/sdd/specs/06-errors-security-and-observability.md` — status set to `verified`; added evidence index and proof command.
+- `docs/sdd/manifest.json` — SDD-006 status set to `verified`.
+
+`docs/sdd/traceability.json` was intentionally unchanged: it is an ownership ledger and its validated schema has no evidence-index field.
+
+### Evidence
+Passed:
+```bash
+npm run sources:ingest
+npm run build && node --test test/sdd-errors-security-observability.test.mjs
+npm run sdd:validate
+```
+
+Focused acceptance evidence covers:
+- stable expected-failure codes, exit statuses, JSON envelopes, stdout/stderr separation, debug stack behavior;
+- parameterized hostile-string SQLite integration;
+- redacted default output, bounded metadata/input size, opt-in local path visibility;
+- absence of network/model-provider runtime dependencies and execution without model credentials.
+
+### Complete gate
+`npm run check` was run but **did not pass** due to an unrelated pre-existing SDD-005 fixture assertion:
+
+```text
+AC-005-03 and AC-005-04:
+expected insertedProducts = 1
+actual insertedProducts = 3
+```
+
+All SDD-006 tests passed in that complete run. I did not alter SDD-005 implementation because it is context-only and outside the requested scope.
+
+### Remaining decision/risk
+- Resolve the SDD-005 fixture-oracle discrepancy in its own authorized change before claiming the repository-wide gate passes.

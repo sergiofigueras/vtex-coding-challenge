@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "catalog-consolidation",
+  "entries": [
+    {
+      "runId": "2026-09-22t13-43-36-038z-catalog-one-foundation",
+      "changeId": "catalog-one-foundation",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t13-43-36-038z-catalog-one-foundation",
+      "changeId": "catalog-one-foundation",
+      "measurement": "unreconciled",
+      "actualUsd": null,
+      "estimatedUsd": null,
+      "accountingStatus": "unreconciled"
+    },
+    {
+      "runId": "2026-09-22t13-52-01-626z-catalog-one-foundation",
+      "changeId": "catalog-one-foundation",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t13-52-01-626z-catalog-one-foundation",
+      "changeId": "catalog-one-foundation",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.2851464,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t13-59-20-170z-catalog-one-foundation",
+      "changeId": "catalog-one-foundation",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t13-59-20-170z-catalog-one-foundation",
+      "changeId": "catalog-one-foundation",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.3959673,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-03-39-731z-catalog-one-input",
+      "changeId": "catalog-one-input",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-03-39-731z-catalog-one-input",
+      "changeId": "catalog-one-input",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.6972253,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-09-39-083z-catalog-one-schema",
+      "changeId": "catalog-one-schema",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-09-39-083z-catalog-one-schema",
+      "changeId": "catalog-one-schema",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.3952551,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-13-39-577z-catalog-one-identity",
+      "changeId": "catalog-one-identity",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-13-39-577z-catalog-one-identity",
+      "changeId": "catalog-one-identity",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5926873,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-18-13-068z-catalog-one-consolidation",
+      "changeId": "catalog-one-consolidation",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-18-13-068z-catalog-one-consolidation",
+      "changeId": "catalog-one-consolidation",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5215035,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-22-47-268z-catalog-one-safety",
+      "changeId": "catalog-one-safety",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-22-47-268z-catalog-one-safety",
+      "changeId": "catalog-one-safety",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.5456045,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-27-40-161z-catalog-one-verification",
+      "changeId": "catalog-one-verification",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-27-40-161z-catalog-one-verification",
+      "changeId": "catalog-one-verification",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.2980902,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-30-51-972z-catalog-one-release",
+      "changeId": "catalog-one-release",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-30-51-972z-catalog-one-release",
+      "changeId": "catalog-one-release",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.0752577,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    },
+    {
+      "runId": "2026-09-22t14-31-49-298z-catalog-one-history",
+      "changeId": "catalog-one-history",
+      "measurement": "estimated",
+      "actualUsd": null,
+      "estimatedUsd": 0.346608,
+      "accountingStatus": "unavailable"
+    },
+    {
+      "runId": "2026-09-22t14-31-49-298z-catalog-one-history",
+      "changeId": "catalog-one-history",
+      "measurement": "provider-reported-standard-assumed",
+      "actualUsd": 0.3178379,
+      "estimatedUsd": null,
+      "accountingStatus": "standard-assumed"
+    }
+  ],
+  "knownActualUsd": 4.1245752,
+  "unavailableEntries": 12
+}

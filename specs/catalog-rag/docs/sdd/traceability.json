@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "requirements": [
+    {
+      "id": "USR-001",
+      "authority": "user",
+      "summary": "Build a RAG application over the final consolidated SQLite catalog with grounded product evidence and citations.",
+      "specIds": ["SDD-000", "SDD-001", "SDD-002", "SDD-003", "SDD-004", "SDD-008", "SDD-009"]
+    },
+    {
+      "id": "USR-002",
+      "authority": "user",
+      "summary": "Provide a practical web interface for text search and RAG answers inside the catalog-rag project.",
+      "specIds": ["SDD-000", "SDD-003", "SDD-004", "SDD-005", "SDD-006", "SDD-008"]
+    },
+    {
+      "id": "USR-003",
+      "authority": "user",
+      "summary": "Keep the existing consolidator and final catalog safe while adding RAG and UI as an independent project.",
+      "specIds": ["SDD-000", "SDD-001", "SDD-005", "SDD-007", "SDD-008"]
+    },
+    {
+      "id": "USR-004",
+      "authority": "user",
+      "summary": "Verify that catalog answers are factually supported by retrieved evidence and causally change when relevant catalog facts change.",
+      "specIds": ["SDD-008", "SDD-009"]
+    },
+    {
+      "id": "PROC-001",
+      "authority": "process",
+      "summary": "Implement product changes through bounded repository SDD and DeepSeek Harness runs rather than direct Codex implementation.",
+      "specIds": ["SDD-000", "SDD-008", "SDD-009"]
+    },
+    {
+      "id": "PROC-002",
+      "authority": "process",
+      "summary": "Keep normal tests and release gates deterministic and offline through injected fake providers; make credentialed smoke tests opt-in.",
+      "specIds": ["SDD-002", "SDD-004", "SDD-005", "SDD-006", "SDD-007", "SDD-008", "SDD-009"]
+    },
+    {
+      "id": "PROC-003",
+      "authority": "process",
+      "summary": "Separate SDD delivery cost from runtime embedding and answer usage and never fabricate unavailable cost as zero.",
+      "specIds": ["SDD-002", "SDD-004", "SDD-007", "SDD-008"]
+    },
+    {
+      "id": "FIX-001",
+      "authority": "fixture-observation",
+      "summary": "The observed final schema has Product, ProductIdentity, and SellerProduct with canonical identity and seller-scoped text identifiers.",
+      "specIds": ["SDD-000", "SDD-001", "SDD-008"]
+    },
+    {
+      "id": "FIX-002",
+      "authority": "fixture-observation",
+      "summary": "The observed disposable final catalog has 976 products and identities, 268 seller links, and limited descriptive fields, so one product document is sufficient for the first baseline.",
+      "specIds": ["SDD-001", "SDD-003", "SDD-008", "SDD-009"]
+    }
+  ]
+}

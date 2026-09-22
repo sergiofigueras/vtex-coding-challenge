@@ -1,0 +1,56 @@
+**Change ID:** `catalog-one-history`  
+**Requested spec:** `SDD-009`
+
+Implemented the public, reviewable portion of SDD-009 and marked it **`implemented`** (not `verified`), because the required outer-operator history snapshot has not yet been created and validated.
+
+### Changed files
+- `TUTORIAL.md` — Portuguese tutorial covering:
+  - requirement/evidence authority boundaries;
+  - deterministic catalog architecture;
+  - Mermaid catalog-flow and history-provenance diagrams;
+  - DeepSeek Harness/Cordis design-time vs. model-free runtime distinction;
+  - pinned OpenAI routing, escalation and unreconciled dated cost accounting;
+  - clean-clone, fixture, disposable dry-run/rerun, history, and bounded extension commands;
+  - confidentiality, history cutoff, private-reasoning, fixture, and cost limits.
+- `docs/sdd/evidence-index.md` — criterion-level SDD-009 evidence and explicit pending external-history evidence.
+- `test/sdd-project-history-tutorial.test.mjs` — executable evidence for AC-009-03 and AC-009-04.
+- `docs/sdd/specs/09-portable-project-history-and-tutorial.md` — status changed `ready` → `implemented`.
+- `docs/sdd/manifest.json` — SDD-009 status changed `ready` → `implemented`.
+
+`docs/sdd/traceability.json` was intentionally unchanged: it is an ownership ledger with no evidence-index field.
+
+### Evidence commands
+Passed:
+```sh
+node --test test/sdd-project-history-tutorial.test.mjs
+npm run sdd:validate
+git diff --check
+```
+
+Also ran the required project gate:
+```sh
+npm run check
+```
+
+### Complete gate status
+**Did not pass.** The gate has one pre-existing/unrequested SDD-005 fixture failure, reproduced after refreshing verified private sources:
+
+```text
+test/sdd-consolidation-idempotency.test.mjs
+AC-005-03 and AC-005-04
+Expected insertedProducts: 1
+Actual insertedProducts:   3
+```
+
+Reproduction command:
+```sh
+npm run sources:ingest && node --test test/sdd-consolidation-idempotency.test.mjs
+```
+
+This is outside the authorized SDD-009 scope, so I did not alter consolidation behavior or SDD-005 evidence.
+
+### Remaining decisions / operator actions
+1. The outer operator must create and validate a **new** history snapshot with its actual unique ID and UTC cutoff.
+2. Record that invocation’s actual run/session/file counts and manifest hash in `docs/sdd/evidence-index.md` and link the reviewed `.sdd/history/<snapshot-id>/` output from `TUTORIAL.md`.
+3. Only after successful privacy/offline history validation can AC-009-01, AC-009-02, and the remaining portion of AC-009-05 be verified and SDD-009 advanced to `verified`.
+4. Resolve the separate SDD-005 fixture-count regression before expecting the full project gate to pass.

@@ -1,0 +1,15 @@
+{
+  "name": "@sdd-project/catalog-rag",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sources:ingest": "npm --prefix ../../engine run sources:ingest -- --project catalog-rag",
+    "sdd:prepare": "npm --prefix ../../engine run sdd:prepare -- --project catalog-rag",
+    "sdd:run": "npm --prefix ../../engine run sdd:run -- --project catalog-rag",
+    "sdd:validate": "npm --prefix ../../engine run sdd:validate -- --project catalog-rag",
+    "cost:record": "npm --prefix ../../engine run cost:record -- --project catalog-rag",
+    "cost:report": "npm --prefix ../../engine run cost:report -- --project catalog-rag",
+    "check": "npm run sdd:validate"
+  }
+}

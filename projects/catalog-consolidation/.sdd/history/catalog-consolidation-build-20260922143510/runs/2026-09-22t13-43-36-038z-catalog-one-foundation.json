@@ -1,0 +1,170 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-22t13-43-36-038z-catalog-one-foundation",
+  "source": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "25ead22217fd7a6a5e7394b341a294661b2d0dd5",
+    "changeId": "catalog-one-foundation",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 150000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 49152,
+      "uncachedInputTokens": 210000
+    },
+    "estimatedUsd": 1.039824,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-22T13:43:36.040Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-22t13-43-36-038z-catalog-one-foundation",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-000",
+      "SDD-001"
+    ]
+  },
+  "result": {
+    "accounting": {
+      "cumulativeKnownActualUsd": 0,
+      "knownActualAttempts": 0,
+      "reservations": [
+        "f4072446-4fe4-481f-9df8-b28737de9c9c"
+      ],
+      "unreconciledAttempts": 0
+    },
+    "attempts": [
+      {
+        "accounting": {
+          "accountingStatus": "unreconciled",
+          "actualUsd": null,
+          "budgetExceeded": false,
+          "cancelled": false,
+          "costEntryId": "ecb51504-12be-4a65-9279-f80ccd60837f",
+          "estimatedUsd": 0.346608,
+          "exit": {
+            "code": 1,
+            "signal": null
+          },
+          "reservationEntryId": "f4072446-4fe4-481f-9df8-b28737de9c9c",
+          "sourceSessionFiles": []
+        },
+        "cancelled": false,
+        "classification": "terminal",
+        "error": {
+          "message": "Harness finished without provider usage; cost is unreconciled",
+          "stderr": "dsh: PI_AI_ERROR: You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\n"
+        },
+        "metadata": {
+          "accounting": {
+            "accountingStatus": "unreconciled",
+            "actualUsd": null,
+            "budgetExceeded": false,
+            "cancelled": false,
+            "costEntryId": "ecb51504-12be-4a65-9279-f80ccd60837f",
+            "estimatedUsd": 0.346608,
+            "exit": {
+              "code": 1,
+              "signal": null
+            },
+            "reservationEntryId": "f4072446-4fe4-481f-9df8-b28737de9c9c",
+            "sourceSessionFiles": []
+          },
+          "cancelled": false,
+          "classification": {
+            "classification": "terminal",
+            "providerDelayMs": null,
+            "reason": "Failure is not an explicitly supported rate limit.",
+            "retryable": false
+          },
+          "error": {
+            "message": "Harness finished without provider usage; cost is unreconciled",
+            "stderr": "dsh: PI_AI_ERROR: You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.\n"
+          },
+          "model": "gpt-5.6-terra",
+          "outcome": "failed",
+          "route": "default",
+          "stderrPath": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/attempt-1.stderr.txt",
+          "stdoutPath": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/attempt-1.stdout.txt",
+          "success": false
+        },
+        "model": "gpt-5.6-terra",
+        "number": 1,
+        "outcome": "failed",
+        "providerDelayMs": null,
+        "route": "default",
+        "stderrPath": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/attempt-1.stderr.txt",
+        "stdoutPath": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/attempt-1.stdout.txt",
+        "success": false
+      }
+    ],
+    "changeId": "catalog-one-foundation",
+    "exitCode": 1,
+    "nextAction": null,
+    "outcome": "terminal",
+    "projectId": "catalog-consolidation",
+    "rateLimitFallback": null,
+    "requestedRoute": "default",
+    "runId": "2026-09-22t13-43-36-038z-catalog-one-foundation",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-000",
+      "SDD-001"
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/e176d8251fce918cf95f231692cdd842c1d59bb4f762ae33910b1082a7ec2e48",
+      "sha256": "e176d8251fce918cf95f231692cdd842c1d59bb4f762ae33910b1082a7ec2e48",
+      "bytes": 946,
+      "source": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1,
+      "source": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/df0862616b983a907f5396a3bad412c9c4a738509152f373e0eb18fa4bb4e788",
+      "sha256": "df0862616b983a907f5396a3bad412c9c4a738509152f373e0eb18fa4bb4e788",
+      "bytes": 150,
+      "source": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-22t13-43-36-038z-catalog-one-foundation/session"
+    }
+  ]
+}

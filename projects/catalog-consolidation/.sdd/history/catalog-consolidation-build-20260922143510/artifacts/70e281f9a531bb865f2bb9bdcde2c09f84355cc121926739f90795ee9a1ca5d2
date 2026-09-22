@@ -1,0 +1,31 @@
+Change ID: `catalog-one-foundation`
+
+### Delivered
+- Verified **SDD-000** and changed its status to `verified` in:
+  - `docs/sdd/specs/00-source-brief-and-requirement-ledger.md`
+  - `docs/sdd/manifest.json`
+- Added deterministic acceptance coverage:
+  - `test/sdd-source-boundary.test.mjs`
+  - `package.json` (`npm test`; `npm run check` now runs tests plus SDD validation)
+- Added documented verification evidence guidance to SDD-000.
+
+### Acceptance evidence
+`npm test` passes all SDD-000 checks:
+- `AC-000-01`: every traceability requirement has a valid authority and owner.
+- `AC-000-02`: Git tracks neither PDFs nor the named raw fixture files.
+- `AC-000-03`: authority, assessment, fixture-observation, and assumption documentation remain distinct.
+
+Proof commands passed:
+```bash
+npm test
+npm run sdd:validate
+npm run check
+npm --prefix ../.. run check
+```
+
+### SDD-001 scope conflict / unresolved decision
+**SDD-001 remains `ready`**. Its acceptance criteria require the actual CLI, input validation, migration planning, resolver/consolidation behavior, and database dry-run tests. Those behaviors are specified by unrequested SDD-002 through SDD-005; additionally, SDD-001 explicitly excludes product implementation in this infrastructure change. Implementing its criteria now would expand scope beyond the requested dependency boundary.
+
+`docs/sdd/traceability.json` was intentionally not changed: the validator rejects an evidence field (`unexpected field evidence`). SDD-000’s executable evidence is instead named by acceptance ID in the test file and documented in its specification.
+
+Complete validation gate: **passed**.

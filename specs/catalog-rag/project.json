@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0",
+  "id": "catalog-rag",
+  "name": "VTEX Catalog RAG Search UI",
+  "sddManifest": "docs/sdd/manifest.json",
+  "traceability": "docs/sdd/traceability.json",
+  "sourcesManifest": "config/sources.json",
+  "stateDirectory": ".sdd"
+}

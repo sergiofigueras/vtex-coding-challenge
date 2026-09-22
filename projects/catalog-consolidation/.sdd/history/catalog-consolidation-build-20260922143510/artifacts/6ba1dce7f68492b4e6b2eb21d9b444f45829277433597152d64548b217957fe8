@@ -1,0 +1,37 @@
+Implemented and verified **change ID `catalog-one-input`**, requested spec **SDD-002**.
+
+### Changed files
+- `src/domain/contracts.ts`
+- `src/adapters/json-input-reader.ts`
+- `src/adapters/deterministic-product-resolver.ts`
+- `src/application/consolidation-service.ts`
+- `src/cli.ts`
+- `test/sdd-input-contract.test.mjs`
+- `README.md`
+- `docs/sdd/specs/02-input-contract-and-validation.md`
+- `docs/sdd/manifest.json`
+
+### Delivered
+- Strict closed-object JSON validation for all five input fields.
+- Nullable `Brand`, opaque non-UUID IDs, required-string whitespace checks, documented field limits.
+- Bounded stable diagnostics with one-based source indexes and CLI exit code `2`.
+- Seller-scoped, trim-only duplicate handling; deterministic lexical representative selection.
+- Whole-batch conflict rejection before database planning.
+- Input values—including SQL-shaped, Unicode, and control-looking text—remain literal data.
+- Added SDD-002 acceptance-evidence tests for `AC-002-01` through `AC-002-04`.
+- Marked SDD-002 `verified` in both its spec and the SDD manifest.
+- `docs/sdd/traceability.json` was intentionally unchanged: its validated ownership-only schema has no evidence-index field.
+
+### Proof commands run
+```bash
+npm run sources:ingest
+npm run build && node --test test/sdd-input-contract.test.mjs
+npm run check
+```
+
+`npm run check` passed:
+- 11 tests passed.
+- SDD validation, traceability, source, cost-ledger, and secret checks passed.
+
+### Unresolved decisions
+None for SDD-002. Product-to-catalog identity resolution and mutation remain deferred to their explicitly unrequested downstream specs (SDD-004/SDD-005).

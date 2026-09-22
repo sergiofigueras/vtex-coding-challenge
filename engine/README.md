@@ -1,68 +1,114 @@
 # SDD Delivery Engine
 
-This directory is the reusable delivery engine. It owns DeepSeek Harness integration, OpenAI-only routing, spec orchestration, source ingestion, cost accounting, release validation, the delivery skill, and their tests. It contains no catalog-specific requirements or application code.
+O engine é o control plane reutilizável deste repositório. Ele integra DeepSeek Harness, rotas OpenAI, composição de prompts, validação SDD, ingestão de fontes, budgets, histórico portátil e contabilidade de custo.
 
-## Contract
+## Arquitetura
 
 ```text
-engine/                         reusable control plane
-  config/                       Harness routes, budgets, immutable prices
-  scripts/                      project creation, ingestion, execution, validation
-  .dsh/skills/sdd-delivery/     model-facing delivery instructions
-  docs/sdd/                     specifications for the engine itself
-  cost/ledger.jsonl             append-only cross-project cost history
-  test/                         offline engine tests
+engine/
+  config/                       rotas, budgets e price books
+  scripts/                      criação, materialização, validação e execução
+  .dsh/skills/sdd-delivery/     instruções usadas pelo agente
+  docs/sdd/                     specs da infraestrutura
+  cost/ledger.jsonl             ledger append-only entre projetos
+  test/                         testes offline do control plane
 
-projects/<project-id>/          independently deliverable project
-  project.json                  paths and identity consumed by the engine
-  AGENTS.md                     project-local constraints
-  config/sources.json           optional public evidence sources
-  docs/sdd/                     product specs and reciprocal traceability
-  .sdd/                         ignored prompts, inputs, sessions, and results
-  package.json                  project/application checks
+specs/<project-id>/             fonte versionada do contrato do produto
+  project.json                  identidade e paths consumidos pelo engine
+  AGENTS.md                     regras locais do projeto
+  config/sources.json           fontes públicas e hashes
+  docs/sdd/                     specs, manifesto e rastreabilidade
+
+projects/<project-id>/          área executável materializada
+  package.json                  comandos de build e teste
+  src/                          aplicação
+  test/                         evidência executável
+  .sdd/                         prompts, inputs, sessões e resultados locais
 ```
 
-Every project-scoped engine command requires `--project <project-id>`. Project IDs are lower-kebab-case directories directly below `projects/`. Descriptor paths must be relative and remain inside that directory; real paths are checked so a project symlink cannot escape the workspace boundary.
+O diretório `specs/` preserva a definição revisável de cada produto. O diretório `projects/` recebe uma cópia materializada e funciona como `cwd` e raiz de sandbox do Harness. O engine valida IDs em lower-kebab-case, mantém os paths do descriptor dentro do projeto selecionado e associa cada run ao projeto, change ID e conjunto de specs.
 
-## Generic commands
+## Materialização de um projeto versionado
 
-Run these from the repository root:
+Execute na raiz do repositório:
 
 ```bash
 npm ci
-npm run project:create -- --id example-service --title "Example Service"
-npm run project:validate -- --project example-service
-npm run project:sources -- --project example-service
-npm run project:prepare -- --project example-service --change first-slice --spec SDD-001
-npm run project:run -- --project example-service --change first-slice --spec SDD-001
-npm run project:cost -- --project example-service
-npm run project:history:create -- --project example-service --snapshot review-2026 --cutoff 2026-09-06T00:00:00Z
-npm run project:history:validate -- --project example-service --snapshot review-2026
+npm run dsh:config
+
+npm run project:create -- \
+  --id catalog-consolidation \
+  --title "VTEX Catalog Consolidation"
+cp -R specs/catalog-consolidation/. projects/catalog-consolidation/
+npm run project:validate -- \
+  --project catalog-consolidation --working-tree
 ```
 
-Project creation is model-free and refuses to overwrite an existing directory. It creates a valid empty manifest and traceability graph; write and register product specs before preparing a run.
-
-`project:prepare` validates the engine and selected project, computes a dependency-ordered prompt, and writes it under the project's ignored `.sdd/` directory without calling a model. `project:run` performs the same preparation, reserves the OpenAI budget, starts pinned Harness with the project directory as its working/sandbox root, exposes the engine-owned skill, settles provider usage, and appends a project-attributed cost event.
-
-### Bounded rate-limit recovery
-
-The catalog application runtime is deterministic and model-free: it never calls OpenAI and this recovery feature does not alter it. Recovery applies only to an interrupted engine `project:run`. The default policy makes at most three total provider attempts, waits at most 60 seconds per recognized delayed `429`/`RATE_LIMIT`, preserves the existing tree and run lock, and writes per-attempt plus aggregate logs and `result.json` under `.sdd/runs/<run-id>/`. Authentication, quota, other HTTP failures, transport, validation, budget, reconciliation, and unknown failures are terminal.
-
-Observe the run output and its result JSON; after capacity is available, invoke the same command again with the identical project/change/spec scope. An operator may reserve the final attempt for the only permitted fallback (Terra/default to economy/Luna) explicitly:
+O mesmo fluxo atende qualquer diretório `specs/<project-id>`:
 
 ```bash
-npm run project:run -- --project example-service --change first-slice --spec SDD-001 --route default --rate-limit-fallback economy
+npm run project:create -- \
+  --id <project-id> \
+  --title "<Project title>"
+cp -R "specs/<project-id>/." "projects/<project-id>/"
+npm run project:validate -- \
+  --project <project-id> --working-tree
 ```
 
-No fallback is automatic, it is rejected for economy or escalation routes, and rate-limit recovery never selects Sol. Exhaustion exits `75` with an actionable resume/capacity/fallback message; Ctrl-C exits `130` and terminates an active child with SIGTERM followed by the configured grace-period SIGKILL only if necessary. Provider availability is not promised. Usage is isolated by durable event identity per attempt, including appends to an existing session file.
+`project:create` entrega o scaffold comum. A cópia seguinte instala o contrato versionado do projeto sobre esse scaffold.
 
-## Engine verification
+## Comandos do engine
+
+```bash
+npm run project:validate -- --project <project-id> --working-tree
+npm run project:sources -- --project <project-id>
+npm run project:prepare -- --project <project-id> --change <change-id> --spec <SDD-ID>
+npm run project:run -- --project <project-id> --change <change-id> --spec <SDD-ID>
+npm run project:cost -- --project <project-id>
+npm run project:history:create -- --project <project-id> --snapshot <snapshot-id> --cutoff <UTC>
+npm run project:history:validate -- --project <project-id> --snapshot <snapshot-id>
+```
+
+### Preparação e execução
+
+`project:prepare` executa validação, fecha dependências, marca specs solicitadas como `IMPLEMENT`, inclui dependências como `CONTEXT ONLY`, projeta budget e grava os artefatos locais em `.sdd/`.
+
+`project:run` repete a preparação, reserva budget, inicia o Harness dentro da área materializada, observa uso do provider, produz o resultado do run e acrescenta o settlement ao ledger.
+
+```mermaid
+flowchart LR
+  SPEC[Spec solicitada] --> GRAPH[Grafo de dependências]
+  GRAPH --> PROMPT[Prompt delimitado]
+  PROMPT --> RESERVE[Reserva]
+  RESERVE --> HARNESS[Harness headless]
+  HARNESS --> CODE[Código + testes]
+  HARNESS --> EVENTS[Eventos de uso]
+  EVENTS --> LEDGER[Settlement no ledger]
+```
+
+### Recuperação de capacidade
+
+Runs na rota default podem reservar a tentativa final para Luna durante uma resposta `429` reconhecida:
+
+```bash
+npm run project:run -- \
+  --project <project-id> \
+  --change <change-id> \
+  --spec <SDD-ID> \
+  --route default \
+  --rate-limit-fallback economy
+```
+
+A política preserva o escopo do run, o estado do projeto e a contabilização por tentativa. Terra permanece como rota default; Luna atende o fallback economy; Sol participa somente da rota escalation aprovada.
+
+## Verificação do engine
 
 ```bash
 npm run dsh:config
 npm run sdd:validate
 npm test
 npm run check
+git diff --check
 ```
 
-CI is offline: it resolves every OpenAI-only Harness route, validates the engine and all registered projects, verifies the global ledger chain and commit trailers, scans tracked files for secrets/private inputs, and runs the engine tests. Live model execution requires `OPENAI_API_KEY`; project creation, preparation, source profiling, validation, reporting, and CI do not.
+Esses gates validam configuração do Harness, projetos materializados, grafos SDD, fontes, secrets, price books, ledger e os testes do engine. Execuções de engenharia com modelo recebem `OPENAI_API_KEY` pelo ambiente do processo; validação, preparação, relatórios e CI permanecem determinísticos.

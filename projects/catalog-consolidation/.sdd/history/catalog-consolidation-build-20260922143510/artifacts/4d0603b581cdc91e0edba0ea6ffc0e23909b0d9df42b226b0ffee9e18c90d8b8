@@ -1,0 +1,16 @@
+**Change ID:** `catalog-one-release`  
+**Requested spec:** `SDD-008`
+
+I stopped before editing because the requested specification has an explicit scope conflict.
+
+- `SDD-008` acceptance criterion **AC-008-04** requires `SDD-000` through `SDD-007` **and `SDD-010`** to be `implemented` or `verified`, with criterion-level evidence.
+- The current manifest marks these required specs as `ready`:
+  - `SDD-005`
+  - `SDD-007`
+  - `SDD-010`
+- The task authorizes implementation of **only SDD-008**. Updating those specs’ implementation/status/evidence would exceed the authorized scope, while marking SDD-008 verified without them would be unsupported.
+
+**Files changed:** none.  
+**Commands run:** none; no implementation was authorized after the scope check.  
+**Unresolved decision:** authorize delivery and evidence work for `SDD-005`, `SDD-007`, and `SDD-010` (or revise AC-008-04 / requested scope).  
+**Complete gate:** not run, because the requested release-review criterion cannot be satisfied within scope.

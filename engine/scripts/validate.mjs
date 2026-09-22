@@ -288,7 +288,9 @@ async function validateLedger(options) {
 async function validateNoSecrets(projects) {
   const listed = git(['ls-files', '--cached', '--others', '--exclude-standard'])
   if (listed.status !== 0) return
-  const trackedPaths = listed.stdout.split(/\r?\n/).filter(Boolean)
+  const deleted = git(['ls-files', '--deleted'])
+  const deletedPaths = new Set(deleted.status === 0 ? deleted.stdout.split(/\r?\n/).filter(Boolean) : [])
+  const trackedPaths = listed.stdout.split(/\r?\n/).filter(path => path && !deletedPaths.has(path))
   let publicArtifacts = new Map()
   try {
     publicArtifacts = await verifyPublicArtifacts(

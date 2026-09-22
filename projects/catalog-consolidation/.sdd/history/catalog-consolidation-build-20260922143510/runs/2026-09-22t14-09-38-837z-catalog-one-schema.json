@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-22t14-09-38-837z-catalog-one-schema",
+  "source": "runs/2026-09-22t14-09-38-837z-catalog-one-schema",
+  "state": "prepared-only",
+  "manifest": {
+    "baselineCommit": "25ead22217fd7a6a5e7394b341a294661b2d0dd5",
+    "changeId": "catalog-one-schema",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 150000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 49152,
+      "uncachedInputTokens": 210000
+    },
+    "estimatedUsd": 1.039824,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-22T14:09:38.838Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-22t14-09-38-837z-catalog-one-schema",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-003"
+    ]
+  },
+  "result": null,
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/7da48dc28d6e76483914f781e854b62e11eef3b0fd6af9d05949591c7408db5c",
+      "sha256": "7da48dc28d6e76483914f781e854b62e11eef3b0fd6af9d05949591c7408db5c",
+      "bytes": 1090,
+      "source": "runs/2026-09-22t14-09-38-837z-catalog-one-schema/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-22t14-09-38-837z-catalog-one-schema/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-22t14-09-38-837z-catalog-one-schema/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-22t14-09-38-837z-catalog-one-schema/session"
+    }
+  ]
+}

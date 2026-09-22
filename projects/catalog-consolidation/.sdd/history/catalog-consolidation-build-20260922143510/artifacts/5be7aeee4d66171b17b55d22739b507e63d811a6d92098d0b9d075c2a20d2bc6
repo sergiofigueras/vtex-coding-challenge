@@ -1,0 +1,42 @@
+Change ID: `catalog-one-verification`  
+Requested spec: `SDD-007`
+
+Implemented the requested SDD-007 hard-case test slice:
+
+- Added `test/hard-case-helpers.mjs`
+- Added all eight required standalone tests:
+  - `test/hc-01-cross-seller-match.test.ts`
+  - `test/hc-02-seller-scoped-id.test.ts`
+  - `test/hc-03-normalized-variants.test.ts`
+  - `test/hc-04-potential-duplicate.test.ts`
+  - `test/hc-05-distinct-model.test.ts`
+  - `test/hc-06-ambiguous-rollback.test.ts`
+  - `test/hc-07-rerun-order.test.ts`
+  - `test/hc-08-hostile-text.test.ts`
+- Updated `package.json` so `npm test` includes `test/hc-*.test.ts`.
+- Added `README_VTEX_ONE.md` with the complete gate, opt-in hash-verified fixture command, and matching independent commands for all eight hard cases.
+
+Proof commands run:
+
+```sh
+npm run build && node --test test/hc-*.test.ts
+npm run sources:ingest && node --test test/sdd-consolidation-idempotency.test.mjs
+npm run check
+```
+
+Results:
+
+- The eight new hard-case tests pass independently: **8/8 passed**.
+- Source ingestion verified both pinned private source hashes.
+- Complete gate **did not pass**: **36/37 tests passed**.
+- Blocking failure is pre-existing dependency evidence in `test/sdd-consolidation-idempotency.test.mjs`:
+  - `AC-005-03 and AC-005-04`
+  - Fixture first run reports `insertedProducts === 3`, but SDD-005 requires `1` (expected final total: 976 products).
+  - This is an SDD-005 consolidation/identity behavior gap, which is explicitly out of the requested SDD-007 implementation scope.
+
+Status/evidence decision:
+
+- Did **not** change SDD-007 from `ready` or update `docs/sdd/traceability.json`, because AC-007-02 cannot be evidenced while the required clean-fixture first-run oracle fails.
+- No commits or pushes were made.
+
+Unresolved decision: authorize a focused `SDD-005` repair for the three unmatched fixture variants; after that, rerun the fixture oracle and complete SDD-007 status/evidence updates.

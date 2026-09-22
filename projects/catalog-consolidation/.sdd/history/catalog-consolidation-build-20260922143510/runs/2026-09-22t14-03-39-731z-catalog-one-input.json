@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "2026-09-22t14-03-39-731z-catalog-one-input",
+  "source": "runs/2026-09-22t14-03-39-731z-catalog-one-input",
+  "state": "executed",
+  "manifest": {
+    "baselineCommit": "25ead22217fd7a6a5e7394b341a294661b2d0dd5",
+    "changeId": "catalog-one-input",
+    "currency": "USD",
+    "escalationReason": null,
+    "estimatedCalls": [
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      },
+      {
+        "cacheReadTokens": 50000,
+        "cacheWriteTokens": 0,
+        "outputTokens": 16384,
+        "uncachedInputTokens": 70000
+      }
+    ],
+    "estimatedUsage": {
+      "cacheReadTokens": 150000,
+      "cacheWriteTokens": 0,
+      "outputTokens": 49152,
+      "uncachedInputTokens": 210000
+    },
+    "estimatedUsd": 1.039824,
+    "harnessVersion": "0.1.2-rc.1",
+    "model": "gpt-5.6-terra",
+    "preparedAt": "2026-09-22T14:03:39.732Z",
+    "projectId": "catalog-consolidation",
+    "provider": "openai",
+    "reasoningEffort": "medium",
+    "route": "default",
+    "runId": "2026-09-22t14-03-39-731z-catalog-one-input",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-002"
+    ]
+  },
+  "result": {
+    "accounting": {
+      "cumulativeKnownActualUsd": 0.6972253,
+      "knownActualAttempts": 1,
+      "reservations": [
+        "acc0f335-bed8-4c68-8dbd-af49947e5410"
+      ],
+      "unreconciledAttempts": 0
+    },
+    "attempts": [
+      {
+        "accounting": {
+          "costEntryId": "3d746a2c-0d4b-41e6-80af-8f54414e372f",
+          "reservationEntryId": "acc0f335-bed8-4c68-8dbd-af49947e5410"
+        },
+        "accountingStatus": "standard-assumed",
+        "actualUsd": 0.6972253,
+        "cancelled": false,
+        "classification": "terminal",
+        "costEntryId": "3d746a2c-0d4b-41e6-80af-8f54414e372f",
+        "exitCode": 0,
+        "metadata": {
+          "accounting": {
+            "costEntryId": "3d746a2c-0d4b-41e6-80af-8f54414e372f",
+            "reservationEntryId": "acc0f335-bed8-4c68-8dbd-af49947e5410"
+          },
+          "accountingStatus": "standard-assumed",
+          "actualUsd": 0.6972253,
+          "cancelled": false,
+          "costEntryId": "3d746a2c-0d4b-41e6-80af-8f54414e372f",
+          "exitCode": 0,
+          "model": "gpt-5.6-terra",
+          "outcome": "completed",
+          "route": "default",
+          "stderrPath": "runs/2026-09-22t14-03-39-731z-catalog-one-input/attempt-1.stderr.txt",
+          "stdoutPath": "runs/2026-09-22t14-03-39-731z-catalog-one-input/attempt-1.stdout.txt",
+          "success": true
+        },
+        "model": "gpt-5.6-terra",
+        "number": 1,
+        "outcome": "completed",
+        "providerDelayMs": null,
+        "route": "default",
+        "stderrPath": "runs/2026-09-22t14-03-39-731z-catalog-one-input/attempt-1.stderr.txt",
+        "stdoutPath": "runs/2026-09-22t14-03-39-731z-catalog-one-input/attempt-1.stdout.txt",
+        "success": true
+      }
+    ],
+    "changeId": "catalog-one-input",
+    "exitCode": 0,
+    "nextAction": null,
+    "outcome": "completed",
+    "projectId": "catalog-consolidation",
+    "rateLimitFallback": null,
+    "requestedRoute": "default",
+    "runId": "2026-09-22t14-03-39-731z-catalog-one-input",
+    "schemaVersion": "1.0",
+    "specIds": [
+      "SDD-002"
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "prompt.md",
+      "path": "artifacts/ecd2e68ef211fa61d06d714d181f00c8122e0b9ebf54c210836a3e29e5f2a4b1",
+      "sha256": "ecd2e68ef211fa61d06d714d181f00c8122e0b9ebf54c210836a3e29e5f2a4b1",
+      "bytes": 1012,
+      "source": "runs/2026-09-22t14-03-39-731z-catalog-one-input/prompt.md"
+    },
+    {
+      "name": "stdout.txt",
+      "path": "artifacts/6ba1dce7f68492b4e6b2eb21d9b444f45829277433597152d64548b217957fe8",
+      "sha256": "6ba1dce7f68492b4e6b2eb21d9b444f45829277433597152d64548b217957fe8",
+      "bytes": 1640,
+      "source": "runs/2026-09-22t14-03-39-731z-catalog-one-input/stdout.txt"
+    },
+    {
+      "name": "stderr.txt",
+      "path": "artifacts/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source": "runs/2026-09-22t14-03-39-731z-catalog-one-input/stderr.txt"
+    },
+    {
+      "name": "session",
+      "path": null,
+      "sha256": null,
+      "bytes": null,
+      "source": "runs/2026-09-22t14-03-39-731z-catalog-one-input/session"
+    }
+  ]
+}

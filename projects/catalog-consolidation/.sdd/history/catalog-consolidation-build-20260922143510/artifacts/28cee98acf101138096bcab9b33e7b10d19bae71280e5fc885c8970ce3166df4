@@ -1,0 +1,34 @@
+Implemented change ID **`catalog-one-schema`** for **SDD-003**.
+
+### Changed files
+- `src/adapters/sqlite-catalog-repository.ts`
+  - Added ordered `PRAGMA user_version` migration support.
+  - Rebuilds `SellerProduct` with text opaque IDs, seller-scoped uniqueness, product index, and preserved legacy rows.
+  - Adds/backfills `ProductIdentity` with versioned canonical values and a unique fingerprint.
+  - Enforces foreign keys, transactional rollback, future-version rejection, and explicit canonical-collision failure.
+- `src/cli.ts`
+  - Applies durable migrations for normal runs; dry-runs continue to plan migrations inside rollback-only transactions.
+- `src/types/node-shim.d.ts`
+  - Added SQLite prepared-statement typings used by migration code.
+- `test/sdd-catalog-schema.test.mjs`
+  - Added executable evidence for `AC-003-01` through `AC-003-04`.
+- `test/sdd-input-contract.test.mjs`
+  - Updated its synthetic database setup to use the declared Product schema so its existing SQL-data-boundary assertion remains valid after migrations.
+- `docs/sdd/specs/03-catalog-schema-and-migrations.md`
+  - Marked `verified`; added acceptance evidence index and reproducible proof command.
+- `docs/sdd/manifest.json`
+  - Marked `SDD-003` as `verified`.
+
+`docs/sdd/traceability.json` was intentionally unchanged: it remains the validated ownership ledger and has no evidence-index field; the SDD-003 document now contains the evidence index.
+
+### Acceptance evidence
+- `npm run sources:ingest && node --test test/sdd-catalog-schema.test.mjs`
+  - All 4 SDD-003 acceptance tests passed.
+- `npm run check`
+  - Passed: TypeScript build, **15 tests**, and SDD/traceability/source/secret validation.
+
+### Remaining decisions / risks
+- No unresolved decisions for SDD-003.
+- Product identity canonicalization is limited to migration backfill support; resolution and matching policy remain correctly deferred to SDD-004.
+
+Complete gate: **passed**.

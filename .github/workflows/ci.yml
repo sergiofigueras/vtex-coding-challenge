@@ -20,18 +20,26 @@ jobs:
       - run: npm ci
       - name: DeepSeek Harness configuration compatibility
         run: npm run dsh:config
-      - name: Verify catalog implementation or bootstrap bundle
+      - name: Verify versioned specs and materialized projects
         run: |
-          if test -f projects/catalog-consolidation/project.json; then
-            npm --prefix projects/catalog-consolidation ci
-            npm --prefix projects/catalog-consolidation run check
-          else
-            printf '%s  %s\n' '0017ba10da2756e5e70974a4c5f6ab437f84cbbb6c9adef512b8701fe50e34c2' catalog-consolidation-sdd-specs.zip | sha256sum --check -
-            unzip -t catalog-consolidation-sdd-specs.zip
-            npm run project:create -- --id catalog-consolidation --title "VTEX Catalog Consolidation"
-            unzip -o catalog-consolidation-sdd-specs.zip -d .
-            npm run project:validate -- --project catalog-consolidation --working-tree
-          fi
+          for spec_dir in specs/*; do
+            test -d "${spec_dir}" || continue
+            project_id="$(basename "${spec_dir}")"
+            project_dir="projects/${project_id}"
+            project_title="$(node -e 'const fs=require("node:fs"); const value=JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(value.name)' "${spec_dir}/project.json")"
+
+            if ! test -f "${project_dir}/project.json"; then
+              npm run project:create -- --id "${project_id}" --title "${project_title}"
+              cp -R "${spec_dir}/." "${project_dir}/"
+            fi
+
+            npm run project:validate -- --project "${project_id}" --working-tree
+
+            if test -f "${project_dir}/package-lock.json"; then
+              npm --prefix "${project_dir}" ci
+              npm --prefix "${project_dir}" run check
+            fi
+          done
       - name: Verify reusable SDD engine
         run: npm run check
       - run: git diff --check

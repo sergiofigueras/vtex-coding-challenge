@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "project": "catalog-rag",
+  "specifications": [
+    {
+      "id": "SDD-000",
+      "title": "Authority, system boundary, and user journey",
+      "path": "docs/sdd/specs/00-authority-boundary-and-user-journey.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": [],
+      "requirements": ["USR-001", "USR-002", "USR-003", "PROC-001", "FIX-001"],
+      "acceptanceCriteria": ["AC-000-01", "AC-000-02", "AC-000-03", "AC-000-04", "AC-000-05"]
+    },
+    {
+      "id": "SDD-001",
+      "title": "Read-only catalog projection and sidecar schema",
+      "path": "docs/sdd/specs/01-read-only-projection-and-sidecar-schema.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-000"],
+      "requirements": ["USR-001", "USR-003", "FIX-001", "FIX-002"],
+      "acceptanceCriteria": ["AC-001-01", "AC-001-02", "AC-001-03", "AC-001-04", "AC-001-05"]
+    },
+    {
+      "id": "SDD-002",
+      "title": "Embedding providers and incremental vector index",
+      "path": "docs/sdd/specs/02-embedding-providers-and-incremental-index.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-001"],
+      "requirements": ["USR-001", "PROC-002", "PROC-003"],
+      "acceptanceCriteria": ["AC-002-01", "AC-002-02", "AC-002-03", "AC-002-04", "AC-002-05"]
+    },
+    {
+      "id": "SDD-003",
+      "title": "Hybrid retrieval and source rehydration",
+      "path": "docs/sdd/specs/03-hybrid-retrieval-and-rehydration.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-001", "SDD-002"],
+      "requirements": ["USR-001", "USR-002", "FIX-002"],
+      "acceptanceCriteria": ["AC-003-01", "AC-003-02", "AC-003-03", "AC-003-04", "AC-003-05"]
+    },
+    {
+      "id": "SDD-004",
+      "title": "Grounded answer generation and citation enforcement",
+      "path": "docs/sdd/specs/04-grounded-generation-and-citations.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-003"],
+      "requirements": ["USR-001", "USR-002", "PROC-002", "PROC-003"],
+      "acceptanceCriteria": ["AC-004-01", "AC-004-02", "AC-004-03", "AC-004-04", "AC-004-05"]
+    },
+    {
+      "id": "SDD-005",
+      "title": "Same-origin HTTP API",
+      "path": "docs/sdd/specs/05-same-origin-http-api.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-003", "SDD-004"],
+      "requirements": ["USR-002", "USR-003", "PROC-002"],
+      "acceptanceCriteria": ["AC-005-01", "AC-005-02", "AC-005-03", "AC-005-04", "AC-005-05", "AC-005-06", "AC-005-07"]
+    },
+    {
+      "id": "SDD-006",
+      "title": "Accessible text-search web interface",
+      "path": "docs/sdd/specs/06-accessible-text-search-ui.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-005"],
+      "requirements": ["USR-002", "PROC-002"],
+      "acceptanceCriteria": ["AC-006-01", "AC-006-02", "AC-006-03", "AC-006-04", "AC-006-05", "AC-006-06", "AC-006-07", "AC-006-08"]
+    },
+    {
+      "id": "SDD-007",
+      "title": "Security, observability, and runtime cost controls",
+      "path": "docs/sdd/specs/07-security-observability-and-runtime-cost.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-002", "SDD-004", "SDD-005", "SDD-006"],
+      "requirements": ["USR-003", "PROC-002", "PROC-003"],
+      "acceptanceCriteria": ["AC-007-01", "AC-007-02", "AC-007-03", "AC-007-04", "AC-007-05"]
+    },
+    {
+      "id": "SDD-008",
+      "title": "Evaluation, end-to-end verification, and delivery",
+      "path": "docs/sdd/specs/08-evaluation-verification-and-delivery.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-001", "SDD-002", "SDD-003", "SDD-004", "SDD-005", "SDD-006", "SDD-007", "SDD-009"],
+      "requirements": ["USR-001", "USR-002", "USR-003", "USR-004", "PROC-001", "PROC-002", "PROC-003", "FIX-001", "FIX-002"],
+      "acceptanceCriteria": ["AC-008-01", "AC-008-02", "AC-008-03", "AC-008-04", "AC-008-05"]
+    },
+    {
+      "id": "SDD-009",
+      "title": "Causal grounding and fact-check audit",
+      "path": "docs/sdd/specs/09-causal-grounding-and-fact-check-audit.md",
+      "kind": "product",
+      "status": "ready",
+      "dependsOn": ["SDD-003", "SDD-004", "SDD-005"],
+      "requirements": ["USR-001", "USR-004", "PROC-001", "PROC-002", "FIX-002"],
+      "acceptanceCriteria": ["AC-009-01", "AC-009-02", "AC-009-03", "AC-009-04", "AC-009-05", "AC-009-06"]
+    }
+  ]
+}

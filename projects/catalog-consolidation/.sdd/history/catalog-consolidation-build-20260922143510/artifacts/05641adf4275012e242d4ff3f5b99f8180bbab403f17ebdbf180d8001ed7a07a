@@ -1,0 +1,28 @@
+Implemented and verified **change ID `catalog-one-identity`**, requested spec **SDD-004**.
+
+### Changed files
+- `src/domain/product-identity.ts` — pure versioned canonicalization, exact aliases, resolution evidence, fingerprint-collision and potential-duplicate detection.
+- `src/domain/product-identity-aliases.ts` — reviewed v1 alias data.
+- `src/domain/contracts.ts` — candidate-read port and identity ambiguity error.
+- `src/adapters/deterministic-product-resolver.ts` — deterministic catalog-aware planning and ambiguity abort.
+- `src/adapters/sqlite-catalog-repository.ts` — supplies transaction-scoped catalog candidates.
+- `src/application/consolidation-service.ts` — passes catalog candidates to the resolver while retaining in-memory-port compatibility.
+- `src/cli.ts` — identity ambiguity returns exit code `3`.
+- `test/sdd-product-identity.test.mjs` — executable evidence for AC-004-01 through AC-004-06, including fixture oracle.
+- `README.md` — documented deterministic-matching decision and false-split limitation.
+- `docs/sdd/specs/04-product-identity-and-resolution.md` — marked `verified` with evidence index.
+- `docs/sdd/manifest.json` — marked SDD-004 `verified`.
+
+`docs/sdd/traceability.json` was intentionally unchanged: it remains a validated ownership ledger and has no evidence-index field.
+
+### Proof commands
+- `npm run sources:ingest && node --test test/sdd-product-identity.test.mjs`
+  - Passed: 7 identity evidence tests.
+- `npm run check`
+  - Passed: TypeScript build, all 22 tests, and SDD validation.
+
+### Remaining decisions / risks
+- No unresolved blocking decisions.
+- Future aliases require a reviewed ADR and collision evidence; unmatched semantic variants intentionally remain possible false splits rather than using fuzzy or model-based matching.
+
+**Complete gate:** passed.

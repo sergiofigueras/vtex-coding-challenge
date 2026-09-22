@@ -1,0 +1,6 @@
+dist/
+.npm-cache/
+.sdd/inputs/
+.sdd/runs/
+.sdd/dsh-home/
+.sdd/run.lock

@@ -1,626 +1,491 @@
-# Spec Driven Development with Deepseek Harness Engine - VTEX Assignment
+# VTEX Catalog Platform — SDD, consolidação e RAG
 
-[![CI · vtext-part-two](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml/badge.svg?branch=vtext-part-two)](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml?query=branch%3Avtext-part-two)
+[![CI](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sergiofigueras/vtex-coding-challenge/actions/workflows/ci.yml?query=branch%3Amain)
 
-<img src="69cba9b378fbdcbc9db3067e_image.png"/>
+Este repositório apresenta uma plataforma de catálogo construída com Spec Driven Development. A solução combina três elementos complementares:
 
-This repository separates a reusable software-delivery engine from the projects it develops. The complete DeepSeek Harness/OpenAI control plane lives in [`engine/`](engine/); the fully implemented VTEX catalog consolidator is the first independently specified project under [`projects/catalog-consolidation/`](projects/catalog-consolidation/). Its application source, migrations, tests, specifications, evidence, and runbook were produced through bounded engine runs rather than a direct outer-agent implementation.
+- um engine reutilizável de entrega em [`engine/`](engine/), com DeepSeek Harness, OpenAI, validação, rastreabilidade e contabilidade de custo;
+- especificações versionadas por projeto em [`specs/`](specs/), fonte canônica para criação e evolução das aplicações;
+- áreas executáveis em `projects/<project-id>/`, materializadas a partir das specs e desenvolvidas em fatias SDD verificáveis.
 
-DeepSeek Harness orchestrates the engineering agent; OpenAI supplies every model call. The engine selects one project, turns a dependency-ordered subset of that project's specs into a bounded headless implementation run, verifies the result, and maps provider cost back to the project and change.
+Os dois projetos formam uma jornada única. O **Catalog Consolidation** transforma ofertas de vendedores em um catálogo SQLite consistente e idempotente. O **Catalog RAG** projeta esse catálogo em um sidecar de busca híbrida, reidrata resultados a partir da fonte de verdade e entrega respostas grounded com citações por uma API e uma interface web.
 
-## What is ready
-
-- A standalone `engine/` package with four verified infrastructure specs (`SDD-090`–`SDD-093`), pinned Harness, OpenAI cost control, multi-project selection, traceability, and release gates.
-- A `projects/<project-id>/project.json` contract plus a model-free project scaffolder for adding new deliverables without copying engine code.
-- A completed, model-free catalog consolidation CLI under `projects/catalog-consolidation/`, with nine verified product specs (`SDD-000`–`SDD-008`) covering the boundary, input, SQLite migration, deterministic identity, consolidation, security, tests, and delivery.
-- Pinned catalog fixture URLs, byte sizes, and SHA-256 hashes; downloads stay private under the selected project's `.sdd/`.
-- DeepSeek Harness `0.1.2-rc.1`, a project-confined headless runner, an engine-owned SDD skill, and an offline configuration smoke test.
-- OpenAI-only routing: Terra is the default, Luna is the economy model, and Sol is escalation-only.
-- A deterministic portable-history exporter and offline validator; only reviewed `.sdd/history/**` snapshots (and `.sdd/README.md`) may be tracked, never raw runtime state.
-- Pre-call and live budget gates, provider-usage extraction, integer price arithmetic, and an append-only hash-chained project/change ledger.
-
-## Workspace boundary
+## Visão arquitetural
 
 ```mermaid
 flowchart LR
-  subgraph ENGINE["engine/ — reusable control plane"]
-    HARNESS["DeepSeek Harness patches"]
-    RUNNER["SDD runner + validator"]
-    COST["OpenAI budgets + global ledger"]
-    SKILL["Reusable delivery skill"]
-  end
+  USER[Operador] --> SPECS[specs por projeto]
+  SPECS --> ENGINE[SDD Engine]
+  ENGINE --> HARNESS[DeepSeek Harness + OpenAI]
+  HARNESS --> PROJECTS[projects materializados]
+  PROJECTS --> TESTS[Testes e evidências]
+  PROJECTS --> COST[Ledger de custo]
 
-  SELECTOR["--project <id>"] --> CONTRACT["projects/<id>/project.json"]
-  CONTRACT --> SPECS["Project specs + traceability"]
-  CONTRACT --> SOURCES["Project source manifest"]
-  CONTRACT --> STATE["Ignored project .sdd/ state"]
-  ENGINE --> SELECTOR
-  RUNNER --> WORK["Project application code + tests"]
-  SPECS --> RUNNER
-  SOURCES --> RUNNER
-  RUNNER --> STATE
-  RUNNER --> COST
+  INPUT[Ofertas de sellers] --> CONSOLIDATOR[Catalog Consolidation]
+  CONSOLIDATOR --> CATALOG[(catalog.db)]
+  CATALOG --> PROJECTION[Projeção determinística]
+  PROJECTION --> SIDECAR[(catalog-rag.db)]
+  SIDECAR --> RETRIEVAL[Exact + FTS5 + vetores + RRF]
+  RETRIEVAL --> API[API grounded]
+  API --> UI[Busca web acessível]
 ```
 
-The separation is enforced at runtime, not merely documented:
+### Por que esta arquitetura é adequada
 
-- Project-scoped commands require a validated lower-kebab-case project ID.
-- Descriptor paths must be relative and contained inside the selected project; real-path checks reject symlink escapes.
-- Harness starts with the selected project as its working directory and filesystem-sandbox root.
-- Prompts, downloaded inputs, session events, locks, and results stay in that project's ignored `.sdd/` directory.
-- The engine configuration, reusable skill, price books, tests, and tamper-evident cost ledger stay under `engine/`.
-- New projects reference the engine; they do not receive private copies of its runner or configuration.
+| Decisão | Valor entregue |
+|---|---|
+| Specs separadas por projeto | Cada produto possui fronteira, requisitos, dependências e critérios de aceitação próprios. |
+| Engine compartilhado | Orquestração, segurança, custo e validação evoluem uma vez e atendem todos os projetos. |
+| Consolidação determinística | A identidade de produto é explicável, versionada e reproduzível; reruns mantêm o catálogo estável. |
+| Transação SQLite única | Migração, criação de produto e vínculo de seller formam uma operação atômica. |
+| Catálogo como fonte de verdade | O RAG consulta o `catalog.db` em modo leitura e mantém artefatos derivados em um sidecar reconstruível. |
+| Retrieval híbrido | Igualdade exata, FTS5 e similaridade vetorial cobrem intenção precisa e variações de linguagem; RRF combina os rankings. |
+| Reidratação antes da resposta | Os vencedores retornam ao catálogo atual antes da geração, mantendo dados e citações alinhados. |
+| API same-origin | Browser, assets e `/api/search` compartilham a mesma origem e mantêm configuração de provider no servidor. |
+| Evidência por acceptance criterion | Cada mudança liga requisito, spec, teste, comando, resultado e custo. |
+| IA no plano de engenharia | DeepSeek Harness e OpenAI implementam fatias delimitadas; o consolidador executa localmente de forma determinística. |
 
-## Why DeepSeek Harness
+### Fronteiras de responsabilidade
 
-[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) is useful here because it is not a monolithic coding agent tied to one model vendor. It is an agent runtime built as a tree of replaceable plugins on [Cordis](https://github.com/cordiverse/cordis). The architectural foundation is described in the DeepSeek/Peking University paper [*A Programming Paradigm for Spatiotemporal Composability*](https://arxiv.org/abs/2608.25512); the concrete Harness wiring is documented in the upstream [architecture guide](https://github.com/deepseek-ai/deepseek-harness/blob/main/docs/architecture.md).
+```text
+engine/
+  config/                  rotas OpenAI, budgets e price books
+  scripts/                 criação, validação, execução, custo e histórico
+  .dsh/skills/             contrato de entrega usado pelo agente
+  docs/sdd/                specs da infraestrutura
+  cost/ledger.jsonl        ledger append-only por projeto e change ID
 
-That combination provides several practical advantages for this project:
+specs/
+  catalog-consolidation/   fonte canônica das 12 specs do consolidador
+  catalog-rag/             fonte canônica das 10 specs do RAG/API/UI
 
-- **OpenAI without a Harness fork.** The model adapter and default-model selector are ordinary plugins. This repository replaces their configuration with the `openai` Responses route while retaining the Harness agent loop, tools, persistence, policy, and session machinery.
-- **Small, reviewable composition.** Profiles assemble bundles and ordered patch layers. The checked-in base patch defines the common OpenAI catalog and safety limits; the economy and escalation overlays change only the intended route policy.
-- **Lifecycle-safe extensibility.** Cordis tracks context-mediated effects together with their cleanup operations. Removing a component can unwind registrations and resources in last-in-first-out order instead of relying on a distant, easy-to-forget global teardown path.
-- **Reactive dependencies.** Components declare what they require and provide. A dependent activates only when its requirements resolve, deactivates before a provider is withdrawn, and can reactivate when a compatible provider returns.
-- **Durable auditability.** Model inputs, messages, attempts, tool calls, and results become session events. Successful, failed, cancelled, and retried attempts can therefore be audited and included in cost rather than only the final answer surviving.
-- **Capability seams.** Models, tools, filesystem access, subprocesses, sandboxes, approvals, persistence, skills, and interfaces are swappable service-provider seams. Policy can intercept those seams without rewriting the agent loop.
-- **Cost containment.** A small spec-scoped prompt, restricted tools, no hidden subagent fan-out, exact model routes, durable usage events, and an outer budget supervisor make the cost of a change observable and subject to conservative reservations and stop thresholds.
-
-The engine still pins Harness because upstream labels it a developer preview and warns that compatibility-breaking changes should be expected.
-
-## Architectural foundation: spatiotemporal composability
-
-The paper starts from two independent problems in dynamically changing systems:
-
-| Dimension | Question | Cordis mechanism | Practical result |
-|---|---|---|---|
-| Temporal composability | What must be undone when a component leaves? | **Revertible effects:** a context transformation returns an inverse, accumulated by the runtime | Component-local teardown can restore context-mediated state without restarting the process |
-| Spatial composability | What happens when a dependency appears, disappears, or changes provider? | **Reactive coeffects:** required and provided keys are resolved against a changing context | Dependents activate, deactivate, or reload as their declared dependency view changes |
-
-Cordis unifies both mechanisms in one first-class context. A component is conceptually a triple:
-
-1. the coeffects it **requires** from its environment;
-2. the keys/services it **provides** to the environment;
-3. the effect function it runs, whose context-mediated changes yield inverse operations.
-
-Each component instance is a **fiber** with its own context, parent, dependency view, accumulated disposer, and lifecycle state. The paper's runtime correspondence is approximately `ctx.effect` for reversible effects, `ctx.get`/`ctx.set` for coeffects, `ctx.use` for component instantiation, and `fiber.dispose` for the accumulated inverse.
-
-```mermaid
-flowchart LR
-  subgraph Paper["Formal model"]
-    E["Revertible effects<br/>action + inverse"]
-    C["Reactive coeffects<br/>requires + provides"]
-    U["Unified context<br/>all mediated interaction"]
-    E --> U
-    C --> U
-  end
-
-  subgraph Cordis["Cordis runtime"]
-    F["Component fiber"]
-    L["Inactive -> Reloading -> Active -> Unloading"]
-    R["Dependency resolution + notification"]
-    D["LIFO disposer accumulation"]
-    F --> L
-    R --> L
-    L --> D
-  end
-
-  subgraph Harness["DeepSeek Harness"]
-    P["Plugin tree"]
-    S["Services and capability seams"]
-    V["Durable session events"]
-    P --> S
-    S --> V
-  end
-
-  U --> F
-  Cordis --> P
+projects/
+  <project-id>/            área executável materializada para código, testes e evidências
 ```
 
-The lifecycle is reactive rather than directly controlled by a plugin. The orchestrator requests insertion or retirement; the runtime decides when activation and deactivation are safe:
+`specs/<project-id>` é a origem versionada. `projects/<project-id>` é a área de execução selecionada pelo engine. Essa separação permite revisar o contrato do produto antes de materializar código e mantém cada run confinado ao projeto escolhido.
 
-```mermaid
-stateDiagram-v2
-  [*] --> Inactive: insert fiber
-  Inactive --> Reloading: requirements satisfied
-  Reloading --> Reloading: run next effect step
-  Reloading --> Active: activation completed
-  Reloading --> Unloading: target dependency view changed
-  Active --> Unloading: retired or dependency changed
-  Unloading --> Inactive: dependents drained and inverses applied
-  Inactive --> [*]: retired, empty, no children
-```
+## DeepSeek Harness, Cordis e OpenAI
 
-During activation, inverses are accumulated in last-in-first-out order. During withdrawal, a provider first stops advertising availability, its dependents are allowed to finish asynchronous teardown, and only then are the provider's own inverses applied. This ordering is the key connection between temporal cleanup and spatial dependency safety. Declarative configuration sits above the fibers: stable entry IDs, module URLs, configuration, isolation, interception, and enabled state are reconciled into the least disruptive fiber operations. Hot module replacement uses the same disposal/recreation machinery and rolls back to cached modules if a reload fails.
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) fornece o loop de agente, ferramentas, sessões duráveis e perfis headless. [Cordis](https://github.com/cordiverse/cordis) organiza esses componentes como serviços reativos com ciclo de vida reversível. O engine fixa a versão do Harness e aplica patches declarativos para selecionar rotas OpenAI:
 
-## DeepSeek Harness runtime architecture
-
-A running `dsh` process is assembled from configuration rather than a privileged hard-coded core:
-
-```mermaid
-flowchart TB
-  CLI["dsh CLI"] --> PROFILE["headless profile"]
-  PROFILE --> BASE["dsh-base bundle"]
-  BASE --> PROJECT["engine/config/dsh/automation.patch.yml"]
-  PROJECT --> ROUTE{"selected route"}
-  ROUTE -->|economy| LUNA["economy.patch.yml<br/>OpenAI GPT-5.6 Luna / low"]
-  ROUTE -->|default| TERRA["OpenAI GPT-5.6 Terra / medium"]
-  ROUTE -->|approved escalation| SOL["escalation.patch.yml<br/>OpenAI GPT-5.6 Sol / high"]
-
-  subgraph TREE["Resulting Cordis plugin tree"]
-    LOOP["agent loop"]
-    PROMPT["system-prompt assembly"]
-    LLM["llm-pi-ai adapter"]
-    TOOLS["scoped tool registry"]
-    SESSION["append-only session log"]
-    POLICY["sandbox + approval policy"]
-    SKILLS["engine-owned skill loader"]
-  end
-
-  LUNA --> TREE
-  TERRA --> TREE
-  SOL --> TREE
-  LOOP --> PROMPT --> LLM
-  LOOP --> TOOLS
-  LOOP --> SESSION
-  POLICY --> TOOLS
-  SKILLS --> PROMPT
-```
-
-The selected profile contributes an ordered plugin tree. `dsh-base` supplies model adapters, the agent loop, session persistence, tools, credentials, sandboxing, approvals, and other services. `dsh-headless` adds the one-shot runner. Engine `--patch` files target plugin rows by ID and replace their configuration; `npm run dsh:config` resolves and verifies every route without making a model call.
-
-One agent **turn** contains zero or more **steps**. Each step is one model request followed by the tool calls it requests:
+- **default:** Terra com esforço médio, apropriado para implementação e testes;
+- **economy:** Luna com esforço baixo, apropriado para tarefas mecânicas;
+- **escalation:** Sol com aprovação e justificativa explícitas.
 
 ```mermaid
 sequenceDiagram
-  participant Runner as Outer SDD runner
-  participant Agent as Harness agent loop
-  participant Log as Durable session log
-  participant OpenAI as OpenAI Responses API
-  participant Tools as Guarded local tools
-  participant Cost as Cost observer
+  participant O as Operador
+  participant E as SDD Engine
+  participant H as DeepSeek Harness
+  participant M as OpenAI
+  participant P as Projeto
 
-  Runner->>Runner: select project + validate specs + estimate budget
-  Runner->>Agent: start project-confined headless task
-  Agent->>Log: turn/start + user/message
-  Agent->>Agent: assemble prompt sections + tool schemas
-  Agent->>OpenAI: llm/stream
-  OpenAI-->>Agent: streamed response + provider usage
-  Agent->>Log: assistant/message or assistant/attempt
-  loop Requested tools
-    Agent->>Tools: pre-execute -> execute -> post-execute
-    Tools-->>Agent: tool/result
-    Agent->>Log: persist call and result
-  end
-  Cost->>Log: fold disjoint usage for every attempt
-  Cost-->>Runner: measured USD + budget decision
-  Agent->>Log: step/end + turn/end
-  Runner->>Runner: append cost ledger + report outcome
+  O->>E: project:prepare com project/change/spec
+  E->>E: validar grafo e ordenar dependências
+  E-->>O: prompt e reserva de custo
+  O->>E: project:run com o mesmo escopo
+  E->>H: cwd e sandbox do projeto
+  H->>M: chamada pela rota aprovada
+  H->>P: código, testes e evidências
+  H-->>E: eventos e uso do provider
+  E->>E: reconciliar custo no ledger
+  E-->>O: resultado verificável
 ```
 
-Session events are the durable source of model history: resume, fork, replay, transcript projection, and this repository's cost observer derive from the log. Live `agent/*`, `llm/stream`, and `tools/*` events are interception points for in-flight behavior. Capability seams separate a service definition, a provider, and consumers, which is why swapping the LLM adapter does not require parallel versions of the loop or tools.
+## Instalar as ferramentas necessárias
 
-## How this repository applies the architecture
+O fluxo usa Git, Node.js, npm, Python 3 com o módulo padrão `sqlite3` e `curl`. A versão recomendada é Node.js 24, compatível com o requisito do projeto (`^22.19.0 || >=24.0.0`). O npm acompanha o Node.js; as ferramentas JavaScript do engine, incluindo o DeepSeek Harness, são instaladas pelo `npm ci` na seção seguinte. Para executar `project:run`, configure também `OPENAI_API_KEY` no shell.
 
-The engine scripts are intentionally outside the model-controlled runtime and form a delivery control plane around the selected project:
-
-```mermaid
-flowchart TD
-  USER["Operator chooses project + change ID + spec IDs"] --> SELECT["Resolve projects/id/project.json<br/>reject path escape"]
-  SELECT --> VALIDATE["Validate engine, project manifest, authority, dependencies, ledger, secrets"]
-  SOURCES["Selected project's public source URLs"] --> INGEST["Deterministic download, hash verification, private profiling"]
-  INGEST --> PRIVATE["Project-local ignored .sdd/inputs inventory"]
-  VALIDATE --> PROMPT["Compact dependency-ordered prompt<br/>IMPLEMENT vs CONTEXT ONLY"]
-  PROMPT --> RESERVE["Price four estimated attempts<br/>reserve run/change budget"]
-  RESERVE --> DSH["Pinned DeepSeek Harness<br/>cwd + sandbox = selected project"]
-  PRIVATE -.->|"available only through documented local checks"| DSH
-  DSH --> OPENAI["Allow-listed OpenAI model"]
-  DSH --> WORKTREE["Selected project edits + deterministic tests"]
-  DSH --> EVENTS["Project-local ignored Harness JSONL events"]
-  EVENTS --> METER["Normalize uncached/cache-read/cache-write/output usage"]
-  METER --> GATE{"measured budget exceeded?"}
-  GATE -->|yes| STOP["terminate + record unresolved/failed outcome"]
-  GATE -->|no| SETTLE["append project-attributed settlement<br/>engine/cost/ledger.jsonl"]
-  WORKTREE --> REVIEW["human review + npm run check"]
-  SETTLE --> REVIEW
-  REVIEW --> COMMIT["commit with Cost-Entry trailer"]
-  COMMIT --> CI["offline GitHub release gates"]
-```
-
-The deterministic boundary is deliberate. Project creation and selection, source downloading, hashing, schema profiling, dependency ordering, validation, pricing arithmetic, tests, and CI use no model. Harness and OpenAI are introduced only for bounded engineering work. A project's runtime remains model-free unless that project's own specifications explicitly require otherwise; the catalog application does not.
-
-### Boundaries and non-guarantees
-
-The paper's guarantees are conditional, not magic cleanup:
-
-- Only operations mediated through the context and supplied with correct inverses are automatically reverted. External emissions such as sent network data cannot generally be undone; they require withholding/commit protocols or application-level compensation.
-- Declared dependency access resembles capability control, but untrusted code can bypass language-level objects. A real hostile-code boundary still needs a process, WebAssembly, container, or comparable external sandbox. This project uses Harness workspace confinement for a trusted coding agent; it does not claim arbitrary-code isolation.
-- Dependency cycles do not resolve automatically; mutually dependent components remain inactive unless the design is decomposed or the cycle is rejected.
-- Key identity alone does not solve independently versioned interface compatibility. Package/version discipline and compatibility tests remain necessary.
-- The paper's Koishi case study is evidence of feasibility and adoption, not a controlled performance or productivity benchmark.
-
-## Operator context tools: RTK and Serena
-
-[RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) is an optional operator/agent CLI proxy. For supported commands, it filters, groups, truncates, and deduplicates noisy shell output before that output enters model context. Install and inspect its global operator setup with:
+No macOS, instale as [Command Line Tools da Apple](https://docs.brew.sh/Installation) e o [Homebrew](https://brew.sh/) caso ainda não estejam disponíveis:
 
 ```bash
-rtk init -g
-rtk init --show
-rtk gain
+xcode-select --install
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Use `rtk proxy <command>` when raw output is required. RTK's upstream savings claim describes reduced shell-output tokens/bytes for supported commands; it is not an equivalent percentage reduction in an OpenAI invoice or in total prompt size. RTK does not change program semantics and is neither a catalog runtime dependency nor a CI dependency.
+Ative o Homebrew no terminal atual e instale [Git](https://formulae.brew.sh/formula/git), [Node.js 24](https://formulae.brew.sh/formula/node@24) e [Python 3](https://docs.brew.sh/Homebrew-and-Python):
 
-[Serena](https://github.com/oraios/serena) is an optional MCP toolkit that uses LSP and semantic symbol relationships for targeted retrieval, reference discovery, and symbol-aware edits. This repository versions its `.serena/project.yml` for TypeScript and Markdown, along with durable `.serena/memories/**`. `.serena/cache` and `.serena/project.local.yml` are ignored for local state and overrides. Serena's targeted symbol context complements RTK's compact command output: one narrows code context while the other reduces incidental shell noise.
+```bash
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+brew install git node@24 python3
+export PATH="$(brew --prefix node@24)/bin:$PATH"
+```
+
+Confira a instalação antes de clonar o repositório (`curl` já acompanha o macOS):
+
+```bash
+git --version
+node --version
+npm --version
+python3 --version
+python3 -c 'import sqlite3; print(sqlite3.sqlite_version)'
+curl --version
+```
+
+Em Linux ou Windows, obtenha as mesmas ferramentas nas páginas oficiais de [Node.js](https://nodejs.org/en/download), [Git](https://git-scm.com/downloads) e [Python](https://www.python.org/downloads/) e execute a mesma verificação de versões. No Windows, o [WSL](https://learn.microsoft.com/windows/wsl/install) oferece um terminal Linux para os comandos deste guia.
+
+## Instalação do engine
+
+```bash
+git clone https://github.com/sergiofigueras/vtex-coding-challenge.git
+cd vtex-coding-challenge
+npm ci
+npm run dsh:config
+npm test
+```
+
+`dsh:config` resolve todos os perfis OpenAI e confirma a composição do Harness. Os testes do engine exercitam seleção de projeto, grafo SDD, budgets, retries, histórico, segurança e ledger.
+
+## Materializar os projetos a partir de `specs/`
+
+Em um clone limpo, crie a área executável e copie a fonte canônica de cada projeto:
+
+```bash
+npm run project:create -- \
+  --id catalog-consolidation \
+  --title "VTEX Catalog Consolidation"
+cp -R specs/catalog-consolidation/. projects/catalog-consolidation/
+
+npm run project:create -- \
+  --id catalog-rag \
+  --title "VTEX Catalog RAG Search UI"
+cp -R specs/catalog-rag/. projects/catalog-rag/
+
+npm run project:validate -- \
+  --project catalog-consolidation --working-tree
+npm run project:validate -- \
+  --project catalog-rag --working-tree
+npm run check
+```
+
+Para sincronizar uma área já materializada com a revisão atual das specs:
+
+```bash
+cp -R specs/catalog-consolidation/. projects/catalog-consolidation/
+cp -R specs/catalog-rag/. projects/catalog-rag/
+```
+
+## Fluxo SDD compartilhado
+
+Cada fatia usa um `change ID` estável e um conjunto explícito de specs. `prepare` cria o prompt dependency-ordered e a projeção de custo. `run` entrega esse mesmo escopo ao Harness.
+
+```bash
+run_sdd_slice() {
+  project_id="$1"
+  change_id="$2"
+  spec_ids="$3"
+
+  npm run project:prepare -- \
+    --project "$project_id" \
+    --change "$change_id" \
+    --spec "$spec_ids" \
+    --route default
+
+  npm run project:run -- \
+    --project "$project_id" \
+    --change "$change_id" \
+    --spec "$spec_ids" \
+    --route default
+
+  npm run project:validate -- \
+    --project "$project_id" --working-tree
+}
+```
+
+Após cada fatia:
+
+```bash
+npm --prefix "projects/<project-id>" run check
+npm run check
+npm run project:cost -- --project "<project-id>"
+git diff --check
+```
+
+## Projeto 1 — Catalog Consolidation
+
+### Objetivo e desenho
+
+O consolidador recebe um JSON de ofertas e um catálogo SQLite. IDs de oferta têm escopo por seller. A identidade canônica versionada compara nome, marca e categoria após normalização explícita e aliases revisados. O serviço planeja o lote em memória e aplica migração, produtos e vínculos `SellerProduct` em uma transação.
 
 ```mermaid
 flowchart LR
-  HA["DeepSeek Harness / agent"] -->|semantic context| SERENA["Serena MCP"]
-  HA -->|compact shell output| RTK["RTK proxy"]
-  SERENA --> CTX["OpenAI context"]
-  RTK --> CTX
-  CTX --> SDD["bounded SDD change"]
+  JSON[ProductEntry.json] --> VALIDATE[Contrato e validação]
+  VALIDATE --> RESOLVE[Identidade canônica]
+  DB[(catalog.db)] --> RESOLVE
+  RESOLVE --> PLAN[Plano determinístico]
+  PLAN --> TX[Transação SQLite]
+  TX --> PRODUCT[Product + ProductIdentity]
+  TX --> LINKS[SellerProduct]
+  TX --> SUMMARY[Resumo JSON versionado]
 ```
 
-These tools optimize the engineering control plane; neither runs in production. Files written by `rtk init -g` remain in the operator's home directory and must not be committed. Only repository-safe `.serena` configuration and memories are versioned. DeepSeek Harness remains the orchestrator, while the delivered catalog runtime stays deterministic and model-free.
+Essa combinação preserva explicabilidade e segurança operacional: equivalências revisadas reutilizam o produto canônico, produtos distintos permanecem separados e ambiguidades produzem um resultado explícito com rollback integral.
 
-## Prerequisites
+### Grafo e ordem de entrega
 
-- Node.js `^22.19.0 || >=24.0.0`
-- npm
-- Python 3 with the standard `sqlite3` module (source inventory only)
-- Git
-- `OPENAI_API_KEY` only for a live agent run
+As 12 specs estão em [`specs/catalog-consolidation/docs/sdd/specs/`](specs/catalog-consolidation/docs/sdd/specs/). O manifesto e a rastreabilidade recíproca ficam em:
 
-## Bootstrap and verify
+- [`manifest.json`](specs/catalog-consolidation/docs/sdd/manifest.json)
+- [`traceability.json`](specs/catalog-consolidation/docs/sdd/traceability.json)
 
 ```bash
-npm ci
+run_sdd_slice catalog-consolidation catalog-one-foundation SDD-000,SDD-001
+run_sdd_slice catalog-consolidation catalog-one-input SDD-002
+run_sdd_slice catalog-consolidation catalog-one-schema SDD-003
+run_sdd_slice catalog-consolidation catalog-one-identity SDD-004
+run_sdd_slice catalog-consolidation catalog-one-consolidation SDD-005
+run_sdd_slice catalog-consolidation catalog-one-safety SDD-006
+run_sdd_slice catalog-consolidation catalog-one-verification SDD-007
+run_sdd_slice catalog-consolidation catalog-one-operational-limits SDD-010
+run_sdd_slice catalog-consolidation catalog-one-feature-existence-demo SDD-011
+run_sdd_slice catalog-consolidation catalog-one-release SDD-008
+run_sdd_slice catalog-consolidation catalog-one-history SDD-009
+```
+
+### Verificação e demonstração pública
+
+Quando a implementação estiver materializada:
+
+```bash
 npm --prefix projects/catalog-consolidation ci
-npm run dsh:config
-npm run sources:ingest
-npm run check
 npm --prefix projects/catalog-consolidation run check
-npm run cost:report
+npm --prefix projects/catalog-consolidation run demo:feature
 ```
 
-`npm ci` installs the root/engine dependencies; the separate `npm --prefix projects/catalog-consolidation ci` installs the intentionally non-workspace project's compiler and runtime dependencies. Root `npm run check` verifies engine/SDD infrastructure. Run the project check separately as shown above.
+`demo:feature` cria dados sintéticos em diretório temporário, prova o dry run, aplica uma consolidação com um novo produto e três vínculos, consulta `Product` e `SellerProduct` e repete o lote com zero novas inserções.
 
-The short commands above are compatibility aliases for `catalog-consolidation`. `sources:ingest` downloads that project's public JSON and SQLite snapshots, verifies their pinned hashes, profiles them deterministically, and stores them only under `projects/catalog-consolidation/.sdd/inputs`. CI stays offline and does not need an API key.
-
-## Create or select another project
-
-Create a valid empty project without copying the engine:
+Os oito casos focados também podem ser executados individualmente:
 
 ```bash
-npm run project:create -- --id example-service --title "Example Service"
-npm run project:validate -- --project example-service
+cd projects/catalog-consolidation
+node --test test/hc-01-cross-seller-match.test.ts
+node --test test/hc-02-seller-scoped-id.test.ts
+node --test test/hc-03-normalized-variants.test.ts
+node --test test/hc-04-potential-duplicate.test.ts
+node --test test/hc-05-distinct-model.test.ts
+node --test test/hc-06-ambiguous-rollback.test.ts
+node --test test/hc-07-rerun-order.test.ts
+node --test test/hc-08-hostile-text.test.ts
+cd ../..
 ```
 
-Then add requirements and specs to `projects/example-service/docs/sdd/`, register them in its manifest and traceability ledger, and use the generic commands:
+### Fontes pinadas e execução descartável
 
 ```bash
-npm run project:sources -- --project example-service
-npm run project:prepare -- --project example-service --change first-slice --spec SDD-001
-npm run project:run -- --project example-service --change first-slice --spec SDD-001
-npm run project:cost -- --project example-service
-npm run project:history:create -- --project example-service --snapshot review-2026 --cutoff 2026-09-06T00:00:00Z
-npm run project:history:validate -- --project example-service --snapshot review-2026
+npm run project:sources -- --project catalog-consolidation
+npm --prefix projects/catalog-consolidation run test:fixture
+npm --prefix projects/catalog-consolidation run build
+
+runtime_dir="$(mktemp -d)"
+cp projects/catalog-consolidation/.sdd/inputs/catalog.db \
+  "$runtime_dir/catalog.db"
+
+node projects/catalog-consolidation/dist/cli.js \
+  --input projects/catalog-consolidation/.sdd/inputs/ProductEntry.json \
+  --database "$runtime_dir/catalog.db" \
+  --dry-run \
+  --format json
+
+node projects/catalog-consolidation/dist/cli.js \
+  --input projects/catalog-consolidation/.sdd/inputs/ProductEntry.json \
+  --database "$runtime_dir/catalog.db" \
+  --format json
+
+node projects/catalog-consolidation/dist/cli.js \
+  --input projects/catalog-consolidation/.sdd/inputs/ProductEntry.json \
+  --database "$runtime_dir/catalog.db" \
+  --format json
 ```
 
-See [`engine/README.md`](engine/README.md) for the reusable command contract. Project creation, validation, preparation, source ingestion, and cost reporting make no model call. Only `project:run` invokes OpenAI through Harness.
+A execução usa uma cópia temporária do banco pinado. A segunda aplicação confirma a idempotência por meio do resumo JSON e das contagens do SQLite.
 
-## Run the SDD agent
+## Projeto 2 — Catalog RAG, API e UI
 
-Start with a preparation-only run. It produces an ignored prompt and manifest, calls no model, and shows the dependency closure:
+### Objetivo e desenho
 
-```bash
-npm run sdd:prepare -- --change cli-input-implementation --spec SDD-001,SDD-002
+O RAG projeta um documento por `Product.Id`, indexa os campos autorizados em um sidecar e combina três sinais de recuperação. O vencedor é reidratado a partir do catálogo antes da composição da resposta.
+
+```mermaid
+flowchart LR
+  CATALOG[(catalog.db read-only)] --> PROJECT[Projeção por Product.Id]
+  PROJECT --> FTS[FTS5]
+  PROJECT --> VECTORS[Embeddings float32]
+  QUERY[Consulta] --> EXACT[Busca exata]
+  QUERY --> FTS
+  QUERY --> VECTORS
+  EXACT --> RRF[RRF]
+  FTS --> RRF
+  VECTORS --> RRF
+  RRF --> REHYDRATE[Reidratação no catálogo]
+  REHYDRATE --> ANSWER[Resposta grounded + citações]
+  ANSWER --> HTTP[API same-origin]
+  HTTP --> WEB[UI acessível]
 ```
 
-After reviewing the selected specs, make `OPENAI_API_KEY` available in the shell without saving it in the repository, then run the same bounded task:
+O sidecar `catalog-rag.db` contém documentos derivados, índice FTS, vetores e estado de build. A projeção ordenada e o hash de conteúdo permitem reindexação incremental. Fakes determinísticos sustentam testes offline; adapters configurados habilitam embeddings e respostas OpenAI em runtime.
+
+### Grafo e ordem de entrega
+
+As 10 specs estão em [`specs/catalog-rag/docs/sdd/specs/`](specs/catalog-rag/docs/sdd/specs/). A política de adapters runtime está documentada em [`engine-policy-prerequisite.md`](specs/catalog-rag/docs/sdd/engine-policy-prerequisite.md).
 
 ```bash
-npm run sdd:run -- --change cli-input-implementation --spec SDD-001,SDD-002
+run_sdd_slice catalog-rag catalog-rag-foundation SDD-000,SDD-001
+run_sdd_slice catalog-rag catalog-rag-index SDD-002
+run_sdd_slice catalog-rag catalog-rag-retrieval SDD-003
+run_sdd_slice catalog-rag catalog-rag-answer-api SDD-004,SDD-005
+run_sdd_slice catalog-rag catalog-rag-search-ui SDD-006
+run_sdd_slice catalog-rag catalog-rag-runtime-operations SDD-007
+run_sdd_slice catalog-rag catalog-rag-causal-grounding-audit SDD-009
+run_sdd_slice catalog-rag catalog-rag-release SDD-008
 ```
 
-Use `--route economy` for a deliberately low-cost mechanical change. The escalation route is intentionally noisy and requires both `--route escalation`, `--approve-escalation`, and `--escalation-reason "..."`.
-
-The inner agent may edit and test only the selected project. It may not commit, push, or read raw PDFs. The outer runner validates scope, isolates Harness state inside that project, monitors durable usage, writes an ignored run result, and appends a project-attributed public cost record under `engine/cost/ledger.jsonl`. Review its changes and proof before committing:
+### Construir o catálogo consumido pelo RAG
 
 ```bash
+npm run project:sources -- --project catalog-consolidation
+npm --prefix projects/catalog-consolidation run build
+
+mkdir -p projects/catalog-rag/.sdd/inputs
+mkdir -p projects/catalog-rag/.sdd/runtime
+
+cp projects/catalog-consolidation/.sdd/inputs/catalog.db \
+  projects/catalog-rag/.sdd/inputs/catalog.db
+
+node projects/catalog-consolidation/dist/cli.js \
+  --input projects/catalog-consolidation/.sdd/inputs/ProductEntry.json \
+  --database projects/catalog-rag/.sdd/inputs/catalog.db \
+  --format json
+
+node projects/catalog-consolidation/dist/cli.js \
+  --input projects/catalog-consolidation/.sdd/inputs/ProductEntry.json \
+  --database projects/catalog-rag/.sdd/inputs/catalog.db \
+  --format json
+```
+
+### Indexar e servir
+
+Após a implementação das specs correspondentes:
+
+```bash
+npm --prefix projects/catalog-rag ci
+npm --prefix projects/catalog-rag run check
+
+npm --prefix projects/catalog-rag run index -- \
+  --catalog-db projects/catalog-rag/.sdd/inputs/catalog.db \
+  --rag-db projects/catalog-rag/.sdd/runtime/catalog-rag.db
+
+npm --prefix projects/catalog-rag run serve -- \
+  --catalog-db projects/catalog-rag/.sdd/inputs/catalog.db \
+  --rag-db projects/catalog-rag/.sdd/runtime/catalog-rag.db \
+  --host 127.0.0.1 \
+  --port 3000
+
+open http://127.0.0.1:3000
+```
+
+O modo offline usa adapters determinísticos. O modo OpenAI recebe configuração no ambiente do processo:
+
+```bash
+read -s OPENAI_API_KEY
+export OPENAI_API_KEY
+
+npm --prefix projects/catalog-rag run index -- \
+  --catalog-db projects/catalog-rag/.sdd/inputs/catalog.db \
+  --rag-db projects/catalog-rag/.sdd/runtime/catalog-rag.db \
+  --embedding-provider openai \
+  --embedding-model '<modelo-fixado-pela-implementação>'
+
+npm --prefix projects/catalog-rag run serve -- \
+  --catalog-db projects/catalog-rag/.sdd/inputs/catalog.db \
+  --rag-db projects/catalog-rag/.sdd/runtime/catalog-rag.db \
+  --answer-provider openai \
+  --answer-model '<modelo-fixado-pela-implementação>' \
+  --host 127.0.0.1 \
+  --port 3000
+
+unset OPENAI_API_KEY
+```
+
+### API e experiência web
+
+```bash
+curl --fail-with-body http://127.0.0.1:3000/api/health
+
+curl --fail-with-body \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"Quais produtos Lenovo aparecem no catálogo?","topK":8}' \
+  http://127.0.0.1:3000/api/search
+```
+
+O contrato de resposta preserva citações ligadas a `Product.Id`. A UI oferece estados de carregamento, resultados, resposta grounded, fontes e navegação por teclado.
+
+## Segurança, privacidade e dados
+
+- Fixtures baixadas permanecem em `.sdd/inputs/`, área ignorada pelo Git.
+- Bancos operacionais e sidecars permanecem em `.sdd/runtime/`.
+- Credenciais chegam por variáveis de ambiente ao processo autorizado.
+- SQL usa parâmetros e transações.
+- O browser recebe conteúdo de produto, resposta e citações pelo contrato HTTP.
+- O consolidador registra métricas e códigos estáveis; o RAG registra retrieval, latência, provider e custo conforme `SDD-007`.
+- Histórico portátil inclui somente artefatos revisados e sanitizados.
+
+## Evidência, custo e gates
+
+```bash
+npm run project:validate -- --project catalog-consolidation --working-tree
+npm run project:validate -- --project catalog-rag --working-tree
+npm --prefix projects/catalog-consolidation run check
+npm --prefix projects/catalog-rag run check
 npm run check
-npm run cost:report
-git commit -m "Implement CLI and input contracts" -m "Cost-Entry: cli-input-implementation"
+npm run project:cost -- --project catalog-consolidation
+npm run project:cost -- --project catalog-rag
+git diff --check
+git status --short --branch
 ```
 
-If the work was performed outside this Harness and its exact provider usage is unavailable, record that honestly rather than inventing zero:
+O ledger em [`engine/cost/ledger.jsonl`](engine/cost/ledger.jsonl) associa cada reserva e settlement ao projeto, change ID, specs, rota, modelo e uso observado. A aplicação RAG também mede custo runtime de embeddings e respostas como telemetria própria.
 
-```bash
-npm run cost:record -- --change manual-review --spec SDD-001 --reason "External tool did not expose provider usage."
-```
+## Criar uma nova mudança SDD
 
-## Recommended implementation order
+1. Escolha o próximo `SDD-NNN` e requisito `USR-NNN` livres no projeto.
+2. Crie a spec em `specs/<project-id>/docs/sdd/specs/` com status `ready`.
+3. Registre a spec no `manifest.json`.
+4. Registre a autoridade e a propriedade recíproca no `traceability.json`.
+5. Sincronize a área materializada em `projects/<project-id>/`.
+6. Execute `project:validate`, `project:prepare`, `project:run` e os gates.
+7. Mapeie cada acceptance criterion em `docs/sdd/evidence-index.md`.
+8. Consulte o custo com `project:cost`.
 
-| Change | Specs to request | Outcome |
-|---|---|---|
-| 1 | `SDD-001,SDD-002` | TypeScript boundary, CLI contract, safe parsing |
-| 2 | `SDD-003` | SQLite migrations and constraints |
-| 3 | `SDD-004` | Deterministic canonical identity and alias data |
-| 4 | `SDD-005,SDD-006` | Atomic consolidation, errors, security, observability |
-| 5 | `SDD-007` | Complete automated and fixture verification |
-| 6 | `SDD-008` | Public delivery and engineering defense |
+Estrutura recomendada:
 
-These catalog spec IDs are the prompts: the runner builds a compact instruction from the selected project's manifest and dependency graph, while the full behavior stays versioned in `projects/catalog-consolidation/docs/sdd/specs/`. Do not ask the agent to “build everything” in one context window.
+```markdown
+# Título observável da mudança
 
-## Model and cost policy
-
-The default route is `openai/gpt-5.6-terra` at medium reasoning. Use `gpt-5.6-luna` for high-volume ingestion summaries, formatting, and mechanical test repair. `gpt-5.6-sol`, a request above 272,000 prompt tokens, or an unpriced model/tier requires an explicit policy change and review.
-
-Pricing comes from the dated engine price book, not from a transitive adapter. Provider usage is normalized into disjoint uncached-input, cache-read, cache-write, and output buckets. Reasoning is included in output and is never counted twice. Since the pinned Harness adapter does not preserve the actual OpenAI service tier, known costs are marked `standard-assumed`; missing usage remains `unreconciled`, never zero.
-
-The initial infrastructure change was authored in Codex outside the target Harness, whose exact token/currency usage was not exposed to this repository. Its ledger entry is therefore intentionally `unavailable`.
-
-## Specification map
-
-Engine infrastructure is specified under `engine/docs/sdd/`. The catalog graph is `projects/catalog-consolidation/docs/sdd/manifest.json`; its requirement authority and ownership are in `projects/catalog-consolidation/docs/sdd/traceability.json`. Start at `SDD-000`, which explicitly separates the user's workflow request, assessment behavior, and fixture observations. Catalog choices are recorded in its `docs/adr/`; shared routing and Harness choices are recorded in `engine/docs/adr/`.
-
-The source documents include a confidentiality notice. They are neither copied nor quoted in this public repository. Only paraphrased requirements, public URLs, hashes, and independently observed schema facts are retained.
-
-## Release gate
-
-The product release gate requires:
-
-1. all requested specs implemented and evidence-linked;
-2. `npm run check` and the opt-in private-fixture suite passing from a clean clone;
-3. source hashes and foreign-key invariants verified;
-4. no PDFs, fixture bytes, databases, secrets, or Harness transcripts tracked;
-5. a valid cost entry for every commit and `npm run cost:report` reviewed;
-6. the final Git revision and CI result recorded in the delivery note.
-
-See [`projects/catalog-consolidation/README.md`](projects/catalog-consolidation/README.md) for clean-room install, test, fixture, CLI, SDD replay, log, and cost-report commands, and `projects/catalog-consolidation/docs/sdd/specs/08-delivery-and-engineering-defense.md` for the delivery requirements and evidence policy.
-
-## Presentation decks
-
-- [Catalog consolidation: requirements, design, verification, and trade-offs](catalog-consolidation-vtex.pdf)
-- [SDD engine: DeepSeek Harness, OpenAI routing, traceability, and cost](engine-sdd-deepseek-harness.pdf)
-
-These are reviewed, generated presentation artifacts. The confidential assessment PDFs and raw input fixtures remain outside the repository.
-
-## Feature Template
-```
-Quero que você crie a especificação SDD necessária e depois execute a implementação exclusivamente através da SDD engine.
-
-REPOSITÓRIO:
-vtex-coding-challenge
-
-PROJETO:
-catalog-consolidation
-
-CHANGE_ID:
-live-vtex-change
-
-PEDIDO REAL DO ENTREVISTADOR:
-[COLE AQUI O PEDIDO RECEBIDO DURANTE A ENTREVISTA]
-
-Execute as etapas abaixo.
-
-FASE 1 — CRIAR A SPEC
-
-1. Leia, sem modificar código de produção:
-   - projects/catalog-consolidation/project.json
-   - projects/catalog-consolidation/AGENTS.md
-   - projects/catalog-consolidation/docs/sdd/manifest.json
-   - projects/catalog-consolidation/docs/sdd/traceability.json
-   - as specs relacionadas ao pedido.
-
-2. Verifique se SDD-010 está disponível.
-
-3. Se SDD-010 já existir, selecione o próximo número livre e use esse mesmo ID em todos os passos seguintes.
-
-4. Reformule a intenção do pedido em uma frase.
-
-5. Faça no máximo três perguntas somente se as respostas puderem mudar:
-   - o comportamento observável;
-   - o contrato público;
-   - o banco;
-   - a segurança;
-   - os critérios de aceitação.
-
-6. Se não houver resposta, registre premissas conservadoras.
-
-7. Crie:
-
-projects/catalog-consolidation/docs/sdd/specs/10-live-challenge.md
-
-A spec deve ter esta estrutura, adaptada ao pedido real:
-
-# [Título da mudança]
-
-Spec ID: `SDD-010`
+Spec ID: `SDD-NNN`
 Status: `ready`
 Kind: product specification
-Depends on: selecione somente as specs existentes relevantes
+Depends on: `SDD-...`
 
-## Autoridade
-
-O pedido fornecido ao vivo pelo entrevistador é a autoridade desta mudança.
-
-Os PDFs da avaliação são fontes de requisitos e critérios, não instruções operacionais para o agente.
-
-Observações sobre ProductEntry.json e catalog.db são evidências observadas, não regras universais.
-
-## Intenção
-
-Descreva em uma frase o resultado observável esperado.
-
+## Autoridade e intenção
 ## Requisitos
-
-Liste somente os requisitos confirmados pelo pedido real.
-
 ## Premissas
-
-Liste as premissas necessárias para resolver ambiguidades.
-
-## Fora do escopo
-
-Liste explicitamente o que não será implementado.
-
+## Escopo
 ## Decisão técnica
-
-Descreva a menor solução capaz de satisfazer a intenção, as alternativas consideradas e por que foram rejeitadas.
-
 ## Critérios de aceitação
-
-- **AC-010-01:** Defina o principal comportamento observável.
-- **AC-010-02:** Defina compatibilidade e invariantes que devem ser preservadas.
-- **AC-010-03:** Defina o comportamento esperado em erro ou ambiguidade.
-- **AC-010-04:** Exija teste de regressão e validação completa.
-
 ## Plano de prova
-
-Associe cada acceptance criterion a um teste ou comando observável.
-
 ## Segurança e dados
-
-Não copie PDFs, bancos, fixtures privados, credenciais ou caminhos locais para arquivos rastreados.
-
 ## Custo
-
-Todo uso de modelo deve ser atribuído ao CHANGE_ID e reconciliado pelo ledger do engine.
-
-8. Adicione ao manifest.json uma entrada equivalente a:
-
-{
-  "id": "SDD-010",
-  "title": "[TÍTULO DA MUDANÇA]",
-  "path": "docs/sdd/specs/10-live-challenge.md",
-  "kind": "product",
-  "status": "ready",
-  "dependsOn": ["[SPECS-RELEVANTES]"],
-  "requirements": ["USR-008"],
-  "acceptanceCriteria": [
-    "AC-010-01",
-    "AC-010-02",
-    "AC-010-03",
-    "AC-010-04"
-  ]
-}
-
-Use um array JSON válido em dependsOn. Não coloque os colchetes de exemplo literalmente.
-
-9. Adicione ao traceability.json:
-
-{
-  "id": "USR-008",
-  "authority": "user",
-  "summary": "[RESUMO EXATO DO PEDIDO REAL]",
-  "specIds": ["SDD-010"]
-}
-
-Se USR-008 já existir, escolha o próximo ID livre. Garanta rastreabilidade recíproca entre requisito e spec.
-
-10. Não implemente código de produção diretamente nesta fase.
-
-FASE 2 — VALIDAR A SPEC
-
-A partir da raiz do repositório, execute:
-
-npm run project:validate -- --project catalog-consolidation --working-tree
-
-Se falhar, corrija somente a spec, o manifesto ou a rastreabilidade e execute novamente.
-
-Não prossiga enquanto a validação SDD estiver falhando.
-
-FASE 3 — PREPARAR O RUN SEM MODELO
-
-Execute:
-
-npm run project:prepare -- --project catalog-consolidation --change live-vtex-change --spec SDD-010 --route default
-
-Mostre:
-- spec selecionada;
-- dependências;
-- prompt preparado;
-- custo projetado;
-- arquivos que poderão ser afetados.
-
-FASE 4 — EXECUTAR A SDD ENGINE
-
-Depois que a preparação passar, execute:
-
-npm run project:run -- --project catalog-consolidation --change live-vtex-change --spec SDD-010 --route default
-
-Essa execução deve:
-
-- usar DeepSeek Harness;
-- usar OpenAI;
-- usar Terra como rota padrão;
-- mostrar integralmente stdout e stderr;
-- implementar somente SDD-010;
-- produzir código e testes pelo agente SDD;
-- preservar o runtime determinístico e model-free;
-- não fazer commit;
-- não fazer push.
-
-Não implemente manualmente uma correção fora do agente SDD. Se houver falha, analise a causa e faça uma nova execução SDD usando o mesmo change ID e spec.
-
-FASE 5 — VERIFICAR
-
-Execute:
-
-npm --prefix projects/catalog-consolidation run build
-npm --prefix projects/catalog-consolidation run lint
-npm --prefix projects/catalog-consolidation run typecheck
-npm --prefix projects/catalog-consolidation test
-npm --prefix projects/catalog-consolidation run sdd:validate
-npm --prefix projects/catalog-consolidation run check
-npm run check
-
-Se algum teste falhar, não declare conclusão.
-
-FASE 6 — MOSTRAR O CUSTO
-
-Execute:
-
-npm run project:cost -- --project catalog-consolidation
-
-Informe separadamente:
-
-- modelo;
-- rota;
-- tokens de input;
-- cache-read;
-- cache-write;
-- output;
-- retries;
-- custo conhecido;
-- reserva pendente;
-- valor não reconciliado;
-- total atribuído ao change ID.
-
-Nunca represente custo desconhecido como zero.
-
-ENTREGA FINAL
-
-Apresente:
-
-- intenção;
-- perguntas e premissas;
-- spec criada;
-- requisito de rastreabilidade;
-- acceptance criteria;
-- arquivos alterados;
-- resumo do diff;
-- testes executados;
-- resultados observados;
-- custo da mudança;
-- trade-offs;
-- riscos e limitações;
-- confirmação de que nenhum commit ou push foi realizado.
-
-npm run project:run -- \
-  --project catalog-consolidation \
-  --change live-vtex-change \
-  --spec SDD-010 \
-  --route default
 ```
+
+## Referências do repositório
+
+- [Engine de entrega](engine/README.md)
+- [Specs do Catalog Consolidation](specs/catalog-consolidation/README.md)
+- [Specs do Catalog RAG](specs/catalog-rag/README.md)
+- [Manifesto do Catalog Consolidation](specs/catalog-consolidation/docs/sdd/manifest.json)
+- [Manifesto do Catalog RAG](specs/catalog-rag/docs/sdd/manifest.json)

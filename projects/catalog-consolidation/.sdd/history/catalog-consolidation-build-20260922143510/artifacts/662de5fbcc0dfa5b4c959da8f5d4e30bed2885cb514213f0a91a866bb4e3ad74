@@ -1,0 +1,41 @@
+Implemented and verified change ID **`catalog-one-foundation`**.
+
+### Requested specs
+- **SDD-000**: remained `verified`; its existing three acceptance tests continue to pass.
+- **SDD-001**: implemented and marked `verified` in both its spec and `docs/sdd/manifest.json`.
+
+### Changed files
+- `src/cli.ts`
+- `src/domain/contracts.ts`
+- `src/application/consolidation-service.ts`
+- `src/adapters/json-input-reader.ts`
+- `src/adapters/sqlite-catalog-repository.ts`
+- `src/adapters/deterministic-product-resolver.ts`
+- `src/adapters/reporter.ts`
+- `src/types/node-shim.d.ts`
+- `test/sdd-system-boundary.test.mjs`
+- `package.json`
+- `package-lock.json`
+- `tsconfig.json`
+- `.gitignore`
+- `docs/sdd/specs/01-system-boundary-and-interface.md`
+- `docs/sdd/manifest.json`
+
+`docs/sdd/traceability.json` was intentionally unchanged: its validated schema is ownership-only and contains no evidence-index field. The SDD-001 spec now contains the executable evidence index.
+
+### Evidence
+- `npm test`
+  - 7/7 tests pass, including all acceptance IDs AC-000-01 through AC-001-04.
+  - AC-001 verifies command validation/exit code `2`, dry-run byte identity and matching planned counts, pure in-memory service orchestration, and stable JSON/text reporting.
+- `npm run sdd:validate`
+  - Passed.
+- `npm run check`
+  - Passed.
+- `npm --prefix ../.. run check`
+  - Passed (48/48 root engine tests).
+
+### Remaining decisions / scope
+- Product identity matching, schema migrations, catalog mutations, and final idempotent persistence remain intentionally deferred to the unrequested SDD-002 through SDD-005 specifications.
+- Node’s built-in `node:sqlite` currently emits its upstream experimental warning to stderr; CLI summaries remain clean and machine-readable on stdout.
+
+Complete gate: **passed**.
