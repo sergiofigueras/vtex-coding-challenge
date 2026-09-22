@@ -57,10 +57,16 @@ export function parseLegacyCommitCostManifest(manifest) {
   for (const [sha, correction] of Object.entries(manifest.commits)) {
     if (!COMMIT_SHA_PATTERN.test(sha)) throw new Error(`legacy commit correction has invalid SHA: ${sha}`)
     exactKeys(correction, ['observedTrailer', 'changeId', 'reason'], `legacy commit correction ${sha}`)
-    if (typeof correction.observedTrailer !== 'string' || correction.observedTrailer.trim() !== correction.observedTrailer || correction.observedTrailer === '') {
-      throw new Error(`legacy commit correction ${sha}: observedTrailer must be a non-empty exact value`)
+    if (correction.observedTrailer !== null && (
+      typeof correction.observedTrailer !== 'string' ||
+      correction.observedTrailer.trim() !== correction.observedTrailer ||
+      correction.observedTrailer === ''
+    )) {
+      throw new Error(`legacy commit correction ${sha}: observedTrailer must be null or a non-empty exact value`)
     }
-    if (CHANGE_ID_PATTERN.test(correction.observedTrailer)) throw new Error(`legacy commit correction ${sha}: observed trailer is already valid`)
+    if (typeof correction.observedTrailer === 'string' && CHANGE_ID_PATTERN.test(correction.observedTrailer)) {
+      throw new Error(`legacy commit correction ${sha}: observed trailer is already valid`)
+    }
     if (!CHANGE_ID_PATTERN.test(correction.changeId ?? '')) throw new Error(`legacy commit correction ${sha}: invalid changeId`)
     if (typeof correction.reason !== 'string' || correction.reason.trim() === '') throw new Error(`legacy commit correction ${sha}: reason is required`)
     result.set(sha, correction)
@@ -72,7 +78,7 @@ export function resolveCommitCostEntry(sha, body, knownChangeIds, legacyCorrecti
   const strict = /^Cost-Entry:\s*([a-z0-9][a-z0-9-]{4,80})\s*$/mi.exec(body)
   let changeId = strict?.[1]
   if (!changeId) {
-    const observed = /^Cost-Entry:\s*(.*?)\s*$/mi.exec(body)?.[1]
+    const observed = /^Cost-Entry:\s*(.*?)\s*$/mi.exec(body)?.[1] ?? null
     const correction = legacyCorrections.get(sha)
     if (!correction || correction.observedTrailer !== observed) {
       throw new Error(`commit ${sha.slice(0, 12)}: missing or invalid Cost-Entry trailer`)

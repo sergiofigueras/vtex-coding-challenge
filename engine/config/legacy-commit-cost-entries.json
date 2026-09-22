@@ -5,6 +5,16 @@
       "observedTrailer": "Template adding",
       "changeId": "template-adding",
       "reason": "Exact correction for the malformed trailer created by the GitHub README edit; future malformed trailers remain invalid."
+    },
+    "2ffd8eb9dabb5ff87d0c319ce4a2c0bc859b09d8": {
+      "observedTrailer": null,
+      "changeId": "publish-sdd-specs-readmes",
+      "reason": "Exact correction for the published SDD and README commit, which omitted its cost trailer; the append-only ledger records unavailable external usage."
+    },
+    "8a24a3c096ab4cefc73a3ce85a79bf5396048a5e": {
+      "observedTrailer": null,
+      "changeId": "ci-fixture-ingestion",
+      "reason": "Exact correction for the published CI fixture-ingestion commit, which omitted its cost trailer; the append-only ledger records unavailable external usage."
     }
   }
 }

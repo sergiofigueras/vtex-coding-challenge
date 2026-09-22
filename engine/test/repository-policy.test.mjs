@@ -45,18 +45,27 @@ test('rejects malformed public artifact entries and missing allowlisted files', 
   }), /not tracked/)
 })
 
-test('accepts only the exact historical malformed trailer mapping backed by a known cost entry', () => {
+test('accepts only exact published trailer corrections backed by known cost entries', () => {
   const sha = 'b'.repeat(40)
+  const missingSha = 'd'.repeat(40)
   const corrections = parseLegacyCommitCostManifest({
     schemaVersion: '1.0',
     commits: {
       [sha]: { observedTrailer: 'Template adding', changeId: 'template-adding', reason: 'Published historical typo.' },
+      [missingSha]: { observedTrailer: null, changeId: 'published-change', reason: 'Published commit without trailer.' },
     },
   })
-  const known = new Set(['template-adding', 'valid-change'])
+  const known = new Set(['template-adding', 'valid-change', 'published-change'])
   assert.equal(resolveCommitCostEntry(sha, 'Update README\n\nCost-Entry: Template adding\n', known, corrections), 'template-adding')
+  assert.equal(resolveCommitCostEntry(missingSha, 'Published change without trailer\n', known, corrections), 'published-change')
   assert.equal(resolveCommitCostEntry('a'.repeat(40), 'Change\n\nCost-Entry: valid-change\n', known, corrections), 'valid-change')
   assert.throws(() => resolveCommitCostEntry('c'.repeat(40), 'Cost-Entry: Another typo', known, corrections), /missing or invalid/)
+  assert.throws(() => resolveCommitCostEntry('c'.repeat(40), 'No trailer here', known, corrections), /missing or invalid/)
   assert.throws(() => resolveCommitCostEntry(sha, 'Cost-Entry: Different typo', known, corrections), /missing or invalid/)
+  assert.throws(() => resolveCommitCostEntry(missingSha, 'Cost-Entry: Different typo', known, corrections), /missing or invalid/)
   assert.throws(() => resolveCommitCostEntry('a'.repeat(40), 'Cost-Entry: unknown-change', known, corrections), /unknown Cost-Entry/)
+  assert.throws(() => parseLegacyCommitCostManifest({
+    schemaVersion: '1.0',
+    commits: { [missingSha]: { changeId: 'published-change', reason: 'Missing observedTrailer field.' } },
+  }), /observedTrailer/)
 })
